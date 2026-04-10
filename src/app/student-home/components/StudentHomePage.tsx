@@ -30,9 +30,9 @@ export default function StudentHomePage() {
       <main className="flex-1 flex flex-col items-center px-4 py-10">
         {/* Welcome */}
         <div className="text-center mb-10 w-full max-w-2xl">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">Welcome Back 👋</h2>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">Welcome to GOGI 👋</h2>
           <p className="text-violet-300 text-sm sm:text-base max-w-md mx-auto">
-            Your current assignment: <span className="text-white font-semibold">ELA.9.R.1.2</span> — Universal Themes in Literary Texts
+            Your Diagnostic Assessment
           </p>
         </div>
 
@@ -47,19 +47,18 @@ export default function StudentHomePage() {
                   <span className="bg-amber-500/20 text-amber-400 text-xs font-semibold px-2 py-0.5 rounded-full">Start Here</span>
                 </div>
                 <h3 className="text-white text-xl font-bold leading-snug">ELA Reading Diagnostic</h3>
-                <p className="text-violet-300 text-sm mt-0.5 font-mono">ELA.9.R.1.2</p>
               </div>
             </div>
 
             <p className="text-slate-300 text-sm leading-relaxed mb-5">
-              Analyze universal themes and their development throughout literary texts. This diagnostic will assess your current skill level and determine your next steps.
+              This assessment will help GOGI understand your current reading skills so we can build a personalized learning plan just for you.
             </p>
 
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[
-                { label: 'Passages', value: '3' },
+                { label: 'Texts', value: '5' },
                 { label: 'Questions', value: '15' },
-                { label: 'Est. Time', value: '~20 min' },
+                { label: 'Est. Time', value: '40-45 min' },
               ]?.map(item => (
                 <div key={item?.label} className="bg-white/5 rounded-xl p-3 text-center">
                   <div className="text-white font-bold text-lg">{item?.value}</div>

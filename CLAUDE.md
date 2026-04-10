@@ -24,13 +24,26 @@ Title 1 ELA teachers have no single system that:
 - AI: Anthropic Claude API (NOT OpenAI)
 - Repo: https://github.com/cgriffinbenitez/gogi
 
-## Database Tables
-- users (id, email, role, full_name, created_at)
-- students (id, user_id, teacher_id, grade_level, created_at)
-- standards (id, code, description, grade_level, domain)
-- sessions (id, student_id, standard_id, session_type, score, status, completed_at)
-- questions (id, standard_id, session_type, question_text, answer_choices jsonb, correct_answer)
-- responses (id, session_id, question_id, student_answer, is_correct, answered_at)
+## DATABASE SCHEMA
+This is the single source of truth for all database tables and columns. Never reference a column not listed here. If a feature requires a new column, flag it before writing any code.
+
+**users**
+- id, email, full_name, school, district, role, created_at
+
+**students**
+- id, teacher_id, full_name, grade_level, fast_pm1_score, fast_pm2_score, created_at, user_id
+
+**standards**
+- id, code, title, description, cognitive_domain, created_at
+
+**sessions**
+- id, student_id, standard_id, phase, status, mastery_achieved, started_at, completed_at, time_spent_seconds
+
+**questions**
+- id, standard_id, content, cognitive_skill_targeted, difficulty_level, created_at
+
+**responses**
+- id, session_id, question_id, student_id, standard_id, cognitive_skill_targeted, diagnostic_classification, intervention_type, intervention_content, student_response, mastery_achieved, attempt_number, ai_feedback, teacher_override, created_at
 
 ## Target Florida BEST Standards (Pilot)
 - ELA.9.R.1.1 — Inferencing and textual evidence
@@ -41,7 +54,7 @@ Title 1 ELA teachers have no single system that:
 - Diagnostic score 80%+ → skip to Reassess
 - Diagnostic score below 80% → Teach → Practice → Reassess
 - Reassess score 80%+ → mastery achieved
-- session_type values: diagnostic, teach, practice, reassess
+- sessions.phase values: diagnostic, teach, practice, reassess
 
 ## User Roles
 - student → redirected to /student-home on login
