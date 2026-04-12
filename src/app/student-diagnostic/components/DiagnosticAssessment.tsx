@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+const MASTERY_THRESHOLD = 0.8;
+
 const PILOT_CODES = ['ELA.9.R.1.1', 'ELA.9.R.1.2', 'ELA.9.R.2.1'] as const;
 
 const STANDARD_LABELS: Record<string, string> = {
@@ -40,6 +42,8 @@ interface AnswerRecord {
 
 interface StandardResult {
   code: string;
+  id: string;
+  title: string;
   correct: number;
   total: number;
   pct: number;
@@ -131,6 +135,7 @@ export default function DiagnosticAssessment() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerStartRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const standardsMetaRef = useRef<Record<string, { id: string; title: string }>>({});
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -161,7 +166,7 @@ export default function DiagnosticAssessment() {
         // 3. Load all 3 pilot standards ordered by code
         const { data: standards, error: standardsError } = await supabase
           .from('standards')
-          .select('id, code')
+          .select('id, code, title')
           .in('code', [...PILOT_CODES])
           .order('code');
 
@@ -171,9 +176,14 @@ export default function DiagnosticAssessment() {
           return;
         }
 
-        // Build lookup: id → code
+        // Build lookups: id → code and code → { id, title }
         const codeById: Record<string, string> = {};
-        standards.forEach(s => { codeById[s.id] = s.code; });
+        const metaByCode: Record<string, { id: string; title: string }> = {};
+        standards.forEach(s => {
+          codeById[s.id] = s.code;
+          metaByCode[s.code] = { id: s.id, title: s.title };
+        });
+        standardsMetaRef.current = metaByCode;
 
         // 4. Load questions for all 3 standards
         const standardIds = standards.map(s => s.id);
@@ -323,6 +333,8 @@ export default function DiagnosticAssessment() {
       }
       const results: StandardResult[] = [...PILOT_CODES].map(code => ({
         code,
+        id: standardsMetaRef.current[code]?.id ?? '',
+        title: standardsMetaRef.current[code]?.title ?? '',
         correct: stdMap[code].correct,
         total: stdMap[code].total,
         pct: stdMap[code].total > 0 ? Math.round((stdMap[code].correct / stdMap[code].total) * 100) : 0,
@@ -337,7 +349,7 @@ export default function DiagnosticAssessment() {
           .from('sessions')
           .update({
             status: 'completed',
-            mastery_achieved: pct >= 80,
+            mastery_achieved: pct >= MASTERY_THRESHOLD * 100,
             completed_at: new Date().toISOString(),
             time_spent_seconds: timeSpent,
           })
@@ -465,77 +477,70 @@ export default function DiagnosticAssessment() {
   // ─── RESULTS ──────────────────────────────────────────────────────────────
 
   if (phase === 'results') {
-    const mastered = finalScore.pct >= 80;
-    const level = getScoreLevel(finalScore.pct);
+    const allPassed = standardResults.every(s => s.pct >= MASTERY_THRESHOLD * 100);
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <div className="text-5xl mb-4">{mastered ? '🏆' : '📊'}</div>
+            <div className="text-5xl mb-4">{allPassed ? '🏆' : '📊'}</div>
             <h1 className="text-white text-3xl font-extrabold mb-2">Diagnostic Complete!</h1>
             <p className="text-violet-300 text-sm">3 Standards · {finalScore.total} Questions</p>
           </div>
 
-          {/* Overall Score */}
-          <div className={`border rounded-2xl p-6 mb-6 text-center ${level.bg}`}>
-            <div className={`text-5xl font-extrabold mb-1 ${level.color}`}>{finalScore.pct}%</div>
-            <div className="text-white font-bold text-lg">{finalScore.correct} / {finalScore.total} Correct</div>
-            <div className={`text-sm font-semibold mt-2 ${level.color}`}>{level.label}</div>
-          </div>
-
-          {/* Per-Standard Breakdown */}
+          {/* Per-Standard Results */}
           <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-5 mb-6">
-            <h2 className="text-white font-bold text-sm mb-4">Score by Standard</h2>
-            <div className="space-y-4">
+            <h2 className="text-white font-bold text-sm mb-4">Results by Standard</h2>
+            <div className="space-y-3">
               {standardResults.map(s => {
-                const sLevel = getScoreLevel(s.pct);
+                const passed = s.pct >= MASTERY_THRESHOLD * 100;
                 return (
-                  <div key={s.code}>
-                    <div className="flex items-center justify-between mb-1">
-                      <div>
+                  <div
+                    key={s.code}
+                    className={`flex items-center justify-between gap-4 p-4 rounded-xl border ${
+                      passed ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-violet-400 font-mono text-xs">{s.code}</span>
-                        <span className="text-slate-400 text-xs ml-2">{STANDARD_LABELS[s.code]}</span>
+                        <span className={`text-xs font-bold ${passed ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {s.pct}%
+                        </span>
                       </div>
-                      <span className={`text-xs font-bold ${sLevel.color}`}>{s.pct}%</span>
+                      <p className="text-slate-300 text-sm">{s.title}</p>
                     </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          s.pct >= 80 ? 'bg-emerald-500' : s.pct >= 60 ? 'bg-amber-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${s.pct}%` }}
-                      />
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      {passed ? (
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                          <span className="text-emerald-400 font-bold">✓</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+                            <span className="text-red-400 font-bold">✗</span>
+                          </div>
+                          <button
+                            onClick={() => router.push(`/student-teach/${s.id}`)}
+                            className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all duration-200"
+                          >
+                            Start
+                          </button>
+                        </>
+                      )}
                     </div>
-                    <div className="text-slate-500 text-xs mt-0.5">{s.correct} of {s.total} correct</div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* What's Next */}
-          <div className={`border rounded-2xl p-5 mb-6 ${mastered ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-amber-500/10 border-amber-500/30'}`}>
-            <h2 className="text-white font-bold text-sm mb-2">
-              {mastered ? '🎉 Mastery Achieved!' : '📚 Next Step: Guided Lesson'}
-            </h2>
-            <p className="text-slate-300 text-sm leading-relaxed">
-              {mastered
-                ? `You scored ${finalScore.pct}% overall — above the 80% mastery threshold. You'll now move to the reassessment to confirm mastery.`
-                : `You scored ${finalScore.pct}% overall — below the 80% mastery threshold. You'll go through guided lessons, targeted practice, and a reassessment to build your skills.`}
-            </p>
-          </div>
-
-          <button
-            onClick={() => router.push(mastered ? '/student-reassess' : '/student-teach')}
-            className={`w-full font-bold py-4 rounded-xl text-base transition-all duration-200 shadow-lg ${
-              mastered
-                ? 'bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/30 text-white'
-                : 'bg-violet-600 hover:bg-violet-500 hover:shadow-violet-500/30 text-white'
-            }`}
-          >
-            {mastered ? 'Continue to Reassessment →' : 'Start Guided Lesson →'}
-          </button>
+          {allPassed && (
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5 text-center">
+              <p className="text-white font-semibold text-sm mb-1">You&apos;ve demonstrated mastery on all standards.</p>
+              <p className="text-slate-300 text-sm">Your teacher can see your results.</p>
+            </div>
+          )}
         </div>
       </div>
     );
