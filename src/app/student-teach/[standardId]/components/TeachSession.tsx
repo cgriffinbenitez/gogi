@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -8,27 +8,20 @@ import { supabase } from '@/lib/supabase';
 
 type TeachView = 'loading' | 'error' | 'step1' | 'step2' | 'step3' | 'step4' | 'step5';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const SENTENCE_STEMS: Record<string, string> = {
-  'ELA.9.R.1.1':
-    'Based on the text, I can infer that _____ because the passage states "___", which suggests _____.',
-  'ELA.9.R.1.2':
-    'The universal theme of this text is _____ because the author shows _____ through _____.',
-  'ELA.9.R.2.1':
-    'The author structures this text by _____, which helps the reader understand _____ by _____.',
-};
+interface ConversationMessage {
+  role: 'gogi' | 'student';
+  text: string;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function parsePassageFromContent(content: string): string {
-  const withoutCorrect = content.replace(/\nCORRECT:\s*[A-D][^\n]*/i, '').trim();
-  const withoutChoices = withoutCorrect
+  return content
+    .replace(/\nCORRECT:\s*[A-D][^\n]*/gi, '')
+    .replace(/^CORRECT:\s*[A-D][^\n]*/gim, '')
     .replace(/^[A-D][.)]\s+.+$/gm, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
-  const paragraphs = withoutChoices.split(/\n\n+/).filter((p) => p.trim().length > 0);
-  return paragraphs.slice(0, -1).join('\n\n').trim();
 }
 
 async function callClaude(action: string, params: Record<string, string>): Promise<string> {
@@ -46,7 +39,6 @@ function renderMarkdown(text: string) {
   return text.split('\n').map((line, i) => {
     if (!line.trim()) return <div key={i} className="h-2" />;
 
-    // Full-line bold headers: **Header:**
     if (/^\*\*[^*]+\*\*$/.test(line)) {
       return (
         <p key={i} className="font-bold text-white mt-4 mb-1 text-sm">
@@ -55,7 +47,6 @@ function renderMarkdown(text: string) {
       );
     }
 
-    // Inline bold
     if (line.includes('**')) {
       const parts = line.split('**');
       return (
@@ -73,7 +64,6 @@ function renderMarkdown(text: string) {
       );
     }
 
-    // Numbered list items like "1. text" or "2. text"
     if (/^\d+\.\s/.test(line)) {
       return (
         <p key={i} className="text-slate-300 text-sm mt-2 leading-relaxed ml-2">
@@ -82,7 +72,6 @@ function renderMarkdown(text: string) {
       );
     }
 
-    // Bullet points
     if (/^[-•]\s/.test(line)) {
       return (
         <li key={i} className="text-slate-300 text-sm mt-1 ml-4 list-disc leading-relaxed">
@@ -93,6 +82,31 @@ function renderMarkdown(text: string) {
 
     return (
       <p key={i} className="text-slate-300 text-sm mt-1 leading-relaxed">
+        {line}
+      </p>
+    );
+  });
+}
+
+function historyString(messages: ConversationMessage[]): string {
+  return messages
+    .map((m) => `${m.role === 'gogi' ? 'Gogi' : 'Student'}: ${m.text}`)
+    .join('\n');
+}
+
+function renderGogiMessage(text: string) {
+  return text.split('\n').map((line, i) => {
+    const trimmed = line.trim();
+    if (!trimmed) return <div key={i} className="h-1" />;
+    if (trimmed.startsWith('_') && trimmed.endsWith('_') && trimmed.length > 2) {
+      return (
+        <p key={i} className="text-slate-400 text-xs mt-2 leading-relaxed italic">
+          {trimmed.slice(1, -1)}
+        </p>
+      );
+    }
+    return (
+      <p key={i} className="text-sm leading-relaxed">
         {line}
       </p>
     );
@@ -128,6 +142,29 @@ function SpinnerBlock({ color = 'violet', label }: { color?: string; label: stri
   );
 }
 
+function GogiAvatar() {
+  return (
+    <div className="w-8 h-8 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
+      <span className="text-white text-xs font-extrabold leading-none select-none">G</span>
+    </div>
+  );
+}
+
+function GogiTyping() {
+  return (
+    <div className="flex items-start gap-2">
+      <GogiAvatar />
+      <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3">
+        <div className="flex gap-1 items-center h-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function TeachSession() {
@@ -146,31 +183,35 @@ export default function TeachSession() {
   const [diagnosticClassification, setDiagnosticClassification] = useState('');
   const [diagnosticStudentResponse, setDiagnosticStudentResponse] = useState('');
   const [diagnosticPassage, setDiagnosticPassage] = useState('');
+  const [step3PassageId, setStep3PassageId] = useState('');
 
   // Step 1 & 2 — Claude content
   const [claudeContent, setClaudeContent] = useState('');
   const [claudeLoading, setClaudeLoading] = useState(false);
 
-  // Step 3 — Guided Attempt
-  const [step3Evidence, setStep3Evidence] = useState('');
-  const [step3EvidenceLoaded, setStep3EvidenceLoaded] = useState(false);
-  const [step3Response, setStep3Response] = useState('');
-  const [step3Feedback, setStep3Feedback] = useState('');
-  const [step3AttemptNum, setStep3AttemptNum] = useState(1);
+  // Step 3 — Guided Conversation
+  const [step3OrientationText, setStep3OrientationText] = useState('');
+  const [step3OrientationSeen, setStep3OrientationSeen] = useState(false);
+  const [step3Messages, setStep3Messages] = useState<ConversationMessage[]>([]);
+  const [step3Input, setStep3Input] = useState('');
+  const [step3StudentTurns, setStep3StudentTurns] = useState(0);
+  const [step3Sending, setStep3Sending] = useState(false);
+  const [step3Done, setStep3Done] = useState(false);
   const [step3Mastered, setStep3Mastered] = useState(false);
-  const [step3Submitting, setStep3Submitting] = useState(false);
-  const [step3ShowFeedback, setStep3ShowFeedback] = useState(false);
+  const step3ScrollRef = useRef<HTMLDivElement>(null);
+  const step3InputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Step 4 — Independent Attempt
+  // Step 4 — Independent Conversation
   const [step4Passage, setStep4Passage] = useState('');
-  const [step4Question, setStep4Question] = useState('');
   const [step4PassageLoaded, setStep4PassageLoaded] = useState(false);
-  const [step4Response, setStep4Response] = useState('');
-  const [step4Feedback, setStep4Feedback] = useState('');
-  const [step4AttemptNum, setStep4AttemptNum] = useState(1);
+  const [step4Messages, setStep4Messages] = useState<ConversationMessage[]>([]);
+  const [step4Input, setStep4Input] = useState('');
+  const [step4StudentTurns, setStep4StudentTurns] = useState(0);
+  const [step4Sending, setStep4Sending] = useState(false);
+  const [step4Done, setStep4Done] = useState(false);
   const [step4Mastered, setStep4Mastered] = useState(false);
-  const [step4Submitting, setStep4Submitting] = useState(false);
-  const [step4ShowFeedback, setStep4ShowFeedback] = useState(false);
+  const step4ScrollRef = useRef<HTMLDivElement>(null);
+  const step4InputRef = useRef<HTMLTextAreaElement>(null);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -305,6 +346,20 @@ export default function TeachSession() {
     init();
   }, [standardId, router]);
 
+  // ─── Scroll to bottom on new messages ─────────────────────────────────────
+
+  useEffect(() => {
+    if (step3ScrollRef.current) {
+      step3ScrollRef.current.scrollTop = step3ScrollRef.current.scrollHeight;
+    }
+  }, [step3Messages, step3Sending]);
+
+  useEffect(() => {
+    if (step4ScrollRef.current) {
+      step4ScrollRef.current.scrollTop = step4ScrollRef.current.scrollHeight;
+    }
+  }, [step4Messages, step4Sending]);
+
   // ─── Step Transitions ──────────────────────────────────────────────────────
 
   const goToStep2 = useCallback(async () => {
@@ -329,78 +384,152 @@ export default function TeachSession() {
 
   const goToStep3 = useCallback(async () => {
     setView('step3');
-    setStep3EvidenceLoaded(false);
-    setStep3Evidence('');
-    setStep3Response('');
-    setStep3Feedback('');
-    setStep3AttemptNum(1);
+    setStep3OrientationText('');
+    setStep3OrientationSeen(false);
+    setStep3Messages([]);
+    setStep3Input('');
+    setStep3StudentTurns(0);
+    setStep3Sending(false);
+    setStep3Done(false);
     setStep3Mastered(false);
-    setStep3ShowFeedback(false);
-
-    if (!diagnosticPassage) {
-      setStep3Evidence(
-        'No original passage was found. Use your understanding of the standard and the skill to write your response.',
-      );
-      setStep3EvidenceLoaded(true);
-      return;
-    }
 
     setClaudeLoading(true);
     try {
-      const text = await callClaude('guided_evidence', {
+      let passageText = diagnosticPassage;
+      if (!passageText) {
+        // Try the questions table for a seeded intervention passage first
+        const { data: dbPassage } = await supabase
+          .from('questions')
+          .select('id, content')
+          .eq('standard_id', standardId)
+          .eq('difficulty_level', 1)
+          .limit(1)
+          .maybeSingle();
+
+        if (dbPassage?.content) {
+          passageText = dbPassage.content;
+          setStep3PassageId(dbPassage.id);
+        } else {
+          passageText = await callClaude('generate_guided_passage', {
+            standardCode,
+            standardTitle,
+          });
+        }
+        setDiagnosticPassage(passageText);
+      }
+
+      const orientationText = await callClaude('generate_orientation', {
         standardCode,
         standardTitle,
-        passageText: diagnosticPassage,
+        diagnosticClassification,
+        passageText,
       });
-      setStep3Evidence(text);
-      setStep3EvidenceLoaded(true);
+      setStep3OrientationText(orientationText);
     } catch (err) {
-      console.error('[TeachSession] Step 3 evidence error:', err);
-      setStep3Evidence(
-        'Evidence could not be loaded. Use the passage above to find your own supporting details.',
+      console.error('[TeachSession] Step 3 orientation error:', err);
+      setStep3OrientationText(
+        "We are going to find what this text is really telling us — something the author never directly says out loud. That skill is called inferencing — reading what an author implies but never directly states. It is one of the most powerful reading skills there is. I am going to ask you three questions. Each one is a clue. By the end you are going to have the answer and the proof. Let's find it.",
       );
-      setStep3EvidenceLoaded(true);
     } finally {
       setClaudeLoading(false);
     }
-  }, [standardCode, standardTitle, diagnosticPassage]);
+  }, [standardCode, standardTitle, diagnosticClassification, diagnosticPassage]);
+
+  const handleStep3Continue = useCallback(async () => {
+    setClaudeLoading(true);
+    try {
+      const turn1Text = await callClaude('generate_conversation_turn', {
+        standardCode,
+        standardTitle,
+        diagnosticClassification,
+        passageText: diagnosticPassage,
+        conversationHistory: '',
+        turnNumber: '1',
+        isIndependent: 'false',
+      });
+      setStep3Messages([{ role: 'gogi', text: turn1Text }]);
+      setStep3OrientationSeen(true);
+    } catch (err) {
+      console.error('[TeachSession] Step 3 Turn 1 error:', err);
+      setStep3Messages([
+        {
+          role: 'gogi',
+          text: "Let's work through this together. Read the passage and tell me what you notice about what's happening beneath the surface.",
+        },
+      ]);
+      setStep3OrientationSeen(true);
+    } finally {
+      setClaudeLoading(false);
+    }
+  }, [standardCode, standardTitle, diagnosticClassification, diagnosticPassage]);
 
   const goToStep4 = useCallback(async () => {
     setView('step4');
     setStep4PassageLoaded(false);
     setStep4Passage('');
-    setStep4Question('');
-    setStep4Response('');
-    setStep4Feedback('');
-    setStep4AttemptNum(1);
+    setStep4Messages([]);
+    setStep4Input('');
+    setStep4StudentTurns(0);
+    setStep4Sending(false);
+    setStep4Done(false);
     setStep4Mastered(false);
-    setStep4ShowFeedback(false);
     setClaudeLoading(true);
+
     try {
-      const text = await callClaude('generate_independent_passage', {
+      // Try the questions table for a seeded intervention passage, different from step 3
+      let dbQuery = supabase
+        .from('questions')
+        .select('id, content')
+        .eq('standard_id', standardId)
+        .eq('difficulty_level', 1);
+
+      if (step3PassageId) {
+        dbQuery = dbQuery.neq('id', step3PassageId);
+      }
+
+      const { data: dbPassage } = await dbQuery.limit(1).maybeSingle();
+
+      let passage: string;
+      if (dbPassage?.content) {
+        passage = dbPassage.content;
+      } else {
+        const text = await callClaude('generate_independent_passage', {
+          standardCode,
+          standardTitle,
+        });
+        const passageMatch = text.match(/\*\*Passage:\*\*\s*([\s\S]+?)(?=\n\n\*\*Question:\*\*|$)/);
+        passage = passageMatch?.[1]?.trim() || text;
+      }
+
+      setStep4Passage(passage);
+      setStep4PassageLoaded(true);
+
+      const turn1Text = await callClaude('generate_conversation_turn', {
         standardCode,
         standardTitle,
+        diagnosticClassification,
+        passageText: passage,
+        conversationHistory: '',
+        turnNumber: '1',
+        isIndependent: 'true',
       });
-      // Parse **Passage:** and **Question:** blocks
-      const passageMatch = text.match(/\*\*Passage:\*\*\s*([\s\S]+?)(?=\n\n\*\*Question:\*\*|$)/);
-      const questionMatch = text.match(/\*\*Question:\*\*\s*([\s\S]+?)$/);
-      setStep4Passage(passageMatch?.[1]?.trim() || text);
-      setStep4Question(
-        questionMatch?.[1]?.trim() ||
-          'Apply this standard to the passage above. Write a complete response with a clear claim and textual evidence.',
-      );
-      setStep4PassageLoaded(true);
+      setStep4Messages([{ role: 'gogi', text: turn1Text }]);
     } catch (err) {
-      console.error('[TeachSession] Step 4 passage error:', err);
+      console.error('[TeachSession] Step 4 init error:', err);
       setStep4Passage(
         'A passage could not be generated at this time. Please ask your teacher for assistance.',
       );
-      setStep4Question('Demonstrate your understanding of this standard with a written response.');
       setStep4PassageLoaded(true);
+      setStep4Messages([
+        {
+          role: 'gogi',
+          text: "New passage. No hints this time. Read it and tell me what you think is really going on underneath the surface.",
+        },
+      ]);
     } finally {
       setClaudeLoading(false);
     }
-  }, [standardCode, standardTitle]);
+  }, [standardCode, standardTitle, diagnosticClassification, standardId, step3PassageId]);
 
   const goToStep5 = useCallback(async () => {
     setView('step5');
@@ -421,151 +550,226 @@ export default function TeachSession() {
     }, 3000);
   }, [teachSessionId, standardId, router]);
 
-  // ─── Step 3 Handlers ──────────────────────────────────────────────────────
+  // ─── Step 3 — Conversation Handler ────────────────────────────────────────
 
-  const handleStep3Submit = useCallback(async () => {
-    if (!step3Response.trim() || step3Submitting) return;
-    setStep3Submitting(true);
+  const handleStep3Send = useCallback(async () => {
+    const text = step3Input.trim();
+    if (!text || step3Sending || step3Done) return;
+
+    const newStudentTurns = step3StudentTurns + 1;
+    const updatedMessages: ConversationMessage[] = [
+      ...step3Messages,
+      { role: 'student', text },
+    ];
+
+    setStep3Messages(updatedMessages);
+    setStep3Input('');
+    setStep3StudentTurns(newStudentTurns);
+    setStep3Sending(true);
+
+    const history = historyString(updatedMessages);
+
     try {
-      const text = await callClaude('evaluate_guided', {
-        standardCode,
-        standardTitle,
-        passageText: diagnosticPassage,
-        studentResponse: step3Response,
-        attemptNumber: String(step3AttemptNum),
-      });
-
-      const mastered = text.startsWith('MASTERY: YES');
-      const feedbackText = text.replace(/^MASTERY:\s*(YES|NO)\n+/, '').trim();
-
-      try {
-        await supabase.from('responses').insert({
-          session_id: teachSessionId,
-          student_id: studentId,
-          standard_id: standardId,
-          intervention_type: 'guided_attempt',
-          intervention_content: diagnosticPassage,
-          student_response: step3Response,
-          mastery_achieved: mastered,
-          attempt_number: step3AttemptNum,
-          ai_feedback: feedbackText,
-          diagnostic_classification: diagnosticClassification,
+      if (newStudentTurns >= 3) {
+        // Evaluate mastery
+        const evalText = await callClaude('evaluate_conversation_mastery', {
+          standardCode,
+          standardTitle,
+          diagnosticClassification,
+          passageText: diagnosticPassage,
+          conversationHistory: history,
         });
-      } catch (err) {
-        console.error('[TeachSession] Step 3 response save error:', err);
-      }
 
-      setStep3Feedback(feedbackText);
-      setStep3Mastered(mastered);
-      setStep3ShowFeedback(true);
+        const mastered = evalText.startsWith('MASTERY: YES');
+        const feedbackText = evalText.replace(/^MASTERY:\s*(YES|NO)\n+/, '').trim();
+        const finalMessages: ConversationMessage[] = [
+          ...updatedMessages,
+          { role: 'gogi', text: feedbackText },
+        ];
+
+        if (mastered || newStudentTurns >= 5) {
+          setStep3Messages(finalMessages);
+          setStep3Mastered(mastered);
+          setStep3Done(true);
+
+          try {
+            await supabase.from('responses').insert({
+              session_id: teachSessionId,
+              student_id: studentId,
+              standard_id: standardId,
+              intervention_type: 'guided_attempt',
+              intervention_content: diagnosticPassage,
+              student_response: JSON.stringify(finalMessages),
+              mastery_achieved: mastered,
+              attempt_number: 1,
+              ai_feedback: feedbackText,
+              diagnostic_classification: diagnosticClassification,
+            });
+          } catch (err) {
+            console.error('[TeachSession] Step 3 save error:', err);
+          }
+        } else {
+          // MASTERY: NO — follow-up question is embedded in feedbackText
+          setStep3Messages(finalMessages);
+        }
+      } else {
+        // Generate next Gogi turn
+        const nextTurnNum = newStudentTurns + 1;
+        const gogiText = await callClaude('generate_conversation_turn', {
+          standardCode,
+          standardTitle,
+          diagnosticClassification,
+          passageText: diagnosticPassage,
+          conversationHistory: history,
+          turnNumber: String(nextTurnNum),
+          isIndependent: 'false',
+        });
+        setStep3Messages([...updatedMessages, { role: 'gogi', text: gogiText }]);
+      }
     } catch (err) {
-      console.error('[TeachSession] Step 3 evaluate error:', err);
-      setStep3Feedback(
-        'Your response was submitted. Please continue when you are ready.',
-      );
-      setStep3Mastered(false);
-      setStep3ShowFeedback(true);
+      console.error('[TeachSession] Step 3 send error:', err);
+      setStep3Messages([
+        ...updatedMessages,
+        { role: 'gogi', text: "Good thinking. Keep going — what else do you notice in the passage?" },
+      ]);
     } finally {
-      setStep3Submitting(false);
+      setStep3Sending(false);
+      step3InputRef.current?.focus();
     }
   }, [
-    step3Response,
-    step3AttemptNum,
-    step3Submitting,
+    step3Input,
+    step3StudentTurns,
+    step3Sending,
+    step3Done,
+    step3Messages,
     standardCode,
     standardTitle,
+    diagnosticClassification,
     diagnosticPassage,
     teachSessionId,
     studentId,
     standardId,
-    diagnosticClassification,
   ]);
 
-  const handleStep3Continue = useCallback(() => {
-    if (step3Mastered || step3AttemptNum >= 3) {
-      goToStep4();
-      return;
-    }
-    setStep3AttemptNum((prev) => prev + 1);
-    setStep3Response('');
-    setStep3Feedback('');
-    setStep3ShowFeedback(false);
-  }, [step3Mastered, step3AttemptNum, goToStep4]);
+  // ─── Step 4 — Conversation Handler ────────────────────────────────────────
 
-  // ─── Step 4 Handlers ──────────────────────────────────────────────────────
+  const handleStep4Send = useCallback(async () => {
+    const text = step4Input.trim();
+    if (!text || step4Sending || step4Done) return;
 
-  const handleStep4Submit = useCallback(async () => {
-    if (!step4Response.trim() || step4Submitting) return;
-    setStep4Submitting(true);
+    const newStudentTurns = step4StudentTurns + 1;
+    const updatedMessages: ConversationMessage[] = [
+      ...step4Messages,
+      { role: 'student', text },
+    ];
+
+    setStep4Messages(updatedMessages);
+    setStep4Input('');
+    setStep4StudentTurns(newStudentTurns);
+    setStep4Sending(true);
+
+    const history = historyString(updatedMessages);
+
     try {
-      const text = await callClaude('evaluate_independent', {
-        standardCode,
-        standardTitle,
-        passageText: step4Passage,
-        passageQuestion: step4Question,
-        studentResponse: step4Response,
-        attemptNumber: String(step4AttemptNum),
-      });
-
-      const mastered = text.startsWith('MASTERY: YES');
-      const feedbackText = text.replace(/^MASTERY:\s*(YES|NO)\n+/, '').trim();
-
-      try {
-        await supabase.from('responses').insert({
-          session_id: teachSessionId,
-          student_id: studentId,
-          standard_id: standardId,
-          intervention_type: 'independent_attempt',
-          intervention_content: step4Passage,
-          student_response: step4Response,
-          mastery_achieved: mastered,
-          attempt_number: step4AttemptNum,
-          ai_feedback: feedbackText,
-          diagnostic_classification: diagnosticClassification,
+      if (newStudentTurns >= 3) {
+        const evalText = await callClaude('evaluate_conversation_mastery', {
+          standardCode,
+          standardTitle,
+          diagnosticClassification,
+          passageText: step4Passage,
+          conversationHistory: history,
         });
-      } catch (err) {
-        console.error('[TeachSession] Step 4 response save error:', err);
-      }
 
-      setStep4Feedback(feedbackText);
-      setStep4Mastered(mastered);
-      setStep4ShowFeedback(true);
+        const mastered = evalText.startsWith('MASTERY: YES');
+        const feedbackText = evalText.replace(/^MASTERY:\s*(YES|NO)\n+/, '').trim();
+        const finalMessages: ConversationMessage[] = [
+          ...updatedMessages,
+          { role: 'gogi', text: feedbackText },
+        ];
+
+        if (mastered || newStudentTurns >= 5) {
+          setStep4Messages(finalMessages);
+          setStep4Mastered(mastered);
+          setStep4Done(true);
+
+          try {
+            await supabase.from('responses').insert({
+              session_id: teachSessionId,
+              student_id: studentId,
+              standard_id: standardId,
+              intervention_type: 'independent_attempt',
+              intervention_content: step4Passage,
+              student_response: JSON.stringify(finalMessages),
+              mastery_achieved: mastered,
+              attempt_number: 1,
+              ai_feedback: feedbackText,
+              diagnostic_classification: diagnosticClassification,
+            });
+          } catch (err) {
+            console.error('[TeachSession] Step 4 save error:', err);
+          }
+        } else {
+          setStep4Messages(finalMessages);
+        }
+      } else {
+        const nextTurnNum = newStudentTurns + 1;
+        const gogiText = await callClaude('generate_conversation_turn', {
+          standardCode,
+          standardTitle,
+          diagnosticClassification,
+          passageText: step4Passage,
+          conversationHistory: history,
+          turnNumber: String(nextTurnNum),
+          isIndependent: 'true',
+        });
+        setStep4Messages([...updatedMessages, { role: 'gogi', text: gogiText }]);
+      }
     } catch (err) {
-      console.error('[TeachSession] Step 4 evaluate error:', err);
-      setStep4Feedback('Your response was submitted. Please continue when you are ready.');
-      setStep4Mastered(false);
-      setStep4ShowFeedback(true);
+      console.error('[TeachSession] Step 4 send error:', err);
+      setStep4Messages([
+        ...updatedMessages,
+        { role: 'gogi', text: "You're on the right track. Go deeper — what does that tell you about what's really happening?" },
+      ]);
     } finally {
-      setStep4Submitting(false);
+      setStep4Sending(false);
+      step4InputRef.current?.focus();
     }
   }, [
-    step4Response,
-    step4AttemptNum,
-    step4Submitting,
+    step4Input,
+    step4StudentTurns,
+    step4Sending,
+    step4Done,
+    step4Messages,
     standardCode,
     standardTitle,
+    diagnosticClassification,
     step4Passage,
-    step4Question,
     teachSessionId,
     studentId,
     standardId,
-    diagnosticClassification,
   ]);
 
-  const handleStep4Continue = useCallback(() => {
-    if (step4Mastered) {
-      goToStep5();
-      return;
-    }
-    if (step4AttemptNum >= 5) {
-      router.push(`/student-teach/${standardId}/simplified`);
-      return;
-    }
-    setStep4AttemptNum((prev) => prev + 1);
-    setStep4Response('');
-    setStep4Feedback('');
-    setStep4ShowFeedback(false);
-  }, [step4Mastered, step4AttemptNum, standardId, router, goToStep5]);
+  // ─── Keyboard Submit ──────────────────────────────────────────────────────
+
+  const handleStep3KeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleStep3Send();
+      }
+    },
+    [handleStep3Send],
+  );
+
+  const handleStep4KeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleStep4Send();
+      }
+    },
+    [handleStep4Send],
+  );
 
   // ─── Shared UI ────────────────────────────────────────────────────────────
 
@@ -789,291 +993,260 @@ export default function TeachSession() {
     );
   }
 
-  // ─── STEP 3 — Guided Attempt ──────────────────────────────────────────────
+  // ─── STEP 3 — Guided Conversation ────────────────────────────────────────
 
   if (view === 'step3') {
-    const sentenceStem =
-      SENTENCE_STEMS[standardCode] ||
-      'The text shows that _____ because "_____", which means _____.';
-    const attemptsLeft = 3 - step3AttemptNum;
+    const canSend = step3Input.trim().length > 0 && !step3Sending && !step3Done;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+      <div className="h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col overflow-hidden">
         <Header />
         <StepProgress />
-        <div className="flex-1 overflow-y-auto px-4 py-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-amber-600/30 border border-amber-500/30 flex items-center justify-center text-2xl flex-shrink-0">
-                ✏️
-              </div>
-              <div>
-                <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-0.5">
-                  Step 3 of 5 — Guided Attempt
+
+        {claudeLoading ? (
+          <div className="flex-1 flex items-center justify-center px-4">
+            <SpinnerBlock color="amber" label={step3OrientationSeen ? "Generating your first question…" : "Setting up your guided session…"} />
+          </div>
+        ) : !step3OrientationSeen ? (
+          <div className="flex-1 flex items-center justify-center px-4 py-8">
+            <div className="max-w-xl w-full">
+              <div className="flex items-start gap-3 mb-6">
+                <GogiAvatar />
+                <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                  {renderGogiMessage(step3OrientationText)}
                 </div>
-                <h1 className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
-                  Your turn — with support
-                </h1>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleStep3Continue}
+                  className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-8 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-amber-500/30"
+                >
+                  <span>Continue</span>
+                  <span>→</span>
+                </button>
               </div>
             </div>
-
-            {/* Original Passage */}
-            {diagnosticPassage ? (
-              <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-5 mb-5">
-                <div className="text-xs font-bold text-violet-400 uppercase tracking-widest mb-3">
-                  Original Passage
-                </div>
-                <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
-                  {diagnosticPassage}
-                </p>
-              </div>
-            ) : (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-5">
-                <p className="text-slate-500 text-sm italic">
-                  No passage was available from your diagnostic. Use your knowledge of the standard to
-                  guide your response.
-                </p>
-              </div>
-            )}
-
-            {/* Evidence */}
-            {!step3EvidenceLoaded && claudeLoading ? (
-              <SpinnerBlock color="amber" label="Finding relevant evidence…" />
-            ) : step3EvidenceLoaded ? (
-              <div className="bg-amber-900/10 border border-amber-500/20 rounded-2xl p-5 mb-5">
-                <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">
-                  Evidence to Consider
-                </div>
-                <div className="space-y-0.5">{renderMarkdown(step3Evidence)}</div>
-              </div>
-            ) : null}
-
-            {/* Sentence Stem */}
-            {step3EvidenceLoaded && !step3ShowFeedback && (
-              <div className="bg-violet-900/20 border border-violet-500/20 rounded-2xl p-4 mb-4">
-                <div className="text-xs font-bold text-violet-400 uppercase tracking-widest mb-2">
-                  Sentence Stem
-                </div>
-                <p className="text-violet-300 text-sm italic leading-relaxed">{sentenceStem}</p>
-              </div>
-            )}
-
-            {/* Response Textarea */}
-            {step3EvidenceLoaded && !step3ShowFeedback && (
-              <div className="mb-5">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    Your Response
-                  </label>
-                  {step3AttemptNum > 1 && (
-                    <span className="text-xs text-amber-400">
-                      Attempt {step3AttemptNum} of 3
-                    </span>
-                  )}
-                </div>
-                <textarea
-                  value={step3Response}
-                  onChange={(e) => setStep3Response(e.target.value)}
-                  placeholder="Write your complete response here. Use the sentence stem as a starting point, then expand with your own thinking."
-                  rows={5}
-                  className="w-full bg-white/5 border border-violet-500/20 rounded-xl px-4 py-3 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 resize-none transition-all"
-                />
-                <div className="flex justify-between items-center mt-3">
-                  <span className="text-xs text-slate-500">
-                    {step3Response.length > 0 ? `${step3Response.length} characters` : ''}
-                  </span>
-                  <button
-                    onClick={handleStep3Submit}
-                    disabled={step3Response.trim().length < 15 || step3Submitting}
-                    className="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl text-sm transition-all flex items-center gap-2"
-                  >
-                    {step3Submitting ? (
-                      <>
-                        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                        <span>Evaluating…</span>
-                      </>
-                    ) : (
-                      'Submit Response'
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Feedback */}
-            {step3ShowFeedback && (
-              <div
-                className={`rounded-2xl p-5 mb-5 border ${
-                  step3Mastered
-                    ? 'bg-emerald-900/20 border-emerald-500/30'
-                    : 'bg-slate-800/50 border-white/10'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span
-                    className={`text-xs font-bold uppercase tracking-widest ${
-                      step3Mastered ? 'text-emerald-400' : 'text-violet-400'
-                    }`}
-                  >
-                    {step3Mastered ? '✓ Mastery Demonstrated' : `Attempt ${step3AttemptNum} of 3`}
-                  </span>
-                </div>
-                <div className="space-y-0.5">{renderMarkdown(step3Feedback)}</div>
-                <div className="mt-5 flex justify-end">
-                  <button
-                    onClick={handleStep3Continue}
-                    className={`font-bold py-3 px-6 rounded-xl text-sm transition-all flex items-center gap-2 ${
-                      step3Mastered
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg hover:shadow-emerald-500/30'
-                        : 'bg-violet-600 hover:bg-violet-500 text-white'
-                    }`}
-                  >
-                    {step3Mastered
-                      ? 'Continue to Independent Attempt →'
-                      : step3AttemptNum >= 3
-                        ? 'Continue to Next Step →'
-                        : `Try Again (${attemptsLeft} attempt${attemptsLeft !== 1 ? 's' : ''} left) →`}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
+        ) : (
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
+            {/* ── Left: Passage panel ── */}
+            <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 max-h-40 md:max-h-none">
+              <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">
+                Step 3 of 5 — Guided Attempt
+              </div>
+              <h2 className="text-white font-extrabold text-lg mb-4 leading-tight">
+                Your turn — with support
+              </h2>
+              {diagnosticPassage ? (
+                <>
+                  <div className="text-xs font-bold text-violet-400 uppercase tracking-widest mb-2">
+                    Passage
+                  </div>
+                  <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+                    {diagnosticPassage}
+                  </p>
+                </>
+              ) : (
+                <p className="text-slate-500 text-sm italic">
+                  No passage was available from your diagnostic.
+                </p>
+              )}
+            </div>
+
+            {/* ── Right: Conversation panel ── */}
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Messages */}
+              <div
+                ref={step3ScrollRef}
+                className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
+              >
+                {step3Messages.map((msg, i) =>
+                  msg.role === 'gogi' ? (
+                    <div key={i} className="flex items-start gap-2">
+                      <GogiAvatar />
+                      <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] shadow-sm">
+                        {renderGogiMessage(msg.text)}
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={i} className="flex items-start gap-2 justify-end">
+                      <div className="bg-blue-900 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] shadow-sm">
+                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                      </div>
+                    </div>
+                  ),
+                )}
+                {step3Sending && <GogiTyping />}
+              </div>
+
+              {/* Input area */}
+              <div className="flex-shrink-0 border-t border-white/10 p-4">
+                {step3Done ? (
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-xs font-bold uppercase tracking-widest ${
+                        step3Mastered ? 'text-emerald-400' : 'text-violet-400'
+                      }`}
+                    >
+                      {step3Mastered ? '✓ Mastery Demonstrated' : 'Session Complete'}
+                    </span>
+                    <button
+                      onClick={goToStep4}
+                      className={`font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2 ${
+                        step3Mastered
+                          ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg'
+                          : 'bg-violet-600 hover:bg-violet-500 text-white'
+                      }`}
+                    >
+                      Continue to Independent Attempt →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 items-end">
+                    <textarea
+                      ref={step3InputRef}
+                      value={step3Input}
+                      onChange={(e) => setStep3Input(e.target.value)}
+                      onKeyDown={handleStep3KeyDown}
+                      placeholder="Type your response… (Enter to send, Shift+Enter for new line)"
+                      rows={2}
+                      disabled={step3Sending || step3Done}
+                      className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 resize-none transition-all disabled:opacity-50"
+                    />
+                    <button
+                      onClick={handleStep3Send}
+                      disabled={!canSend}
+                      className="flex-shrink-0 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-2.5 px-5 rounded-xl text-sm transition-all"
+                    >
+                      {step3Sending ? (
+                        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin block" />
+                      ) : (
+                        'Send'
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  // ─── STEP 4 — Independent Attempt ────────────────────────────────────────
+  // ─── STEP 4 — Independent Conversation ───────────────────────────────────
 
   if (view === 'step4') {
-    const attemptsLeft = 5 - step4AttemptNum;
+    const canSend = step4Input.trim().length > 0 && !step4Sending && !step4Done;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+      <div className="h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col overflow-hidden">
         <Header />
         <StepProgress />
-        <div className="flex-1 overflow-y-auto px-4 py-8">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-emerald-600/30 border border-emerald-500/30 flex items-center justify-center text-2xl flex-shrink-0">
-                💪
+
+        {!step4PassageLoaded || claudeLoading ? (
+          <div className="flex-1 flex items-center justify-center px-4">
+            <SpinnerBlock color="emerald" label="Generating your independent passage…" />
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
+            {/* ── Left: Passage panel ── */}
+            <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 max-h-40 md:max-h-none">
+              <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
+                Step 4 of 5 — Independent Attempt
               </div>
-              <div>
-                <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-0.5">
-                  Step 4 of 5 — Independent Attempt
-                </div>
-                <h1 className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
-                  No scaffolds. Just you.
-                </h1>
+              <h2 className="text-white font-extrabold text-lg mb-4 leading-tight">
+                No scaffolds. Just you.
+              </h2>
+              <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
+                New Passage
               </div>
+              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+                {step4Passage}
+              </p>
             </div>
 
-            {!step4PassageLoaded || claudeLoading ? (
-              <SpinnerBlock color="emerald" label="Generating your passage…" />
-            ) : (
-              <>
-                {/* New Passage */}
-                <div className="bg-white/5 border border-emerald-500/20 rounded-2xl p-5 mb-5">
-                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
-                    New Passage
-                  </div>
-                  <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
-                    {step4Passage}
-                  </p>
-                </div>
-
-                {/* Question */}
-                <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-4 mb-5">
-                  <p className="text-white text-sm font-medium leading-snug">{step4Question}</p>
-                </div>
-
-                {/* Response Textarea */}
-                {!step4ShowFeedback && (
-                  <div className="mb-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        Your Response
-                      </label>
-                      {step4AttemptNum > 1 && (
-                        <span className="text-xs text-emerald-400">
-                          Attempt {step4AttemptNum} of 5
-                        </span>
-                      )}
+            {/* ── Right: Conversation panel ── */}
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Messages */}
+              <div
+                ref={step4ScrollRef}
+                className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
+              >
+                {step4Messages.map((msg, i) =>
+                  msg.role === 'gogi' ? (
+                    <div key={i} className="flex items-start gap-2">
+                      <GogiAvatar />
+                      <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] shadow-sm">
+                        {renderGogiMessage(msg.text)}
+                      </div>
                     </div>
+                  ) : (
+                    <div key={i} className="flex items-start gap-2 justify-end">
+                      <div className="bg-blue-900 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] shadow-sm">
+                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                      </div>
+                    </div>
+                  ),
+                )}
+                {step4Sending && <GogiTyping />}
+              </div>
+
+              {/* Input area */}
+              <div className="flex-shrink-0 border-t border-white/10 p-4">
+                {step4Done ? (
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-xs font-bold uppercase tracking-widest ${
+                        step4Mastered ? 'text-emerald-400' : 'text-violet-400'
+                      }`}
+                    >
+                      {step4Mastered ? '✓ Mastery Demonstrated' : 'Session Complete'}
+                    </span>
+                    <button
+                      onClick={
+                        step4Mastered
+                          ? goToStep5
+                          : () => router.push(`/student-teach/${standardId}/simplified`)
+                      }
+                      className={`font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2 ${
+                        step4Mastered
+                          ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg'
+                          : 'bg-violet-600 hover:bg-violet-500 text-white'
+                      }`}
+                    >
+                      {step4Mastered ? 'Mastery Confirmed — Continue →' : 'Get Additional Support →'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 items-end">
                     <textarea
-                      value={step4Response}
-                      onChange={(e) => setStep4Response(e.target.value)}
-                      placeholder="Write a complete response. Make a specific claim about what this text means, support it with evidence from the passage, and explain your reasoning."
-                      rows={5}
-                      className="w-full bg-white/5 border border-emerald-500/20 rounded-xl px-4 py-3 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 resize-none transition-all"
+                      ref={step4InputRef}
+                      value={step4Input}
+                      onChange={(e) => setStep4Input(e.target.value)}
+                      onKeyDown={handleStep4KeyDown}
+                      placeholder="Type your response… (Enter to send, Shift+Enter for new line)"
+                      rows={2}
+                      disabled={step4Sending || step4Done}
+                      className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 resize-none transition-all disabled:opacity-50"
                     />
-                    <div className="flex justify-between items-center mt-3">
-                      <span className="text-xs text-slate-500">
-                        {step4Response.length > 0 ? `${step4Response.length} characters` : ''}
-                      </span>
-                      <button
-                        onClick={handleStep4Submit}
-                        disabled={step4Response.trim().length < 15 || step4Submitting}
-                        className="bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl text-sm transition-all flex items-center gap-2"
-                      >
-                        {step4Submitting ? (
-                          <>
-                            <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                            <span>Evaluating…</span>
-                          </>
-                        ) : (
-                          'Submit Response'
-                        )}
-                      </button>
-                    </div>
+                    <button
+                      onClick={handleStep4Send}
+                      disabled={!canSend}
+                      className="flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-2.5 px-5 rounded-xl text-sm transition-all"
+                    >
+                      {step4Sending ? (
+                        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin block" />
+                      ) : (
+                        'Send'
+                      )}
+                    </button>
                   </div>
                 )}
-
-                {/* Feedback */}
-                {step4ShowFeedback && (
-                  <div
-                    className={`rounded-2xl p-5 mb-5 border ${
-                      step4Mastered
-                        ? 'bg-emerald-900/20 border-emerald-500/30'
-                        : 'bg-slate-800/50 border-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <span
-                        className={`text-xs font-bold uppercase tracking-widest ${
-                          step4Mastered ? 'text-emerald-400' : 'text-violet-400'
-                        }`}
-                      >
-                        {step4Mastered
-                          ? '✓ Mastery Demonstrated'
-                          : `Attempt ${step4AttemptNum} of 5`}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">{renderMarkdown(step4Feedback)}</div>
-                    <div className="mt-5 flex justify-end">
-                      <button
-                        onClick={handleStep4Continue}
-                        className={`font-bold py-3 px-6 rounded-xl text-sm transition-all flex items-center gap-2 ${
-                          step4Mastered
-                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg hover:shadow-emerald-500/30'
-                            : step4AttemptNum >= 5
-                              ? 'bg-violet-600 hover:bg-violet-500 text-white'
-                              : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                        }`}
-                      >
-                        {step4Mastered
-                          ? 'Mastery Confirmed — Continue →'
-                          : step4AttemptNum >= 5
-                            ? 'Get Additional Support →'
-                            : `Try Again (${attemptsLeft} attempt${attemptsLeft !== 1 ? 's' : ''} left) →`}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
