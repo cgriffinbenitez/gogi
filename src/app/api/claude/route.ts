@@ -2,6 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // ─── System Prompts ───────────────────────────────────────────────────────────
 
+const GENERATE_DIAGNOSTIC_QUESTIONS_SYSTEM_PROMPT = `You are a diagnostic assessment designer for a 9th grade ELA literacy intervention platform serving Title I students in Miami-Dade County Florida. You generate GOGI Ordered Multiple Choice diagnostic questions — not comprehension questions. These are precision diagnostic instruments designed to identify which specific cognitive layer caused a student's failure.
+
+Each question must have exactly 4 options: one correct answer called the Key and three diagnostic distractors. Each distractor represents a specific cognitive breakdown at a specific layer.
+
+Distractor Layer 1 — schema deficit or no metacognitive strategy: the student selects this when they have no prior knowledge framework to connect to the text or no strategy for approaching it.
+Distractor Layer 2 — vocabulary gap, morphology gap, syntax barrier, or connotative language blindness: the student selects this when linguistic features are blocking meaning construction during reading.
+Distractor Layer 3 — inferencing deficit, abstract reasoning deficit, evidence retrieval failure, or comprehension integration failure: the student selects this when meaning-making breaks down after reading is complete.
+The Key is the correct answer — selected only by a student who has mastered the targeted cognitive skill.
+
+Use these diagnostic classification codes exactly: schema_deficit, no_metacognitive_strategy, vocabulary_gap, vocabulary_gap_connotative, morphology_gap, syntax_barrier, inferencing_deficit, abstract_reasoning_deficit, evidence_retrieval_failure, comprehension_integration_failure
+
+Return ONLY a valid JSON array of 5 question objects. No preamble. No markdown. No explanation. Just raw JSON.
+
+Each object in the array must have exactly these fields:
+- content: a multi-line string formatted exactly as shown:
+PASSAGE: [full passage text]
+QUESTION: [question stem]
+A) [option text]
+B) [option text]
+C) [option text]
+D) [option text]
+CORRECT: [A, B, C, or D]
+LAYER1_DISTRACTOR: [which letter is the Layer 1 distractor]
+LAYER2_DISTRACTOR: [which letter is the Layer 2 distractor]
+LAYER3_DISTRACTOR: [which letter is the Layer 3 distractor]
+DIAGNOSTIC_CLASSIFICATION_A: [classification code for option A]
+DIAGNOSTIC_CLASSIFICATION_B: [classification code for option B]
+DIAGNOSTIC_CLASSIFICATION_C: [classification code for option C]
+DIAGNOSTIC_CLASSIFICATION_D: [classification code for option D]
+COGNITIVE_SKILL: [the primary cognitive skill this question targets]
+- cognitive_skill_targeted: the same value as COGNITIVE_SKILL above`;
+
 const EXTRACT_PASSAGES_SYSTEM_PROMPT = `You are extracting passages from a literary text for use in a 9th grade ELA literacy intervention platform serving Title I students in Miami-Dade County Florida. Extract exactly 4 passages following these requirements exactly.
 
 Two intervention passages at difficulty level 1. Each passage must be 150 to 200 words. Must contain a clear opportunity for one of these cognitive skills: inferencing, theme identification, or structural analysis depending on the standard. Must be emotionally accessible — avoid passages involving graphic violence, abuse, trauma, death of a child, or content that could be activating for students experiencing hardship. Must stand alone without requiring knowledge of surrounding chapters. Must feature a character facing a recognizable human challenge — ambition, friendship, identity, belonging, loss, or perseverance.
@@ -38,7 +70,8 @@ type ClaudeAction =
   | 'generate_orientation'
   | 'generate_conversation_turn'
   | 'evaluate_conversation_mastery'
-  | 'extract_passages';
+  | 'extract_passages'
+  | 'generate_diagnostic_questions';
 
 function buildPrompt(action: ClaudeAction, params: Record<string, string>): string {
   const { standardCode = '', standardTitle = '' } = params;
@@ -356,6 +389,66 @@ ${bookText}
 Extract exactly 4 passages from this text following the system prompt requirements. Return ONLY the JSON array.`;
     }
 
+    case 'generate_diagnostic_questions': {
+      const { cognitiveDomain = '', passage1Text = '', passage2Text = '' } = params;
+
+      const skillsByStandard: Record<string, string[]> = {
+        'ELA.9.R.1.1': ['inferencing', 'textual evidence', 'vocabulary', 'syntax', 'schema'],
+        'ELA.9.R.1.2': [
+          'abstract reasoning',
+          'theme identification',
+          'vocabulary connotative',
+          'schema',
+          'inferencing',
+        ],
+        'ELA.9.R.2.1': [
+          'structural analysis',
+          'purpose analysis',
+          'vocabulary',
+          'metacognitive strategy',
+          'inferencing',
+        ],
+      };
+
+      const skills = skillsByStandard[standardCode] ?? [
+        'inferencing',
+        'vocabulary',
+        'schema',
+        'syntax',
+        'abstract reasoning',
+      ];
+
+      return `Standard: ${standardCode} — ${standardTitle}
+Cognitive Domain: ${cognitiveDomain}
+
+You have two passages from the Gutenberg library to build diagnostic questions on.
+
+PASSAGE 1 (difficulty level 1 — intervention level):
+${passage1Text}
+
+PASSAGE 2 (difficulty level 2 — reassessment level):
+${passage2Text}
+
+Generate exactly 5 diagnostic multiple choice questions. Distribute them across these 5 cognitive skills in this exact order:
+Question 1 — target: ${skills[0]}
+Question 2 — target: ${skills[1]}
+Question 3 — target: ${skills[2]}
+Question 4 — target: ${skills[3]}
+Question 5 — target: ${skills[4]}
+
+Use PASSAGE 1 for questions 1, 2, and 3. Use PASSAGE 2 for questions 4 and 5.
+
+Each question must have exactly 4 options arranged so that:
+- One option is the Key (correct answer, demonstrates mastery)
+- One option is the Layer 1 distractor (schema_deficit or no_metacognitive_strategy)
+- One option is the Layer 2 distractor (vocabulary_gap, vocabulary_gap_connotative, morphology_gap, or syntax_barrier)
+- One option is the Layer 3 distractor (inferencing_deficit, abstract_reasoning_deficit, evidence_retrieval_failure, or comprehension_integration_failure)
+
+Randomize which letter (A, B, C, D) is the Key across the 5 questions — do not always put the Key in the same position.
+
+Return ONLY the JSON array. No markdown. No preamble. No explanation.`;
+    }
+
     default:
       return '';
   }
@@ -379,6 +472,14 @@ export async function POST(req: NextRequest) {
     }
 
     const isExtractPassages = action === 'extract_passages';
+    const isGenerateDiagnostic = action === 'generate_diagnostic_questions';
+    const isJsonAction = isExtractPassages || isGenerateDiagnostic;
+
+    const systemPrompt = isExtractPassages
+      ? EXTRACT_PASSAGES_SYSTEM_PROMPT
+      : isGenerateDiagnostic
+        ? GENERATE_DIAGNOSTIC_QUESTIONS_SYSTEM_PROMPT
+        : SYSTEM_PROMPT;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -389,8 +490,8 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: isExtractPassages ? 4096 : 1024,
-        system: isExtractPassages ? EXTRACT_PASSAGES_SYSTEM_PROMPT : SYSTEM_PROMPT,
+        max_tokens: isJsonAction ? 8192 : 1024,
+        system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       }),
     });

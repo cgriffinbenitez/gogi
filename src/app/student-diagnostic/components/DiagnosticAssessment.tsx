@@ -28,6 +28,7 @@ interface ParsedQuestion {
   correctLetter: string;
   correctIndex: number;
   cognitiveSkill: string | null;
+  diagnosticClassifications: Record<string, string>; // keyed by A/B/C/D
 }
 
 interface AnswerRecord {
@@ -52,27 +53,115 @@ interface StandardResult {
 type Phase = 'loading' | 'error' | 'intro' | 'assessment' | 'results';
 
 // ─── Content Parser ───────────────────────────────────────────────────────────
-// Expected format:
-//   [Passage text paragraphs]
-//
-//   [Question text]
-//
-//   A. [choice]
-//   B. [choice]
-//   C. [choice]
-//   D. [choice]
-//
-//   CORRECT: B
+// Supported format (Gutenberg diagnostic questions):
+//   PASSAGE: [full passage text, may span multiple lines]
+//   QUESTION: [question stem]
+//   A) [option]
+//   B) [option]
+//   C) [option]
+//   D) [option]
+//   CORRECT: [letter]
+//   DIAGNOSTIC_CLASSIFICATION_A: ...
+//   DIAGNOSTIC_CLASSIFICATION_B: ...
+//   DIAGNOSTIC_CLASSIFICATION_C: ...
+//   DIAGNOSTIC_CLASSIFICATION_D: ...
+//   COGNITIVE_SKILL: ...
+//   LAYER1_DISTRACTOR: ...
+//   LAYER2_DISTRACTOR: ...
+//   LAYER3_DISTRACTOR: ...
+
+const METADATA_PREFIXES = [
+  'LAYER1_DISTRACTOR:',
+  'LAYER2_DISTRACTOR:',
+  'LAYER3_DISTRACTOR:',
+  'DIAGNOSTIC_CLASSIFICATION_A:',
+  'DIAGNOSTIC_CLASSIFICATION_B:',
+  'DIAGNOSTIC_CLASSIFICATION_C:',
+  'DIAGNOSTIC_CLASSIFICATION_D:',
+  'COGNITIVE_SKILL:',
+];
 
 function parseQuestionContent(content: string) {
-  // 1. Extract correct answer letter
-  const correctMatch = content.match(/CORRECT:\s*([A-D])/i);
-  const correctLetter = (correctMatch?.[1] ?? 'A').toUpperCase();
+  // 1. Extract diagnostic classifications per answer letter before any stripping
+  const diagnosticClassifications: Record<string, string> = {};
+  const classificationRegex = /^DIAGNOSTIC_CLASSIFICATION_([A-D]):\s*(.+)$/gm;
+  let cm;
+  while ((cm = classificationRegex.exec(content)) !== null) {
+    diagnosticClassifications[cm[1]] = cm[2].trim();
+  }
 
-  // 2. Strip the CORRECT line — never shown to student
-  const withoutCorrect = content.replace(/\nCORRECT:\s*[A-D][^\n]*/i, '').trim();
+  // 2. Strip all backend metadata lines — never shown to student
+  const stripped = content
+    .split('\n')
+    .filter(line => !METADATA_PREFIXES.some(prefix => line.trimStart().startsWith(prefix)))
+    .join('\n');
 
-  // 3. Extract choices A–D
+  // 3. Try structured PASSAGE: / QUESTION: format first (Gutenberg diagnostic questions)
+  const passageMarker = stripped.match(/^PASSAGE:\s*/im);
+  const questionMarker = stripped.match(/^QUESTION:\s*/im);
+
+  if (passageMarker && questionMarker) {
+    // Extract correct answer letter
+    const correctMatch = stripped.match(/^CORRECT:\s*([A-D])/im);
+    if (!correctMatch) {
+      return {
+        passageText: stripped.trim(),
+        questionText: '',
+        choices: ['', '', '', ''],
+        correctLetter: 'A',
+        correctIndex: 0,
+        diagnosticClassifications,
+      };
+    }
+    const correctLetter = correctMatch[1].toUpperCase();
+
+    // Split on the QUESTION: marker — everything before is the passage block
+    const questionSplit = stripped.split(/^QUESTION:\s*/im);
+    const passageBlock = questionSplit[0].replace(/^PASSAGE:\s*/i, '').trim();
+    const afterQuestion = questionSplit[1] ?? '';
+
+    // Extract choices A) B) C) D) — support both ) and . delimiters
+    const choices: Record<string, string> = {};
+    const choiceRegex = /^([A-D])[).\s]\s*(.+)$/gm;
+    let m;
+    while ((m = choiceRegex.exec(afterQuestion)) !== null) {
+      choices[m[1]] = m[2].trim();
+    }
+
+    // Question stem is everything before the first choice line
+    const questionText = afterQuestion
+      .replace(/^([A-D])[).\s]\s*.+$/gm, '')
+      .replace(/\nCORRECT:\s*[A-D][^\n]*/gi, '')
+      .trim();
+
+    return {
+      passageText: passageBlock,
+      questionText,
+      choices: ['A', 'B', 'C', 'D'].map(l => choices[l] ?? ''),
+      correctLetter,
+      correctIndex: ['A', 'B', 'C', 'D'].indexOf(correctLetter),
+      diagnosticClassifications,
+    };
+  }
+
+  // 4. Fallback: legacy format — no PASSAGE:/QUESTION: markers
+  // If there is no CORRECT: marker the content is a passage-only item. Return
+  // the full text as passageText so it renders in the left panel only.
+  const correctMatch = stripped.match(/CORRECT:\s*([A-D])/i);
+  if (!correctMatch) {
+    return {
+      passageText: stripped.trim(),
+      questionText: '',
+      choices: ['', '', '', ''],
+      correctLetter: 'A',
+      correctIndex: 0,
+      diagnosticClassifications,
+    };
+  }
+  const correctLetter = correctMatch[1].toUpperCase();
+
+  const withoutCorrect = stripped.replace(/\nCORRECT:\s*[A-D][^\n]*/i, '').trim();
+
   const choices: Record<string, string> = {};
   const choiceRegex = /^([A-D])[.)]\s+(.+)$/gm;
   let m;
@@ -80,13 +169,11 @@ function parseQuestionContent(content: string) {
     choices[m[1]] = m[2].trim();
   }
 
-  // 4. Remove choice lines to isolate passage + question text
   const withoutChoices = withoutCorrect
     .replace(/^[A-D][.)]\s+.+$/gm, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
-  // 5. Last paragraph = question; everything before = passage
   const paragraphs = withoutChoices.split(/\n\n+/).filter(p => p.trim().length > 0);
   const questionText = paragraphs[paragraphs.length - 1]?.trim() ?? '';
   const passageText = paragraphs.slice(0, -1).join('\n\n').trim();
@@ -97,6 +184,7 @@ function parseQuestionContent(content: string) {
     choices: ['A', 'B', 'C', 'D'].map(l => choices[l] ?? ''),
     correctLetter,
     correctIndex: ['A', 'B', 'C', 'D'].indexOf(correctLetter),
+    diagnosticClassifications,
   };
 }
 
@@ -185,12 +273,14 @@ export default function DiagnosticAssessment() {
         });
         standardsMetaRef.current = metaByCode;
 
-        // 4. Load questions for all 3 standards
+        // 4. Load diagnostic questions only (difficulty_level IS NULL or 0).
+        // Gutenberg intervention passages use difficulty_level 1 or 2 and must be excluded.
         const standardIds = standards.map(s => s.id);
         const { data: dbQuestions, error: questionsError } = await supabase
           .from('questions')
           .select('id, standard_id, content, cognitive_skill_targeted, difficulty_level')
           .in('standard_id', standardIds)
+          .or('difficulty_level.is.null,difficulty_level.eq.0')
           .order('difficulty_level');
 
         if (questionsError || !dbQuestions || dbQuestions.length === 0) {
@@ -284,6 +374,7 @@ export default function DiagnosticAssessment() {
         student_id: studentId,
         standard_id: q.standardId,
         cognitive_skill_targeted: q.cognitiveSkill,
+        diagnostic_classification: q.diagnosticClassifications[selectedLetter] ?? null,
         student_response: selectedLetter,
         mastery_achieved: isCorrect,
       });
