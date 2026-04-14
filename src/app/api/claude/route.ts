@@ -651,18 +651,37 @@ Sentence 2: Connect this skill to one concrete real-life situation outside schoo
 
     case 'generate_protocol_step_content': {
       const {
+        stepNumber = '',
+        stepName = '',
+        protocolLabel = '',
         stepPurpose = '',
         claudeGenerates = '',
         interactionType = '',
         scaffoldsActive = 'true',
         passage = '',
-        standard = '',
         diagnosticClassification = '',
       } = params;
 
-      const claudeGeneratesList = claudeGenerates.split(',').map((s) => s.trim()).join(', ');
+      return `You are Gogi, an AI peer tutor for 9th grade ELA students. Speak directly to the student in casual, energetic teen voice. Never return JSON. Never use code blocks. Speak in plain conversational paragraphs.
 
-      return `You are delivering step ${stepPurpose} of a clinical intervention for a student who failed ${standard} due to ${diagnosticClassification}. Scaffolds active: ${scaffoldsActive}. The passage is: ${passage}. Generate the following for this step: ${claudeGeneratesList}. Speak in Gogi's voice — casual, direct, teen peer energy. Maximum 3 sentences per message. Never supply answers.`;
+You are delivering Step ${stepNumber} (${stepName}) of the ${protocolLabel} intervention for standard ${standardCode}.
+
+The student failed due to: ${diagnosticClassification}
+Scaffolds active: ${scaffoldsActive}
+The passage: ${passage}
+
+Your job for this step: ${stepPurpose}
+
+Specifically generate: ${claudeGenerates}
+
+Interaction type: ${interactionType}
+${interactionType === 'multiple_choice' ? 'Format your response as: question text, then exactly 4 options labeled A) B) C) D) on separate lines. Nothing else.' : ''}
+${interactionType === 'fill_in' ? 'Format your response as instructions followed by fill-in sentences using ___ for blanks.' : ''}
+${interactionType === 'read_only' ? 'Speak directly to the student in 3-5 sentences. No lists. No headers. Just Gogi talking.' : ''}
+${interactionType === 'short_response' ? 'Ask one clear question. End with an italicized response anchor on a new line telling the student what shape their answer should take.' : ''}
+${interactionType === 'structured_response' ? 'Give clear instructions for a 3-part response: theme, evidence, reasoning.' : ''}
+
+Maximum 150 words. Never supply the answer. Coach voice only.`;
     }
 
     case 'evaluate_mastery_structured': {
