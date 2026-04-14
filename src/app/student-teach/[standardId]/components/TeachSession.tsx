@@ -3,10 +3,30 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import ProtocolEngine from '../protocol/ProtocolEngine';
+import { routeToProtocol, type StandardCode } from '../protocol/ClassificationRouter';
+import {
+  ThemeConceptBuilding,
+  ThemeHuntingStrategy,
+  ConnotativeLanguage,
+  AbstractionLadder,
+  ThemeEvidenceMapping,
+  LiteraryAnalysisParagraph,
+} from '../protocol/protocols/ELA9R12Protocols';
+import type { Protocol } from '../protocol/types';
+
+const PROTOCOL_MAP: Record<string, Protocol> = {
+  ThemeConceptBuilding,
+  ThemeHuntingStrategy,
+  ConnotativeLanguage,
+  AbstractionLadder,
+  ThemeEvidenceMapping,
+  LiteraryAnalysisParagraph,
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type TeachView = 'loading' | 'error' | 'step1' | 'step2' | 'step3' | 'step4' | 'step5';
+type TeachView = 'loading' | 'error' | 'protocol' | 'step1' | 'step2' | 'step3' | 'step4' | 'step5';
 
 interface ConversationMessage {
   role: 'gogi' | 'student';
@@ -184,6 +204,7 @@ export default function TeachSession() {
   const [diagnosticStudentResponse, setDiagnosticStudentResponse] = useState('');
   const [diagnosticPassage, setDiagnosticPassage] = useState('');
   const [step3PassageId, setStep3PassageId] = useState('');
+  const [loadedProtocol, setLoadedProtocol] = useState<Protocol | null>(null);
 
   // Step 1 & 2 — Claude content
   const [claudeContent, setClaudeContent] = useState('');
@@ -298,6 +319,20 @@ export default function TeachSession() {
 
         setDiagnosticPassage(passage);
 
+        // Fetch intervention passage from questions table
+        const { data: interventionPassage } = await supabase
+          .from('questions')
+          .select('id, content')
+          .eq('standard_id', standardId)
+          .gt('difficulty_level', 0)
+          .limit(1)
+          .maybeSingle()
+
+        if (interventionPassage?.content) {
+          setDiagnosticPassage(interventionPassage.content)
+          setStep3PassageId(interventionPassage.id)
+        }
+
         // Create teach session
         const { data: session, error: sessionError } = await supabase
           .from('sessions')
@@ -318,23 +353,25 @@ export default function TeachSession() {
         setTeachSessionId(session.id);
 
         // Transition to step 1 and load explanation
-        setView('step1');
-        setClaudeLoading(true);
-        try {
-          const text = await callClaude('explanation', {
-            standardCode: standard.code,
-            standardTitle: standard.title,
-            diagnosticClassification: classification,
-            studentResponse: studentResp || 'no response recorded',
-          });
-          setClaudeContent(text);
-        } catch (err) {
-          console.error('[TeachSession] Step 1 Claude error:', err);
-          setClaudeContent(
-            'We had trouble loading your personalized explanation right now. Please continue — your teacher can review your progress.',
-          );
-        } finally {
-          setClaudeLoading(false);
+        if (standard.code !== 'ELA.9.R.1.2') {
+          setView('step1');
+          setClaudeLoading(true);
+          try {
+            const text = await callClaude('explanation', {
+              standardCode: standard.code,
+              standardTitle: standard.title,
+              diagnosticClassification: classification,
+              studentResponse: studentResp || 'no response recorded',
+            });
+            setClaudeContent(text);
+          } catch (err) {
+            console.error('[TeachSession] Step 1 Claude error:', err);
+            setClaudeContent(
+              'We had trouble loading your personalized explanation right now. Please continue — your teacher can review your progress.',
+            );
+          } finally {
+            setClaudeLoading(false);
+          }
         }
       } catch (err) {
         console.error('[TeachSession] Init error:', err);
@@ -398,17 +435,23 @@ export default function TeachSession() {
       let passageText = diagnosticPassage;
       if (!passageText) {
         // Try the questions table for a seeded intervention passage first
-        const { data: dbPassage } = await supabase
+        const { data: passageData, error: passageError } = await supabase
           .from('questions')
-          .select('id, content')
+          .select('*')
           .eq('standard_id', standardId)
-          .eq('difficulty_level', 1)
+          .gt('difficulty_level', 0)
           .limit(1)
-          .maybeSingle();
+          .single()
 
-        if (dbPassage?.content) {
-          passageText = dbPassage.content;
-          setStep3PassageId(dbPassage.id);
+        console.log('PASSAGE FETCH:', {
+          standardId,
+          passageData: passageData?.content?.substring(0, 80),
+          passageError
+        })
+
+        if (passageData) {
+          passageText = passageData.content;
+          setStep3PassageId(passageData.id);
         } else {
           passageText = await callClaude('generate_guided_passage', {
             standardCode,
@@ -840,6 +883,32 @@ export default function TeachSession() {
   }
 
   // ─── Views ────────────────────────────────────────────────────────────────
+
+  const protocolName = routeToProtocol(standardCode as StandardCode, diagnosticClassification)
+  const protocol = PROTOCOL_MAP[protocolName]
+
+  console.warn('BRANCH:', { standardCode, protocolName, passage: !!diagnosticPassage, session: !!teachSessionId, student: !!studentId })
+
+  if (
+    standardCode === 'ELA.9.R.1.2' &&
+    protocol &&
+    protocolName !== 'GenericTeach' &&
+    !!diagnosticPassage &&
+    !!teachSessionId &&
+    !!studentId
+  ) {
+    return (
+      <ProtocolEngine
+        protocol={protocol}
+        studentId={studentId}
+        standardId={standardId}
+        sessionId={teachSessionId}
+        passage={diagnosticPassage}
+        onComplete={() => router.push(`/student-reassess/${standardId}`)}
+        onReclassify={(fallback) => console.warn('Reclassify to:', fallback)}
+      />
+    );
+  }
 
   if (view === 'loading') {
     return (
