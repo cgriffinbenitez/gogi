@@ -12,6 +12,7 @@
 //   "This story suggests that [  input  ]."
 
 import React, { useState, useMemo } from 'react';
+import GogiAvatar from '@/components/GogiAvatar';
 
 export interface FillInStepProps {
   content: string;
@@ -20,14 +21,6 @@ export interface FillInStepProps {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function GogiAvatar() {
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-sm font-extrabold leading-none select-none">G</span>
-    </div>
-  );
-}
 
 // Count total ___ occurrences across the content
 function countBlanks(content: string): number {

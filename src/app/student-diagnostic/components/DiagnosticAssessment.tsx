@@ -210,7 +210,7 @@ export default function DiagnosticAssessment() {
   const [phase, setPhase] = useState<Phase>('loading');
   const [errorMsg, setErrorMsg] = useState('');
   const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
-  const [sessionId, setSessionId] = useState('');
+  const [sessionIds, setSessionIds] = useState<Record<string, string>>({});
   const [studentId, setStudentId] = useState('');
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -307,25 +307,33 @@ export default function DiagnosticAssessment() {
 
         setQuestions(parsed);
 
-        // 5. Create ONE session using the first standard's id (ELA.9.R.1.1)
-        const firstStandardId = standards.find(s => s.code === 'ELA.9.R.1.1')?.id ?? standards[0].id;
-        const { data: session, error: sessionError } = await supabase
-          .from('sessions')
-          .insert({
-            student_id: student.id,
-            standard_id: firstStandardId,
-            phase: 'diagnose',
-            status: 'in_progress',
-          })
-          .select('id')
-          .single();
+        // 5. Create one diagnostic session per standard
+        const sessionInserts = await Promise.all(
+          standards.map(s =>
+            supabase
+              .from('sessions')
+              .insert({
+                student_id: student.id,
+                standard_id: s.id,
+                phase: 'diagnose',
+                status: 'in_progress',
+              })
+              .select('id')
+              .single()
+          )
+        );
 
-        if (sessionError || !session) {
-          setErrorMsg('Failed to start your session. Please try again.');
-          setPhase('error');
-          return;
+        const sessionMap: Record<string, string> = {};
+        for (let i = 0; i < standards.length; i++) {
+          const { data: sess, error: sessError } = sessionInserts[i];
+          if (sessError || !sess) {
+            setErrorMsg('Failed to start your session. Please try again.');
+            setPhase('error');
+            return;
+          }
+          sessionMap[standards[i].id] = sess.id;
         }
-        setSessionId(session.id);
+        setSessionIds(sessionMap);
         setPhase('intro');
       } catch (err) {
         console.error('[DiagnosticAssessment] Init error:', err);
@@ -369,12 +377,12 @@ export default function DiagnosticAssessment() {
 
     try {
       const { error } = await supabase.from('responses').insert({
-        session_id: sessionId,
+        session_id: sessionIds[q.standardId],
         question_id: q.id,
         student_id: studentId,
         standard_id: q.standardId,
         cognitive_skill_targeted: q.cognitiveSkill,
-        diagnostic_classification: q.diagnosticClassifications[selectedLetter] ?? null,
+        diagnostic_classification: isCorrect ? null : (q.diagnosticClassifications[selectedLetter] ?? null),
         student_response: selectedLetter,
         mastery_achieved: isCorrect,
       });
@@ -436,16 +444,20 @@ export default function DiagnosticAssessment() {
         : elapsedSeconds;
 
       try {
-        const { error } = await supabase
-          .from('sessions')
-          .update({
-            status: 'completed',
-            mastery_achieved: pct >= MASTERY_THRESHOLD * 100,
-            completed_at: new Date().toISOString(),
-            time_spent_seconds: timeSpent,
-          })
-          .eq('id', sessionId);
-        if (error) console.error('[DiagnosticAssessment] Session update error:', error);
+        const completedAt = new Date().toISOString();
+        await Promise.all(
+          results.map(s =>
+            supabase
+              .from('sessions')
+              .update({
+                status: 'completed',
+                mastery_achieved: s.pct >= MASTERY_THRESHOLD * 100,
+                completed_at: completedAt,
+                time_spent_seconds: timeSpent,
+              })
+              .eq('id', sessionIds[s.id])
+          )
+        );
       } catch (err) {
         console.error('[DiagnosticAssessment] Session update exception:', err);
       }

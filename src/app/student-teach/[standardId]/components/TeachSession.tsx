@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { callClaude } from '@/lib/callClaude';
+import GogiAvatar from '@/components/GogiAvatar';
+import { renderMarkdown } from '@/lib/renderMarkdown';
 import ProtocolEngine from '../protocol/ProtocolEngine';
 import { routeToProtocol, type StandardCode } from '../protocol/ClassificationRouter';
 import {
@@ -44,69 +47,6 @@ function parsePassageFromContent(content: string): string {
     .trim();
 }
 
-async function callClaude(action: string, params: Record<string, string>): Promise<string> {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, ...params }),
-  });
-  if (!res.ok) throw new Error(`Claude API call failed: ${res.status}`);
-  const data = await res.json();
-  return (data.text as string) || '';
-}
-
-function renderMarkdown(text: string) {
-  return text.split('\n').map((line, i) => {
-    if (!line.trim()) return <div key={i} className="h-2" />;
-
-    if (/^\*\*[^*]+\*\*$/.test(line)) {
-      return (
-        <p key={i} className="font-bold text-white mt-4 mb-1 text-sm">
-          {line.replace(/\*\*/g, '')}
-        </p>
-      );
-    }
-
-    if (line.includes('**')) {
-      const parts = line.split('**');
-      return (
-        <p key={i} className="text-slate-300 text-sm mt-1 leading-relaxed">
-          {parts.map((part, j) =>
-            j % 2 === 1 ? (
-              <strong key={j} className="text-white font-semibold">
-                {part}
-              </strong>
-            ) : (
-              part
-            ),
-          )}
-        </p>
-      );
-    }
-
-    if (/^\d+\.\s/.test(line)) {
-      return (
-        <p key={i} className="text-slate-300 text-sm mt-2 leading-relaxed ml-2">
-          {line}
-        </p>
-      );
-    }
-
-    if (/^[-•]\s/.test(line)) {
-      return (
-        <li key={i} className="text-slate-300 text-sm mt-1 ml-4 list-disc leading-relaxed">
-          {line.replace(/^[-•]\s/, '')}
-        </li>
-      );
-    }
-
-    return (
-      <p key={i} className="text-slate-300 text-sm mt-1 leading-relaxed">
-        {line}
-      </p>
-    );
-  });
-}
 
 function historyString(messages: ConversationMessage[]): string {
   return messages
@@ -162,18 +102,10 @@ function SpinnerBlock({ color = 'violet', label }: { color?: string; label: stri
   );
 }
 
-function GogiAvatar() {
-  return (
-    <div className="w-8 h-8 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-xs font-extrabold leading-none select-none">G</span>
-    </div>
-  );
-}
-
 function GogiTyping() {
   return (
     <div className="flex items-start gap-2">
-      <GogiAvatar />
+      <GogiAvatar size="sm" />
       <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3">
         <div className="flex gap-1 items-center h-4">
           <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
@@ -205,6 +137,7 @@ export default function TeachSession() {
   const [diagnosticPassage, setDiagnosticPassage] = useState('');
   const [step3PassageId, setStep3PassageId] = useState('');
   const [loadedProtocol, setLoadedProtocol] = useState<Protocol | null>(null);
+  const [reclassifiedProtocolName, setReclassifiedProtocolName] = useState<string | null>(null);
 
   // Step 1 & 2 — Claude content
   const [claudeContent, setClaudeContent] = useState('');
@@ -233,6 +166,7 @@ export default function TeachSession() {
   const [step4Mastered, setStep4Mastered] = useState(false);
   const step4ScrollRef = useRef<HTMLDivElement>(null);
   const step4InputRef = useRef<HTMLTextAreaElement>(null);
+  const teachSessionStartRef = useRef<number>(0);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -351,6 +285,7 @@ export default function TeachSession() {
           return;
         }
         setTeachSessionId(session.id);
+        teachSessionStartRef.current = Date.now();
 
         // Transition to step 1 and load explanation
         if (standard.code !== 'ELA.9.R.1.2') {
@@ -882,9 +817,32 @@ export default function TeachSession() {
     );
   }
 
+  // ─── Teach session completion ─────────────────────────────────────────────
+
+  async function handleTeachComplete() {
+    const timeSpent = teachSessionStartRef.current
+      ? Math.floor((Date.now() - teachSessionStartRef.current) / 1000)
+      : 0;
+    if (teachSessionId) {
+      try {
+        await supabase
+          .from('sessions')
+          .update({
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            time_spent_seconds: timeSpent,
+          })
+          .eq('id', teachSessionId);
+      } catch (err) {
+        console.error('[TeachSession] Failed to close teach session:', err);
+      }
+    }
+    router.push(`/student-reassess/${standardId}`);
+  }
+
   // ─── Views ────────────────────────────────────────────────────────────────
 
-  const protocolName = routeToProtocol(standardCode as StandardCode, diagnosticClassification)
+  const protocolName = reclassifiedProtocolName ?? routeToProtocol(standardCode as StandardCode, diagnosticClassification)
   const protocol = PROTOCOL_MAP[protocolName]
 
   console.warn('BRANCH:', { standardCode, protocolName, passage: !!diagnosticPassage, session: !!teachSessionId, student: !!studentId })
@@ -899,13 +857,14 @@ export default function TeachSession() {
   ) {
     return (
       <ProtocolEngine
+        key={protocolName}
         protocol={protocol}
         studentId={studentId}
         standardId={standardId}
         sessionId={teachSessionId}
         passage={diagnosticPassage}
-        onComplete={() => router.push(`/student-reassess/${standardId}`)}
-        onReclassify={(fallback) => console.warn('Reclassify to:', fallback)}
+        onComplete={handleTeachComplete}
+        onReclassify={(fallbackProtocol) => setReclassifiedProtocolName(fallbackProtocol)}
       />
     );
   }
@@ -1080,7 +1039,7 @@ export default function TeachSession() {
           <div className="flex-1 flex items-center justify-center px-4 py-8">
             <div className="max-w-xl w-full">
               <div className="flex items-start gap-3 mb-6">
-                <GogiAvatar />
+                <GogiAvatar size="sm" />
                 <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
                   {renderGogiMessage(step3OrientationText)}
                 </div>
@@ -1132,7 +1091,7 @@ export default function TeachSession() {
                 {step3Messages.map((msg, i) =>
                   msg.role === 'gogi' ? (
                     <div key={i} className="flex items-start gap-2">
-                      <GogiAvatar />
+                      <GogiAvatar size="sm" />
                       <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] shadow-sm">
                         {renderGogiMessage(msg.text)}
                       </div>
@@ -1245,7 +1204,7 @@ export default function TeachSession() {
                 {step4Messages.map((msg, i) =>
                   msg.role === 'gogi' ? (
                     <div key={i} className="flex items-start gap-2">
-                      <GogiAvatar />
+                      <GogiAvatar size="sm" />
                       <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] shadow-sm">
                         {renderGogiMessage(msg.text)}
                       </div>

@@ -6,6 +6,7 @@
 // the selected letter + text, e.g. "B) friendship is always enough".
 
 import React, { useState, useMemo, useEffect } from 'react';
+import GogiAvatar from '@/components/GogiAvatar';
 
 export interface MultipleChoiceStepProps {
   content: string;
@@ -56,14 +57,6 @@ function renderText(text: string) {
     }
     return <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">{line}</p>;
   });
-}
-
-function GogiAvatar() {
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-sm font-extrabold leading-none select-none">G</span>
-    </div>
-  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

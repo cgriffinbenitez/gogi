@@ -8,7 +8,10 @@ export type InteractionType =
   | 'fill_in'
   | 'short_response'
   | 'structured_response'
-  | 'read_only' // orientation and micro-model steps — student reads, does not respond
+  | 'read_only'            // orientation and micro-model steps — student reads, does not respond
+  | 'passage_annotation'   // student highlights and tags a passage, then explains selections
+  | 'drag_and_drop'        // student organizes items into labeled categories or sequences
+  | 'multiple_select'      // student selects all correct answers from a list (signal words etc.)
 
 export type StepName =
   | 'Orientation'
@@ -50,6 +53,10 @@ export interface MasteryConditions {
 export interface ReclassificationTrigger {
   // After this many failed attempts, reclassify
   attemptThreshold: number
+  // On this attempt number, surface a scaffold hint before allowing the final retry
+  hintUnlockAttempt: number
+  // The hint shown to the student on hintUnlockAttempt — protocol-specific scaffold
+  hint: string
   // The new classification to try if threshold is hit
   fallbackProtocol: string
   // Clinical rationale for why this fallback makes sense

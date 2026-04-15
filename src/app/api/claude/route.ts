@@ -1,4 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+
+// ─── Rate Limiter ─────────────────────────────────────────────────────────────
+// Sliding-window in-memory store: userId → array of call timestamps (ms).
+// Resets on server restart — acceptable for pilot scale.
+
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT_MAX_CALLS = 30;
 
 // ─── System Prompts ───────────────────────────────────────────────────────────
 
@@ -89,14 +98,6 @@ type ClaudeAction =
   | 'evaluate_conversation_mastery'
   | 'extract_passages'
   | 'generate_diagnostic_questions'
-  // ─── Protocol Engine Actions ───────────────────────────────────────────────
-  | 'generate_protocol_orientation'
-  | 'generate_protocol_micro_model'
-  | 'generate_protocol_mc_step'
-  | 'generate_protocol_fill_step'
-  | 'generate_protocol_prompt'
-  | 'evaluate_protocol_step'
-  | 'generate_protocol_mastery_close'
   // ─── Canonical Protocol Engine (ProtocolEngine.tsx) ───────────────────────
   | 'generate_protocol_step_content'
   | 'evaluate_mastery_structured';
@@ -477,187 +478,6 @@ Randomize which letter (A, B, C, D) is the Key across the 5 questions — do not
 Return ONLY the JSON array. No markdown. No preamble. No explanation.`;
     }
 
-    // ─── Protocol Engine Actions ─────────────────────────────────────────────
-
-    case 'generate_protocol_orientation': {
-      const {
-        protocolLabel = '',
-        cognitiveSkillTargeted = '',
-        diagnosticClassification = '',
-        stepPurpose = '',
-        claudeInstructions = '',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Cognitive skill targeted: ${cognitiveSkillTargeted}
-Student's diagnostic classification: ${diagnosticClassification}
-Step purpose: ${stepPurpose}
-
-${claudeInstructions}
-
-Write exactly 3 sentences directly to the student in Gogi's voice:
-Sentence 1: Name the exact skill they are going to learn right now — plain language, no academic terms.
-Sentence 2: Tell them why this skill matters in one real-life situation outside school — concrete, not abstract.
-Sentence 3: Tell them exactly what they are about to do — the sequence of this session in specific terms.
-
-3 sentences. Nothing else. Write directly to the student as "you."`;
-    }
-
-    case 'generate_protocol_micro_model': {
-      const {
-        protocolLabel = '',
-        cognitiveSkillTargeted = '',
-        claudeInstructions = '',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Cognitive skill targeted: ${cognitiveSkillTargeted}
-
-${claudeInstructions}
-
-Write in Gogi's voice. Make expert thinking visible with concrete examples a 9th grader instantly recognizes — movies, music, sports, real life. No academic language. No walls of text.`;
-    }
-
-    case 'generate_protocol_mc_step': {
-      const {
-        protocolLabel = '',
-        stepName = '',
-        diagnosticClassification = '',
-        passageText = '',
-        claudeInstructions = '',
-        questionCount = '3',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Step: ${stepName}
-Diagnostic classification: ${diagnosticClassification}
-
-${passageText ? `Passage:\n"${passageText}"\n` : ''}
-
-${claudeInstructions}
-
-Generate exactly ${questionCount} multiple choice question(s). Each question must have exactly 4 options. One correct answer. Each wrong option should represent a specific, predictable error (not just a random wrong answer).
-
-Return ONLY a valid JSON array. No preamble. No markdown. Raw JSON only.
-
-Format:
-[
-  {
-    "question": "question text",
-    "options": [
-      { "letter": "A", "text": "option text" },
-      { "letter": "B", "text": "option text" },
-      { "letter": "C", "text": "option text" },
-      { "letter": "D", "text": "option text" }
-    ],
-    "correct": "A",
-    "error_explanations": {
-      "A": "why this is correct or what error this represents",
-      "B": "what error this represents",
-      "C": "what error this represents",
-      "D": "what error this represents"
-    }
-  }
-]`;
-    }
-
-    case 'generate_protocol_fill_step': {
-      const {
-        protocolLabel = '',
-        stepName = '',
-        claudeInstructions = '',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Step: ${stepName}
-
-${claudeInstructions}
-
-Return ONLY valid JSON. No preamble. No markdown. Raw JSON only.
-
-Format:
-{
-  "passage": "4 to 6 sentence passage text — emotionally accessible, clear human challenge, age-appropriate for 9th grade",
-  "topic_label": "The topic of this story is",
-  "theme_stem": "This story suggests that",
-  "feedback_hint": "What to look for in the student's theme statement to determine if it is a universal claim"
-}`;
-    }
-
-    case 'generate_protocol_prompt': {
-      const {
-        protocolLabel = '',
-        stepName = '',
-        diagnosticClassification = '',
-        passageText = '',
-        claudeInstructions = '',
-        scaffoldsActive = 'false',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Step: ${stepName}
-Diagnostic classification: ${diagnosticClassification}
-Scaffolds active: ${scaffoldsActive}
-
-${passageText ? `Passage:\n"${passageText}"\n` : ''}
-
-${claudeInstructions}
-
-Write in Gogi's voice. Direct and clear. End with the specific question or task the student must respond to. No academic walls of text.`;
-    }
-
-    case 'evaluate_protocol_step': {
-      const {
-        protocolLabel = '',
-        stepName = '',
-        interactionType = '',
-        diagnosticClassification = '',
-        passageText = '',
-        studentResponse = '',
-        scaffoldsActive = 'false',
-        advancementCondition = '',
-      } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Step: ${stepName}
-Interaction type: ${interactionType}
-Diagnostic classification: ${diagnosticClassification}
-Scaffolds active during this step: ${scaffoldsActive}
-
-${passageText ? `Passage:\n"${passageText}"\n` : ''}
-
-Student response:
-"${studentResponse}"
-
-Advancement condition: ${advancementCondition}
-
-Evaluate whether the student's response meets the advancement condition.
-
-Return ONLY valid JSON. No preamble. No markdown. Raw JSON only.
-
-{
-  "passed": true or false,
-  "theme_universal": true or false,
-  "evidence_relevant": true or false,
-  "reasoning_explicit": true or false,
-  "scaffolds_used": true or false,
-  "feedback": "2 to 3 sentences in Gogi's voice. If passed: celebrate what specifically worked, name the skill. If failed: name exactly which criterion was not met using the student's actual words, then point forward without giving the answer. Never say however or unfortunately."
-}`;
-    }
-
-    case 'generate_protocol_mastery_close': {
-      const { protocolLabel = '', cognitiveSkillTargeted = '' } = params;
-      return `Protocol: ${protocolLabel}
-Standard: ${standardCode} — ${standardTitle}
-Cognitive skill mastered: ${cognitiveSkillTargeted}
-
-Write exactly 2 sentences in Gogi's voice:
-Sentence 1: Name the exact skill they just mastered and what they proved — reference the protocol skill specifically, using their session journey.
-Sentence 2: Connect this skill to one concrete real-life situation outside school where it gives them actual power.
-
-2 sentences. Nothing else. Direct to the student as "you."`;
-    }
-
     // ─── Canonical Protocol Engine ──────────────────────────────────────────
 
     case 'generate_protocol_step_content': {
@@ -699,25 +519,39 @@ Maximum 150 words. Never supply the answer. Coach voice only.`;
       const {
         studentResponse = '',
         passage = '',
-        standard = '',
-        interactionType = '',
+        protocolName = '',
+        stepName = '',
+        advancementCondition = '',
         scaffoldsActive = 'false',
       } = params;
 
-      const truncatedPassage = passage.substring(0, 600);
-      return `You are evaluating a 9th grade student's literary analysis response.
+      return `You are evaluating a 9th grade student's literary analysis response for standard ${standardCode} — ${standardTitle}.
 
-Passage (excerpt): ${truncatedPassage}
+Protocol: ${protocolName}
+Step: ${stepName}
+Scaffolds active: ${scaffoldsActive}
 
-Student response: ${studentResponse}
+Advancement condition:
+"${advancementCondition}"
 
-Return ONLY this JSON, nothing else:
+Full passage:
+${passage}
+
+Student response:
+"${studentResponse}"
+
+Note: responses formatted as Theme:/Evidence:/Reasoning: are structured student answers — evaluate each labeled section against its corresponding mastery condition independently.
+
+A blank response, single word, or off-topic response always fails.
+
+Return ONLY valid JSON:
 {
-  "theme_universal": <true if student stated a universal theme about human nature — not a topic word, not a plot summary>,
-  "evidence_relevant": <true if student cited specific text that supports their theme>,
-  "reasoning_explicit": <true if student explained HOW the evidence proves the theme — not just stated it>,
-  "scaffolds_used": <true if student's response contains sentence stems like "The topic is" or "The theme is:" or fill-in-blank patterns>,
-  "feedback": "<2 sentences max in Gogi's voice — name what broke down specifically, point forward without giving the answer>"
+  "theme_universal": <true if Theme section states a universal claim about human nature — not a topic>,
+  "evidence_relevant": <true if Evidence section cites specific text supporting the theme>,
+  "reasoning_explicit": <true if Reasoning section explains HOW evidence proves theme>,
+  "scaffolds_used": <true if response contains sentence stems or fill-in patterns>,
+  "passed": <true ONLY if all three conditions above are true AND scaffolds_used is false>,
+  "feedback": "<2 sentences Gogi voice — name what broke down using student words, point forward>"
 }`;
     }
 
@@ -730,6 +564,45 @@ Return ONLY this JSON, nothing else:
 
 export async function POST(req: NextRequest) {
   try {
+    // ── Auth ────────────────────────────────────────────────────────────────
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll() {
+            // Read-only in API routes — session refresh handled by middleware
+          },
+        },
+      },
+    );
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // ── Rate limiting (30 calls / user / hour, sliding window) ──────────────
+    const now = Date.now();
+    const windowStart = now - RATE_LIMIT_WINDOW_MS;
+    const timestamps = (rateLimitMap.get(user.id) ?? []).filter(t => t > windowStart);
+
+    if (timestamps.length >= RATE_LIMIT_MAX_CALLS) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before continuing.' },
+        { status: 429 },
+      );
+    }
+
+    rateLimitMap.set(user.id, [...timestamps, now]);
+
+    // ── Request ─────────────────────────────────────────────────────────────
     const body = await req.json();
     const { action, ...params } = body as { action: ClaudeAction } & Record<string, string>;
 
@@ -745,16 +618,9 @@ export async function POST(req: NextRequest) {
 
     const isExtractPassages = action === 'extract_passages';
     const isGenerateDiagnostic = action === 'generate_diagnostic_questions';
-    const isProtocolJson =
-      action === 'generate_protocol_mc_step' ||
-      action === 'generate_protocol_fill_step' ||
-      action === 'evaluate_protocol_step' ||
-      action === 'evaluate_mastery_structured';
-    const isProtocolAction =
-      (action as string).startsWith('generate_protocol') ||
-      action === 'evaluate_protocol_step' ||
-      action === 'evaluate_mastery_structured';
-    const isJsonAction = isExtractPassages || isGenerateDiagnostic || isProtocolJson;
+    const isProtocolJson = action === 'evaluate_mastery_structured';
+    const isProtocolAction = action === 'evaluate_mastery_structured';
+    const isJsonAction = isExtractPassages || isGenerateDiagnostic || isProtocolJson || action === 'generate_reassess';
 
     const isProtocolContentAction = action === 'generate_protocol_step_content';
 

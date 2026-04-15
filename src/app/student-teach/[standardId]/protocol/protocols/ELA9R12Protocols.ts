@@ -142,7 +142,9 @@ export const ThemeConceptBuilding: Protocol = {
     minimumAttempts: 1,
   },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "The theme is never the topic — it's what the topic teaches everyone. Instead of writing what the story is about, write what it says about all people. Try this frame: 'People often discover _____ when they face _____.' Fill in both blanks using what happens in this passage.",
     fallbackProtocol: 'ThemeHuntingStrategy',
     clinicalRationale:
       'A student who cannot discriminate topic from theme after two full concept-building cycles may lack the metacognitive strategy to approach theme identification systematically, not just the concept itself. Shift to strategy instruction.',
@@ -277,7 +279,9 @@ export const ThemeHuntingStrategy: Protocol = {
   ],
   masteryConditions: { minimumAttempts: 1 },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "Look for the moment in the passage where everything changes for the character — what they do, say, or realize that they couldn't at the start. That turning point is usually where the theme lives. What changed for this character, and what does that change say about people in general?",
     fallbackProtocol: 'ThemeConceptBuilding',
     clinicalRationale:
       'A student failing strategy instruction after two attempts may not have the underlying theme concept itself. Drop back to concept-building before re-attempting strategy.',
@@ -409,7 +413,9 @@ export const ConnotativeLanguage: Protocol = {
   ],
   masteryConditions: { minimumAttempts: 1 },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "Don't just read the words — read the feeling behind them. Find one word or phrase in the passage that feels emotionally charged. Ask: why did the author choose this word over a simpler one? What does that choice reveal about what the author wants you to understand about people?",
     fallbackProtocol: 'AbstractionLadder',
     clinicalRationale:
       'If connotative instruction does not produce theme mastery after two attempts, the student may be able to read emotional tone but unable to abstract it into a universal claim. Shift to abstraction training.',
@@ -541,7 +547,9 @@ export const AbstractionLadder: Protocol = {
   ],
   masteryConditions: { minimumAttempts: 1 },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "Your theme needs to be true for someone who has never read this passage. If your statement only describes this one character, move it up one level. Try adding 'people' or 'we' and see if it still holds: 'People who face _____ often discover _____.' That forces the abstraction the theme requires.",
     fallbackProtocol: 'ThemeConceptBuilding',
     clinicalRationale:
       'If abstraction training fails after two attempts, the student may lack the foundational theme concept entirely. The abstraction ladder has nothing to climb if the student does not understand what a theme is. Return to concept-building.',
@@ -671,7 +679,9 @@ export const ThemeEvidenceMapping: Protocol = {
   ],
   masteryConditions: { minimumAttempts: 1 },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "Find the single line in the passage that surprised you most — the one that changed how you understood the character. That line is usually your strongest evidence. Paste that exact quote, then ask yourself: why would the author include this specific moment? What does it reveal about people in general?",
     fallbackProtocol: 'LiteraryAnalysisParagraph',
     clinicalRationale:
       'If evidence mapping fails after two attempts, the student may be able to locate evidence but cannot synthesize it into a coherent analytical claim. Shift to full paragraph scaffold.',
@@ -808,7 +818,9 @@ export const LiteraryAnalysisParagraph: Protocol = {
   ],
   masteryConditions: { minimumAttempts: 1 },
   reclassificationTrigger: {
-    attemptThreshold: 2,
+    attemptThreshold: 3,
+    hintUnlockAttempt: 2,
+    hint: "Your reasoning is the bridge between the evidence and the theme. Try this sentence starter: 'This quote proves the theme because it shows that people _____.' If you cannot complete that sentence using your evidence, your evidence and theme may not match — check that connection first before rewriting.",
     fallbackProtocol: 'ThemeEvidenceMapping',
     clinicalRationale:
       'If paragraph scaffold fails after two attempts, the student may not yet have reliable evidence selection. A student who cannot consistently choose relevant evidence cannot build reasoning from it. Return to evidence mapping.',

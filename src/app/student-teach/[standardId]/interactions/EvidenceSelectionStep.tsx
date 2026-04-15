@@ -6,6 +6,7 @@
 // Calls onSubmit with JSON string { quote, lineReference }.
 
 import React, { useState } from 'react';
+import GogiAvatar from '@/components/GogiAvatar';
 
 export interface EvidenceSelectionStepProps {
   content: string;
@@ -47,14 +48,6 @@ function renderText(text: string) {
       </p>
     );
   });
-}
-
-function GogiAvatar() {
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-sm font-extrabold leading-none select-none">G</span>
-    </div>
-  );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

@@ -3,23 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { callClaude } from '@/lib/callClaude';
+import { renderMarkdown } from '@/lib/renderMarkdown';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ReassessView = 'loading' | 'error' | 'intro' | 'assessment' | 'results';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function callClaude(action: string, params: Record<string, string>): Promise<string> {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, ...params }),
-  });
-  if (!res.ok) throw new Error(`Claude API call failed: ${res.status}`);
-  const data = await res.json();
-  return (data.text as string) || '';
-}
 
 function parseReassessContent(text: string): { passage: string; questions: string[] } {
   const sections = text
@@ -33,40 +22,6 @@ function parseReassessContent(text: string): { passage: string; questions: strin
     questions.push('Apply the standard skill to the passage above in a complete written response.');
   }
   return { passage, questions };
-}
-
-function renderMarkdown(text: string) {
-  return text.split('\n').map((line, i) => {
-    if (!line.trim()) return <div key={i} className="h-2" />;
-    if (/^\*\*[^*]+\*\*$/.test(line)) {
-      return (
-        <p key={i} className="font-bold text-white mt-4 mb-1 text-sm">
-          {line.replace(/\*\*/g, '')}
-        </p>
-      );
-    }
-    if (line.includes('**')) {
-      const parts = line.split('**');
-      return (
-        <p key={i} className="text-slate-300 text-sm mt-1 leading-relaxed">
-          {parts.map((part, j) =>
-            j % 2 === 1 ? (
-              <strong key={j} className="text-white font-semibold">
-                {part}
-              </strong>
-            ) : (
-              part
-            ),
-          )}
-        </p>
-      );
-    }
-    return (
-      <p key={i} className="text-slate-300 text-sm mt-1 leading-relaxed">
-        {line}
-      </p>
-    );
-  });
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

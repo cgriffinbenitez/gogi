@@ -21,12 +21,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { callClaude } from '@/lib/callClaude';
+import GogiAvatar from '@/components/GogiAvatar';
 import { Protocol, ProtocolStep } from './types';
 import MultipleChoiceStep from '../interactions/MultipleChoiceStep';
 import EvidenceSelectionStep from '../interactions/EvidenceSelectionStep';
 import FillInStep from '../interactions/FillInStep';
 import ShortResponseStep from '../interactions/ShortResponseStep';
 import StructuredResponseStep from '../interactions/StructuredResponseStep';
+import PassageAnnotatorStep from '@/components/protocol/steps/PassageAnnotatorStep';
+import DragAndDropStep from '@/components/protocol/steps/DragAndDropStep';
+import MultipleSelectStep from '@/components/protocol/steps/MultipleSelectStep';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -63,20 +68,6 @@ interface MasteryEval {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function callClaude(
-  action: string,
-  params: Record<string, string>,
-): Promise<string> {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, ...params }),
-  });
-  if (!res.ok) throw new Error(`Claude API error: ${res.status}`);
-  const data = await res.json();
-  return (data.text as string) ?? '';
-}
 
 function parseJsonSafe<T>(raw: string): T | null {
   try {
@@ -183,45 +174,7 @@ function renderGogiContent(text: string) {
   });
 }
 
-// Parses a passage string into a display title and body.
-// Strips diagnostic format prefixes (PASSAGE:, QUESTION:) if present.
-// Detects a title when the first line is short and doesn't end in sentence punctuation.
-function parsePassageDisplay(raw: string): { title: string; body: string } {
-  let text = raw.replace(/^PASSAGE:\s*/i, '').trim();
-  const qIdx = text.search(/\nQUESTION:/i);
-  if (qIdx !== -1) text = text.slice(0, qIdx).trim();
-  const lines = text.split('\n').filter((l) => l.trim());
-  const first = lines[0]?.trim() ?? '';
-  if (lines.length > 1 && first.length < 70 && !/[.!?,]$/.test(first)) {
-    return { title: first, body: lines.slice(1).join('\n').trim() };
-  }
-  return { title: 'Reading Passage', body: text };
-}
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-function GogiAvatar() {
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-sm font-extrabold leading-none select-none">G</span>
-    </div>
-  );
-}
-
-function GogiTyping() {
-  return (
-    <div className="flex items-start gap-3">
-      <GogiAvatar />
-      <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-        <div className="flex gap-1 items-center h-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0ms]" />
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:150ms]" />
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:300ms]" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function SpinnerBlock({ label }: { label: string }) {
   return (
@@ -342,6 +295,7 @@ export default function ProtocolEngine({
   // ── Evaluation state ────────────────────────────────────────────────────────
   const [lastEval, setLastEval] = useState<MasteryEval | null>(null);
   const [evalFeedback, setEvalFeedback] = useState('');
+  const [showHint, setShowHint] = useState(false);
 
   // ── Error ────────────────────────────────────────────────────────────────────
   const [errorMsg, setErrorMsg] = useState('');
@@ -417,6 +371,7 @@ export default function ProtocolEngine({
           scaffoldsActive: String(step!.scaffoldsActive),
           passage,
           advancementCondition: step!.advancementCondition,
+          diagnosticClassification: protocol.triggerClassifications[0] ?? '',
         });
 
         if (cancelled) return;
@@ -477,7 +432,8 @@ export default function ProtocolEngine({
           session_id: sessionId,
           student_id: studentId,
           standard_id: standardId,
-          phase: 'teach',
+          cognitive_skill_targeted: protocol.cognitiveSkillTargeted,
+          diagnostic_classification: protocol.triggerClassifications[0] ?? null,
           intervention_type: protocol.name,
           attempt_number: attemptNumber,
           mastery_achieved: masteryAchievedForStep,
@@ -489,7 +445,7 @@ export default function ProtocolEngine({
         console.error('[ProtocolEngine] saveResponse error:', err);
       }
     },
-    [sessionId, studentId, standardId, protocol.name],
+    [sessionId, studentId, standardId, protocol.name, protocol.cognitiveSkillTargeted, protocol.triggerClassifications],
   );
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -613,6 +569,11 @@ export default function ProtocolEngine({
         return;
       }
 
+      // Unlock hint on the designated attempt before reclassification fires
+      if (currentAttempt === protocol.reclassificationTrigger.hintUnlockAttempt) {
+        setShowHint(true);
+      }
+
       // Show feedback, allow retry
       setEvalFeedback(feedback);
       setView('feedback');
@@ -646,6 +607,7 @@ export default function ProtocolEngine({
       return;
     }
     setEvalFeedback('');
+    setShowHint(false);
     setView('interactive');
     // Interaction components mount fresh on view change — no focus management needed here
   }, [attemptCount, advanceStep]);
@@ -937,6 +899,27 @@ export default function ProtocolEngine({
                     onSubmit={handleInteractionSubmit}
                   />
                 )}
+                {step.interactionType === 'passage_annotation' && (
+                  <PassageAnnotatorStep
+                    content={stepContent}
+                    scaffoldsActive={scaffoldsActive}
+                    onSubmit={handleInteractionSubmit}
+                  />
+                )}
+                {step.interactionType === 'drag_and_drop' && (
+                  <DragAndDropStep
+                    content={stepContent}
+                    scaffoldsActive={scaffoldsActive}
+                    onSubmit={handleInteractionSubmit}
+                  />
+                )}
+                {step.interactionType === 'multiple_select' && (
+                  <MultipleSelectStep
+                    content={stepContent}
+                    scaffoldsActive={scaffoldsActive}
+                    onSubmit={handleInteractionSubmit}
+                  />
+                )}
               </div>
             ) : (
               /* ── Feedback view: Gogi feedback + EvalBreakdown + retry ──────── */
@@ -954,6 +937,18 @@ export default function ProtocolEngine({
 
                   {/* Mastery condition breakdown */}
                   {lastEval && <EvalBreakdown eval_={lastEval} />}
+
+                  {/* Hint unlock — shown on attempt 2, cleared on retry */}
+                  {showHint && (
+                    <div className="bg-amber-900/30 border border-amber-500/30 rounded-2xl px-4 py-4">
+                      <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2">
+                        One more hint before we move on
+                      </p>
+                      <p className="text-amber-100 text-sm leading-relaxed">
+                        {protocol.reclassificationTrigger.hint}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Student's prior response (displayed as a chat bubble) */}
                   {stepResponses[currentStepIndex] && (

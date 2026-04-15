@@ -7,6 +7,7 @@
 // Calls onSubmit with JSON string { theme, evidence, reasoning }.
 
 import React, { useState } from 'react';
+import GogiAvatar from '@/components/GogiAvatar';
 
 export interface StructuredResponseStepProps {
   content: string;
@@ -50,14 +51,6 @@ function renderText(text: string) {
   });
 }
 
-function GogiAvatar() {
-  return (
-    <div className="w-10 h-10 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center flex-shrink-0 self-start mt-0.5">
-      <span className="text-white text-sm font-extrabold leading-none select-none">G</span>
-    </div>
-  );
-}
-
 const INPUT_BASE =
   'w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-all';
 
@@ -81,13 +74,7 @@ export default function StructuredResponseStep({
 
   function handleSubmit() {
     if (!canSubmit) return;
-    onSubmit(
-      JSON.stringify({
-        theme: theme.trim(),
-        evidence: evidence.trim(),
-        reasoning: reasoning.trim(),
-      }),
-    );
+    onSubmit(`Theme: ${theme.trim()}\nEvidence: ${evidence.trim()}\nReasoning: ${reasoning.trim()}`);
   }
 
   return (
