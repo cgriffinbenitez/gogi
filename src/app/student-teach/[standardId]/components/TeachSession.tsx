@@ -16,15 +16,27 @@ import {
   ThemeEvidenceMapping,
   LiteraryAnalysisParagraph,
 } from '../protocol/protocols/ELA9R12Protocols';
+import {
+  WorkingMemoryOverload,
+  ReadingStrategyFailure,
+  SituationModelFailure,
+  VocabularyGap,
+} from '../protocol/protocols/ELA9R11Protocols';
 import type { Protocol } from '../protocol/types';
 
 const PROTOCOL_MAP: Record<string, Protocol> = {
+  // ELA.9.R.1.2 — Universal Themes
   ThemeConceptBuilding,
   ThemeHuntingStrategy,
   ConnotativeLanguage,
   AbstractionLadder,
   ThemeEvidenceMapping,
   LiteraryAnalysisParagraph,
+  // ELA.9.R.1.1 — Inferencing and Textual Evidence
+  WorkingMemoryOverload,
+  ReadingStrategyFailure,
+  SituationModelFailure,
+  VocabularyGap,
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
