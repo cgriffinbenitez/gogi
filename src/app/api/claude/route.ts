@@ -100,7 +100,10 @@ type ClaudeAction =
   | 'generate_diagnostic_questions'
   // ─── Canonical Protocol Engine (ProtocolEngine.tsx) ───────────────────────
   | 'generate_protocol_step_content'
-  | 'evaluate_mastery_structured';
+  | 'evaluate_mastery_structured'
+  // ─── Practice Phase (PracticeSession.tsx) ─────────────────────────────────
+  | 'generate_practice_questions'
+  | 'evaluate_practice_response';
 
 function buildPrompt(action: ClaudeAction, params: Record<string, string>): string {
   const { standardCode = '', standardTitle = '' } = params;
@@ -555,6 +558,139 @@ Return ONLY valid JSON:
 }`;
     }
 
+    // ─── Practice Phase ──────────────────────────────────────────────────────
+
+    case 'generate_practice_questions': {
+      const { protocolName = '', cognitiveSkillTargeted = '', passageText = '' } = params;
+
+      let formatSpec = '';
+
+      if (standardCode === 'ELA.9.R.1.2') {
+        formatSpec = `
+Return this exact JSON shape:
+{
+  "q1": {
+    "instruction": "<one sentence question stem asking student to identify the universal theme>",
+    "choices": [
+      "<a valid universal theme — full sentence, true for all people>",
+      "<a topic restated as a phrase, not a sentence>",
+      "<a plot summary tied to this specific story>",
+      "<a moral directive starting with 'You should' or 'Always'>'"
+    ]
+  },
+  "q2": {
+    "instruction": "The topic of this passage is ___. The universal theme is: ___. This theme applies to all people, not just the character, because ___."
+  },
+  "q3": {
+    "instruction": "State the universal theme of this passage in one complete sentence. Make it true for all people, not only the character in this story."
+  }
+}
+Note for q1: randomize which choice index (0-3) holds the correct universal theme.`;
+      } else if (standardCode === 'ELA.9.R.1.1') {
+        formatSpec = `
+Return this exact JSON shape:
+{
+  "q1": {
+    "instruction": "Highlight TWO details in the passage that hint at something the author never directly says. Tag each as 'Textual Evidence.' Then explain in the box below: what does the author want you to infer from these two details together?"
+  },
+  "q2": {
+    "instruction": "Find the strongest piece of evidence in the passage. Highlight it and tag it. Then explain your inference — what does this detail allow you to conclude that the author never directly states?"
+  },
+  "q3": {
+    "instruction": "Make your inference. Highlight and tag the evidence that proves it. Explain exactly how the evidence leads to your inference — what is the author implying without saying it directly?"
+  }
+}`;
+      } else if (standardCode === 'ELA.9.R.2.1') {
+        formatSpec = `
+Return this exact JSON shape:
+{
+  "q1": {
+    "instruction": "Sort these text elements into the correct categories based on how this passage is organized.",
+    "items": ["<extract 6-8 short phrases or concepts directly from the passage>"],
+    "categories": ["<Category 1 matching the text structure, e.g. Main Idea>", "<Category 2, e.g. Supporting Detail>"]
+  },
+  "q2": {
+    "instruction": "Highlight the signal words and structural markers in the passage that show how the author organized this text. Tag each as a 'Signal Word.' Then explain: what text structure is this, and how do the signal words prove it?"
+  },
+  "q3": {
+    "instruction": "State the main idea of this passage. Find the strongest evidence that supports it. Explain how the text structure helps the author make this point."
+  }
+}
+For q1 categories: choose TWO categories that match the dominant text structure (e.g. 'Main Idea' + 'Supporting Detail', or 'Cause' + 'Effect', or 'Problem' + 'Solution', or 'Compare' + 'Contrast'). Generate items that genuinely represent both categories so the sort is meaningful.`;
+      } else {
+        formatSpec = `
+Return this exact JSON shape:
+{
+  "q1": { "instruction": "<scaffolded question about the cognitive skill>" },
+  "q2": { "instruction": "<reduced scaffold question>" },
+  "q3": { "instruction": "<independent question>" }
+}`;
+      }
+
+      return `You are generating 3 progressive practice questions for a 9th grade ELA student.
+
+Standard: ${standardCode} — ${standardTitle}
+Protocol completed: ${protocolName}
+Cognitive skill: ${cognitiveSkillTargeted}
+
+The student worked with this passage:
+${passageText}
+
+Generate 3 questions at 3 progressive scaffold levels:
+- Q1 (scaffold_level: full): Student applies skill with one support structure visible.
+- Q2 (scaffold_level: reduced): Student gets a direction but no frame or stem.
+- Q3 (scaffold_level: none): Student applies skill fully independently.
+
+All questions must work directly with the passage above. All questions must target the exact cognitive skill listed. Do NOT ask questions that are off-topic or require knowledge beyond what is in the passage.
+
+${formatSpec}
+
+Return ONLY the valid JSON. No preamble. No markdown. No explanation.`;
+    }
+
+    case 'evaluate_practice_response': {
+      const {
+        question = '',
+        studentResponse = '',
+        scaffoldLevel = 'full',
+        cognitiveSkillTargeted = '',
+      } = params;
+
+      return `You are evaluating a 9th grade student's practice response for standard ${standardCode} — ${standardTitle}.
+
+Cognitive skill targeted: ${cognitiveSkillTargeted}
+Scaffold level: ${scaffoldLevel}
+
+Question asked:
+"${question}"
+
+Student response:
+"${studentResponse}"
+
+FIRST — Check for these 8 fake-out patterns that look like answers but are NOT mastery. Any one of these = mastery_achieved: false:
+1. COPY-PASTE: Response is copied verbatim or near-verbatim from the passage without interpretation.
+2. NON-RESPONSE: Single word, phrase, or off-topic response with no attempt at the skill.
+3. RESTATEMENT WITHOUT REASONING: Student restates what happened but never explains what it means or implies.
+4. DISCONNECTED: Student makes a claim but the evidence or annotation has no logical connection to the claim.
+5. INCOHERENT: Response does not form a coherent thought about the text.
+6. SOPHISTICATED RESTATEMENT: Response sounds analytical but on close reading only retells the passage in different words.
+7. EVIDENCE DROPPING: Student identifies evidence but never uses it to build the inference or theme — the connection is missing.
+8. UNIVERSAL THEME FAKER: Theme statement sounds universal but actually names something specific to this character or story only.
+
+If NONE of the above apply AND the response genuinely demonstrates the targeted cognitive skill: mastery_achieved: true.
+
+For scaffold_level 'full': the bar is meeting the skill at a basic level with support.
+For scaffold_level 'reduced': the bar is meeting the skill without a pre-built frame.
+For scaffold_level 'none': the bar is independent, complete demonstration of the skill.
+
+Return ONLY valid JSON:
+{
+  "mastery_achieved": <true or false>,
+  "feedback": "<1-2 sentences in Gogi peer voice — if mastery: name exactly what the student's brain just did, no praise words like great or excellent; if not mastery: name the specific fake-out or gap, point forward without giving the answer>",
+  "scaffold_level_cleared": <true if student met the skill at this scaffold level, same as mastery_achieved>
+}`;
+    }
+
     default:
       return '';
   }
@@ -620,7 +756,13 @@ export async function POST(req: NextRequest) {
     const isGenerateDiagnostic = action === 'generate_diagnostic_questions';
     const isProtocolJson = action === 'evaluate_mastery_structured';
     const isProtocolAction = action === 'evaluate_mastery_structured';
-    const isJsonAction = isExtractPassages || isGenerateDiagnostic || isProtocolJson || action === 'generate_reassess';
+    const isJsonAction =
+      isExtractPassages ||
+      isGenerateDiagnostic ||
+      isProtocolJson ||
+      action === 'generate_reassess' ||
+      action === 'generate_practice_questions' ||
+      action === 'evaluate_practice_response';
 
     const isProtocolContentAction = action === 'generate_protocol_step_content';
 

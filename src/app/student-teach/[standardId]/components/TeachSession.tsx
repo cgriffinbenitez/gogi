@@ -228,7 +228,7 @@ export default function TeachSession() {
         console.error('[TeachSession] Failed to close teach session:', err);
       }
     }
-    router.push(`/student-reassess/${standardId}`);
+    router.push(`/student-practice/${standardId}`);
   }
 
   // ─── Views ────────────────────────────────────────────────────────────────
