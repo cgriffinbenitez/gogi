@@ -15,6 +15,12 @@ export type ProtocolName =
   | 'ReadingStrategyFailure'
   | 'SituationModelFailure'
   | 'VocabularyGap'
+  // ELA.9.R.2.1 — Text Structure and Purpose
+  | 'DefaultListStrategy'
+  | 'ChunkingFailure'
+  | 'MainIdeaExtractionFailure'
+  | 'TextTypeDiscriminationFailure'
+  | 'SyntaxComprehensionFailure'
   | 'GenericTeach' // fallback for unclassified or non-targeted standards
 
 export type StandardCode =
@@ -60,6 +66,24 @@ const INFERENCING_ROUTING_MAP: Record<string, ProtocolName> = {
   schema_deficit:                      'SituationModelFailure',
 }
 
+const TEXT_STRUCTURE_ROUTING_MAP: Record<string, ProtocolName> = {
+  // Layer 1 — Pre-reading / schema and strategy failures
+  schema_deficit:                      'DefaultListStrategy',
+  no_metacognitive_strategy:           'DefaultListStrategy',
+
+  // Layer 2 — During-reading / syntax and vocabulary failures
+  syntax_barrier:                      'SyntaxComprehensionFailure',
+  morphology_gap:                      'SyntaxComprehensionFailure',
+  vocabulary_gap:                      'SyntaxComprehensionFailure',
+  vocabulary_gap_connotative:          'TextTypeDiscriminationFailure',
+
+  // Layer 3 — After-reading / integration and abstraction failures
+  comprehension_integration_failure:   'ChunkingFailure',
+  evidence_retrieval_failure:          'TextTypeDiscriminationFailure',
+  inferencing_deficit:                 'MainIdeaExtractionFailure',
+  abstract_reasoning_deficit:          'MainIdeaExtractionFailure',
+}
+
 export function routeToProtocol(
   standardCode: StandardCode,
   diagnosticClassification: string | null | undefined
@@ -76,7 +100,11 @@ export function routeToProtocol(
     return INFERENCING_ROUTING_MAP[normalized] ?? 'SituationModelFailure'
   }
 
-  // ELA.9.R.2.1 and others use GenericTeach until their protocols are built
+  if (standardCode === 'ELA.9.R.2.1') {
+    if (!normalized) return 'DefaultListStrategy'
+    return TEXT_STRUCTURE_ROUTING_MAP[normalized] ?? 'DefaultListStrategy'
+  }
+
   return 'GenericTeach'
 }
 
@@ -91,12 +119,18 @@ export function getProtocolLabel(protocol: ProtocolName): string {
     ThemeEvidenceMapping:      'Theme-Evidence Mapping',
     LiteraryAnalysisParagraph: 'Literary Analysis Paragraph',
     // ELA.9.R.1.1
-    WorkingMemoryOverload:     'Working Memory Overload',
-    ReadingStrategyFailure:    'Reading Strategy Failure',
-    SituationModelFailure:     'Situation Model Failure',
-    VocabularyGap:             'Vocabulary Gap',
+    WorkingMemoryOverload:          'Working Memory Overload',
+    ReadingStrategyFailure:         'Reading Strategy Failure',
+    SituationModelFailure:          'Situation Model Failure',
+    VocabularyGap:                  'Vocabulary Gap',
+    // ELA.9.R.2.1
+    DefaultListStrategy:            'Default List Strategy',
+    ChunkingFailure:                'Chunking Failure',
+    MainIdeaExtractionFailure:      'Main Idea Extraction Failure',
+    TextTypeDiscriminationFailure:  'Text Type Discrimination Failure',
+    SyntaxComprehensionFailure:     'Syntax Comprehension Failure',
     // Fallback
-    GenericTeach:              'General Teach',
+    GenericTeach:                   'General Teach',
   }
   return labels[protocol]
 }

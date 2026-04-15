@@ -22,6 +22,13 @@ import {
   SituationModelFailure,
   VocabularyGap,
 } from '../protocol/protocols/ELA9R11Protocols';
+import {
+  DefaultListStrategy,
+  ChunkingFailure,
+  MainIdeaExtractionFailure,
+  TextTypeDiscriminationFailure,
+  SyntaxComprehensionFailure,
+} from '../protocol/protocols/ELA9R21Protocols';
 import type { Protocol } from '../protocol/types';
 
 const PROTOCOL_MAP: Record<string, Protocol> = {
@@ -37,6 +44,12 @@ const PROTOCOL_MAP: Record<string, Protocol> = {
   ReadingStrategyFailure,
   SituationModelFailure,
   VocabularyGap,
+  // ELA.9.R.2.1 — Text Structure and Purpose
+  DefaultListStrategy,
+  ChunkingFailure,
+  MainIdeaExtractionFailure,
+  TextTypeDiscriminationFailure,
+  SyntaxComprehensionFailure,
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
