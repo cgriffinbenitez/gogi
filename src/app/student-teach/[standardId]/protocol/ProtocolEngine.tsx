@@ -520,15 +520,31 @@ export default function ProtocolEngine({
     });
 
     if (!step.masteryRelevant) {
-      // Non-mastery step — save and advance
       await saveResponse({
         studentResponse: text,
         masteryAchievedForStep: false,
         attemptNumber: currentAttempt,
       });
-      setAttemptCount(0); // reset per-step attempt counter
+      // Show brief acknowledgment before advancing
+      const ack = await callClaude('generate_protocol_step_content', {
+        standardCode,
+        standardTitle,
+        protocolName: protocol.name,
+        protocolLabel: protocol.label,
+        stepName: step.name,
+        stepNumber: String(step.stepNumber),
+        stepPurpose: 'Give brief 1-sentence acknowledgment of the student response and confirm they are ready to move forward. Be specific to what they wrote.',
+        claudeGenerates: 'One sentence acknowledging what the student did. No praise words like great or excellent. Just name what they did correctly.',
+        interactionType: 'read_only',
+        scaffoldsActive: String(step.scaffoldsActive),
+        passage: passage.substring(0, 400),
+        advancementCondition: '',
+      });
+      setEvalFeedback(ack);
+      setView('feedback');
+      // Override retry button to advance instead of retry
+      setAttemptCount(-99); // sentinel value — feedback view will advance not retry
       submittingRef.current = false;
-      advanceStep();
       return;
     }
 
@@ -578,10 +594,13 @@ export default function ProtocolEngine({
 
       if (passed) {
         setMasteryAchieved(true);
-        setAttemptCount(0);
+        setEvalFeedback(eval_.feedback || "That's the move. You just did exactly what a strong reader does — let's keep going.");
+        setLastEval(eval_);
+        setAttemptCount(-99); // sentinel: feedback view will advance not retry
+        setView('feedback');
         submittingRef.current = false;
-        advanceStep();
         return;
+        // advanceStep() is now called from handleRetry when attemptCount === -99
       }
 
       // Not passed — check reclassification threshold
@@ -620,10 +639,16 @@ export default function ProtocolEngine({
   ]);
 
   const handleRetry = useCallback(() => {
+    if (attemptCount === -99) {
+      setAttemptCount(0);
+      setEvalFeedback('');
+      advanceStep();
+      return;
+    }
     setEvalFeedback('');
     setView('interactive');
     // Interaction components mount fresh on view change — no focus management needed here
-  }, []);
+  }, [attemptCount, advanceStep]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // SHARED LAYOUT COMPONENTS
@@ -944,13 +969,13 @@ export default function ProtocolEngine({
                 <div className="flex-shrink-0 border-t border-white/10 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
-                      Not quite yet — try again
+                      {attemptCount === -99 ? 'Keep going' : 'Not quite yet — try again'}
                     </span>
                     <button
                       onClick={handleRetry}
                       className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20"
                     >
-                      Try Again
+                      {attemptCount === -99 ? 'Continue →' : 'Try Again'}
                     </button>
                   </div>
                 </div>

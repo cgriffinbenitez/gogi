@@ -77,8 +77,7 @@ function FilledLine({
                 value={blanks[globalIdx] ?? ''}
                 onChange={(e) => onChange(globalIdx, e.target.value)}
                 placeholder="___"
-                className="inline-block bg-transparent border-b-2 border-violet-500/60 text-violet-200 placeholder:text-slate-600 px-1 mx-0.5 min-w-[80px] max-w-[180px] text-sm focus:outline-none focus:border-violet-400 transition-colors"
-                style={{ width: `${Math.max(80, (blanks[globalIdx]?.length ?? 0) * 9 + 24)}px` }}
+                className="inline-block min-w-[140px] border-b-2 border-violet-400 bg-transparent text-white placeholder-slate-500 text-sm px-2 py-1 focus:outline-none focus:border-violet-300 mx-1"
               />
             )}
           </React.Fragment>

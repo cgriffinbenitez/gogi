@@ -48,6 +48,17 @@ Voice (when writing to students): direct, warm, peer-to-peer. Speak like a peer 
 
 When returning JSON: return ONLY valid JSON. No preamble. No markdown. No explanation. Raw JSON only.`;
 
+const PROTOCOL_CONTENT_SYSTEM_PROMPT = `You are Gogi, a peer tutor for 9th grade ELA students in Title I schools in Miami-Dade County, Florida.
+
+Voice: casual, direct, warm, teen peer energy. You believe in this student completely. No academic language. No walls of text. Every word earns its place. Speak directly to the student as "you."
+
+Rules that never break:
+- Never return JSON. Never use code blocks. Never use markdown headers.
+- Never give away the answer. Guide the thinking, never do it.
+- Speak in plain conversational sentences only.
+- Maximum 150 words per response.
+- Connect every skill to real power in the student's actual life.`;
+
 const SYSTEM_PROMPT = `You are GOGI, an AI literacy tutor for 9th grade students in Title 1 schools.
 
 Voice: sharp, warm, direct. Speak like a peer who believes in this student completely. No academic language. No walls of text. Every word earns its place.
@@ -693,7 +704,21 @@ Maximum 150 words. Never supply the answer. Coach voice only.`;
         scaffoldsActive = 'false',
       } = params;
 
-      return `Passage: ${passage}\n\nStudent response: ${studentResponse}\n\nEvaluate and return exactly this JSON:\n{\n  "theme_universal": boolean (true if the theme is a universal claim about human nature, not a topic word or plot summary),\n  "evidence_relevant": boolean (true if the evidence directly supports the stated theme),\n  "reasoning_explicit": boolean (true if the student explicitly explains HOW the evidence proves the theme — not implied, stated),\n  "scaffolds_used": boolean (true if the student used any sentence stems, frames, or templates visible in their response)\n}`;
+      const truncatedPassage = passage.substring(0, 600);
+      return `You are evaluating a 9th grade student's literary analysis response.
+
+Passage (excerpt): ${truncatedPassage}
+
+Student response: ${studentResponse}
+
+Return ONLY this JSON, nothing else:
+{
+  "theme_universal": <true if student stated a universal theme about human nature — not a topic word, not a plot summary>,
+  "evidence_relevant": <true if student cited specific text that supports their theme>,
+  "reasoning_explicit": <true if student explained HOW the evidence proves the theme — not just stated it>,
+  "scaffolds_used": <true if student's response contains sentence stems like "The topic is" or "The theme is:" or fill-in-blank patterns>,
+  "feedback": "<2 sentences max in Gogi's voice — name what broke down specifically, point forward without giving the answer>"
+}`;
     }
 
     default:
@@ -731,13 +756,17 @@ export async function POST(req: NextRequest) {
       action === 'evaluate_mastery_structured';
     const isJsonAction = isExtractPassages || isGenerateDiagnostic || isProtocolJson;
 
+    const isProtocolContentAction = action === 'generate_protocol_step_content';
+
     const systemPrompt = isExtractPassages
       ? EXTRACT_PASSAGES_SYSTEM_PROMPT
       : isGenerateDiagnostic
         ? GENERATE_DIAGNOSTIC_QUESTIONS_SYSTEM_PROMPT
-        : isProtocolAction
-          ? PROTOCOL_SYSTEM_PROMPT
-          : SYSTEM_PROMPT;
+        : isProtocolContentAction
+          ? PROTOCOL_CONTENT_SYSTEM_PROMPT
+          : isProtocolAction
+            ? PROTOCOL_SYSTEM_PROMPT
+            : SYSTEM_PROMPT;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
