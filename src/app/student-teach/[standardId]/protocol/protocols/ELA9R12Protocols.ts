@@ -55,9 +55,9 @@ export const ThemeConceptBuilding: Protocol = {
       interactionType: 'multiple_choice',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Three multiple choice questions presenting a topic word and asking the student to select the correct universal theme from four options.',
-        'Each wrong option represents a predictable error: too vague, still a topic, or a plot summary.',
-        'After each selection, feedback that names the error type and explains the principle — never gives the answer directly.',
+        'A Gogi opening line directly to the student: "You just saw the difference between a topic and a theme. Now let\'s see if you can spot it yourself. I\'m going to show you a topic word — your job is to find the sentence that turns it into a universal theme."',
+        'Three multiple-choice questions. Each presents a single topic word (e.g., "courage," "loss," "belonging") and four candidate theme statements. One is a correct universal theme. The other three are predictable errors: one is too vague ("this topic is important"), one is still a topic word restated as a phrase, one is a plot summary of a specific story.',
+        'After each selection, Gogi feedback in peer voice that names the error type — not the correct answer — and repeats the rule: "A theme is never a word. It is a full sentence that is true for all people."',
       ],
       stepPurpose:
         'First active application of the topic/theme distinction with full scaffold support. Multiple choice reduces cognitive load while requiring discrimination.',
@@ -70,9 +70,9 @@ export const ThemeConceptBuilding: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Two fill-in frames: "The topic of this story is ___. The theme of this story is ___." Applied to a short passage (4–6 sentences).',
-        'Sentence stem provided for the theme: "This story suggests that ___."',
-        'Feedback on student completion that evaluates universality — is this true for all people or just for this character?',
+        'A Gogi opening line directly to the student: "You picked themes from a list — now you\'re going to write one yourself. I\'m giving you a sentence starter. Finish it and you\'ll have a real theme."',
+        'A short passage (4–6 sentences) followed by two fill-in blanks: "The topic of this story is ___." and "This story suggests that ___." The second blank is the theme — the sentence stem is locked in place.',
+        'Feedback that evaluates the completed theme sentence for universality: is this statement true for all people, or does it only describe this one character in this one story?',
       ],
       stepPurpose:
         'Transition from recognition (multiple choice) to production with partial scaffold. Student generates a theme statement but frame reduces working memory load.',
@@ -198,12 +198,9 @@ export const ThemeHuntingStrategy: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Short passage (6–8 sentences) with a full 4-step template. Each step has a guided prompt inside it.',
-        'Step 1: "The character wants ___ but ___ stands in the way."',
-        'Step 2: "By the end, the character learns/loses ___."',
-        'Step 3: "This suggests that people in general ___."',
-        'Step 4: "The theme is: ___."',
-        'Feedback on each step before student proceeds to next.',
+        'A Gogi opening line directly to the student: "You just watched me run the strategy. Now it\'s your turn — and I\'m walking with you every step. Fill in each blank as you go. Don\'t skip ahead."',
+        'A short passage (6–8 sentences) with a full 4-step guided template. Each step contains its own sentence starter: Step 1: "The character wants ___ but ___ stands in the way." / Step 2: "By the end, the character learns/loses ___." / Step 3: "This suggests that people in general ___." / Step 4: "The theme is: ___."',
+        'After each completed step: Gogi feedback in peer voice that confirms whether the student\'s answer stays on track or names exactly which word to reconsider — never supplies the answer. Step 4 feedback checks that the theme is a universal sentence, not a restatement of the event.',
       ],
       stepPurpose:
         'First full execution of the strategy with complete scaffold. Every step supported. CLT: full schema acquisition before reduction.',
@@ -216,9 +213,9 @@ export const ThemeHuntingStrategy: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'New passage. Template with headers only — no guided prompts inside each step.',
-        'Student sees: Step 1: ___ / Step 2: ___ / Step 3: ___ / Step 4: ___',
-        'Feedback on theme statement only.',
+        'A Gogi opening line directly to the student: "Same four steps — this time I\'m only giving you the headers. You remember what each one asks for. Trust yourself."',
+        'A new passage. Template with step headers only — no sentence starters inside: Step 1: ___ / Step 2: ___ / Step 3: ___ / Step 4: ___',
+        'Feedback on Step 4 theme only: is this statement universal or is it still tied to this one character\'s specific situation?',
       ],
       stepPurpose:
         'Scaffold fade — Sweller (1988). Headers only. Student must recall what each step requires without being told.',
@@ -337,9 +334,9 @@ export const ConnotativeLanguage: Protocol = {
       interactionType: 'multiple_choice',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Three isolated sentences from a passage, each containing a high-connotation word. For each sentence, multiple choice: "What does the author want you to FEEL by using this word?"',
-        'Options include: the denotative meaning, the correct connotative reading, an unrelated emotion, and an over-literal interpretation.',
-        'After each selection: feedback naming the feeling the word carries and connecting it to what the author is building.',
+        'A Gogi opening line directly to the student: "Now you try it. I\'ll give you one sentence at a time — your job is to pick the feeling the author is building. Don\'t just pick the definition. Pick the feeling."',
+        'Three isolated sentences, each with one high-connotation word underlined. For each: "What does the author want you to FEEL by using this word?" Four options: A) the dictionary definition, B) the correct emotional connotation, C) an unrelated emotion, D) an over-literal reading of the word.',
+        'After each selection: Gogi feedback that names the emotion the word carries and says explicitly how it signals something the author wants you to feel — not just understand. If wrong: tells the student which type of error they made (definition vs. feeling), not the correct answer.',
       ],
       stepPurpose:
         'Isolated connotation practice before full passage. Reduces cognitive load — one sentence at a time.',
@@ -352,9 +349,9 @@ export const ConnotativeLanguage: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Full short passage with 3–4 words highlighted.',
-        'Prompt for each: "This word feels ___. The author chose it because ___."',
-        'After all words: "Based on the author\'s word choices, the theme of this passage is probably about ___."',
+        'A Gogi opening line directly to the student: "Now read the whole passage. I\'ve highlighted 3 words for you. For each one, tell me what it feels like and why the author put it there. Then use all three to predict the theme."',
+        'A short passage with 3 words highlighted. For each: "This word feels ___. The author chose it because ___." After all three: "Based on these word choices, the theme of this passage is probably: ___."',
+        'Feedback on the theme prediction only: is it directionally correct — does it connect to the emotional pattern the words built? Exact phrasing is not required yet.',
       ],
       stepPurpose:
         'Connect connotative reading to theme identification. Student traces word choice → author intent → theme.',
@@ -471,9 +468,9 @@ export const AbstractionLadder: Protocol = {
       interactionType: 'multiple_choice',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Three short passages. For each: student sees the event (Rung 1 provided), and must select the correct universal truth (Rung 3) from four options.',
-        'Wrong options: one stays at the event level, one is too vague to be a theme, one is a moral lesson not a truth.',
-        'Feedback names which rung each wrong answer is stuck on.',
+        'A Gogi opening line directly to the student: "I already gave you Rung 1 — what happened. Your job is to skip straight to Rung 3: what does this say about ALL people? Don\'t describe the story. Climb past it."',
+        'Three short passages. For each: Rung 1 is provided ("In this story: ___"). Student selects Rung 3 from four options: A) the correct universal truth, B) a restatement of the event at Rung 1, C) a vague platitude with no specific claim, D) a moral directive ("you should always ___") rather than a human truth.',
+        'Feedback names which rung the wrong answer is stuck on — not the correct answer: "That\'s still Rung 1 — you\'re describing the story." or "That\'s too vague to be a theme — it could be the lesson of any story." Correct answers get: "That\'s Rung 3. It\'s true for all people, not just this character."',
       ],
       stepPurpose:
         'Practice the Rung 1 → Rung 3 jump with scaffold (Rung 1 is given). Student focuses on abstraction only.',
@@ -486,10 +483,9 @@ export const AbstractionLadder: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'New passage. 3-rung ladder template:',
-        'Rung 1: "In this story, ___ happens." (student fills)',
-        'Rung 2: "This shows that when people ___, they ___." (student fills)',
-        'Rung 3: "The universal theme is: ___." (student fills)',
+        'A Gogi opening line directly to the student: "Now you climb the whole ladder yourself. Three rungs. Fill them all in — don\'t skip to Rung 3 without doing the work. The rungs are how you get there."',
+        'A new passage. Full 3-rung ladder template: Rung 1: "In this story, ___ happens." / Rung 2: "This shows that when people ___, they ___." / Rung 3: "The universal theme is: ___."',
+        'Feedback on Rung 3 only: is it a universal truth or is it still describing what happened to this specific character? If it\'s still the event: "You\'re still at Rung 2. Who else does this truth belong to — not just this character?"',
       ],
       stepPurpose:
         'Student climbs the ladder explicitly, one rung at a time. All three rungs must be completed.',
@@ -604,9 +600,9 @@ export const ThemeEvidenceMapping: Protocol = {
       interactionType: 'evidence_selection',
       scaffoldsActive: true,
       claudeGenerates: [
-        'A short passage with theme provided. Student selects the best evidence from four highlighted options.',
-        'Each option labeled with its evidence type (direct quote, paraphrase, summary, irrelevant).',
-        'Feedback on selection: names why the selected option does or does not directly support the given theme.',
+        'A Gogi opening line directly to the student: "I\'ve already told you the theme. Your job is to find the proof. I\'ve highlighted four options — pick the one that makes the theme impossible to argue with."',
+        'A short passage with the theme provided at the top. Four options highlighted in the passage, each labeled with its type: [Direct Quote], [Paraphrase], [Summary], [Irrelevant]. Student selects the one that most directly proves the given theme.',
+        'Feedback on selection: if correct — "That\'s the strongest evidence because it directly shows [X] without needing interpretation." If incorrect — names which type of evidence error was made: "That\'s too general — it relates to the topic, not the theme." or "That\'s irrelevant — it describes an event but doesn\'t prove the claim."',
       ],
       stepPurpose:
         'Evidence selection with theme given and options labeled. Maximum scaffold — student focuses only on quality evaluation.',
@@ -619,9 +615,9 @@ export const ThemeEvidenceMapping: Protocol = {
       interactionType: 'evidence_selection',
       scaffoldsActive: true,
       claudeGenerates: [
-        'New passage. Theme provided. Student selects evidence from the full text — no options highlighted, no labels.',
-        '3-column organizer: Theme Statement | Evidence (quote or paraphrase) | Line Reference.',
-        'Student must complete all three columns.',
+        'A Gogi opening line directly to the student: "Theme\'s given. Now you find the proof yourself — no highlights, no labels. Read the whole passage and pull out the one line that makes this theme undeniable. Then fill in the organizer."',
+        'A new passage with the theme provided at the top. No options highlighted. A 3-column organizer below: Theme Statement | Evidence (quote or paraphrase) | Line Reference. Student must locate and complete all three columns independently.',
+        'Feedback: is the evidence directly relevant to the stated theme, or does it only relate to the topic? Is the line reference accurate? If evidence is weak: "Your evidence is about the topic — but does it prove the specific claim the theme makes about all people?"',
       ],
       stepPurpose:
         'Evidence retrieval from full text with theme scaffold still active. Student locates and evaluates without pre-selected options.',
@@ -740,10 +736,9 @@ export const LiteraryAnalysisParagraph: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Short passage. Theme and evidence both provided.',
-        'Student fills only the reasoning: "This evidence shows the theme is true because ___."',
-        'Sentence stem active. Student cannot skip the reasoning step.',
-        'Feedback: does the reasoning explain the CONNECTION or just restate the evidence?',
+        'A Gogi opening line directly to the student: "I did the hard part — I gave you the theme and the evidence. Your job is the one move most students skip: explain WHY. Fill in the blank and you\'ve built the bridge."',
+        'A short passage with the theme stated and one piece of evidence already selected and displayed. One fill-in blank: "This evidence shows the theme is true because ___." The sentence stem is locked in — student cannot skip it.',
+        'Feedback: does the completed sentence explain the CONNECTION between the evidence and the theme, or does it just restate what the evidence says? If restatement: "You told me what the quote says. Now tell me why it proves the theme is true for all people." If connection made: "That\'s the reasoning move. You didn\'t just repeat the quote — you explained what it reveals."',
       ],
       stepPurpose:
         'Isolated reasoning practice. Theme and evidence given — student focuses only on building the bridge.',
@@ -756,9 +751,9 @@ export const LiteraryAnalysisParagraph: Protocol = {
       interactionType: 'fill_in',
       scaffoldsActive: true,
       claudeGenerates: [
-        'New passage. Theme provided. Student selects evidence AND writes reasoning.',
-        'Paragraph scaffold: Theme → Evidence (student selects) → Reasoning (student writes) → Real-world connection (student writes).',
-        'Sentence stem for reasoning removed. Student must generate the bridge independently.',
+        'A Gogi opening line directly to the student: "Theme is given. You pick the evidence, you write the reasoning, you make the real-world connection. The sentence stem is gone — you have to build the bridge on your own now."',
+        'A new passage with the theme provided. A 4-part paragraph scaffold: (1) Theme [provided] → (2) Evidence: student selects and writes a quote or paraphrase → (3) Reasoning: student writes the explanation without a sentence stem → (4) Real-world connection: student writes one sentence connecting the theme to life outside the text.',
+        'Feedback on reasoning only: does it explicitly explain how the evidence proves the theme, or does it just restate the evidence or jump straight to the real-world connection without the bridge?',
       ],
       stepPurpose:
         'Theme scaffold still active. Evidence selection + reasoning both required. Stem removed.',
