@@ -11,12 +11,12 @@ const ALERTS = [
     issue: 'Comprehension dropped to 38% — below intervention threshold',
     severity: 'critical' as const,
     time: '14 min ago',
-    standard: 'ELA.8.R.1.3',
+    standard: 'ELA.9.R.1.1',
   },
   {
     id: 'alert-002',
     student: 'Aaliyah Torres',
-    issue: 'Has not started today\'s assignment after 45 minutes',
+    issue: "Has not started today's assignment after 45 minutes",
     severity: 'warning' as const,
     time: '32 min ago',
     standard: null,
@@ -27,7 +27,7 @@ const ALERTS = [
     issue: 'AI dependency score 6.2 hints/task — possible over-reliance',
     severity: 'warning' as const,
     time: '1 hr ago',
-    standard: 'ELA.8.C.1.2',
+    standard: 'ELA.9.R.1.2',
   },
   {
     id: 'alert-004',
@@ -35,24 +35,26 @@ const ALERTS = [
     issue: 'Evidence quality score 22% — responses too vague',
     severity: 'critical' as const,
     time: '2 hr ago',
-    standard: 'ELA.8.R.1.3',
+    standard: 'ELA.9.R.1.1',
   },
 ];
 
 const SEVERITY_STYLES = {
   critical: {
-    bg: 'bg-rose-50',
-    border: 'border-rose-200',
+    border: 'border-rose-500/30',
+    bg: 'bg-rose-500/10',
     dot: 'bg-rose-500',
-    text: 'text-rose-700',
-    badge: 'bg-rose-100 text-rose-700',
+    nameColor: 'text-white',
+    badge: 'bg-rose-500/20 text-rose-400 border border-rose-500/30',
+    issueColor: 'text-[#94A3B8]',
   },
   warning: {
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
+    border: 'border-amber-500/30',
+    bg: 'bg-amber-500/10',
     dot: 'bg-amber-400',
-    text: 'text-amber-700',
-    badge: 'bg-amber-100 text-amber-700',
+    nameColor: 'text-white',
+    badge: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+    issueColor: 'text-[#94A3B8]',
   },
 };
 
@@ -67,11 +69,11 @@ export default function AlertsPanel() {
   };
 
   return (
-    <div className="card p-4">
+    <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <AlertTriangle size={16} className="text-rose-500" />
-          <h3 className="text-sm font-bold text-slate-900">Student Alerts</h3>
+          <AlertTriangle size={16} className="text-rose-400" />
+          <h3 className="text-sm font-bold text-white">Student Alerts</h3>
           {visible.length > 0 && (
             <span className="w-5 h-5 rounded-full bg-rose-500 text-white text-xs flex items-center justify-center font-bold">
               {visible.length}
@@ -80,7 +82,7 @@ export default function AlertsPanel() {
         </div>
         <button
           onClick={() => toast.info('Full alerts view coming soon')}
-          className="text-xs text-violet-600 hover:text-violet-800 font-semibold transition-colors flex items-center gap-0.5"
+          className="text-xs text-[#1D9E75] hover:text-[#17825F] font-semibold transition-colors flex items-center gap-0.5"
         >
           View all <ChevronRight size={12} />
         </button>
@@ -88,9 +90,8 @@ export default function AlertsPanel() {
 
       {visible.length === 0 ? (
         <div className="text-center py-6">
-          <span className="text-3xl block mb-2">✅</span>
-          <p className="text-sm font-semibold text-slate-700">No active alerts</p>
-          <p className="text-xs text-slate-400 mt-1">All students are on track right now.</p>
+          <p className="text-sm font-semibold text-white">No active alerts</p>
+          <p className="text-xs text-[#4B5563] mt-1">All students are on track right now.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -104,17 +105,17 @@ export default function AlertsPanel() {
                 <div className={`w-2 h-2 rounded-full ${styles.dot} mt-1.5 flex-shrink-0`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-xs font-bold text-slate-800">{alert.student}</span>
+                    <span className={`text-xs font-bold ${styles.nameColor}`}>{alert.student}</span>
                     {alert.standard && (
                       <span className={`badge ${styles.badge} text-xs font-mono`}>{alert.standard}</span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">{alert.issue}</p>
-                  <p className="text-xs text-slate-400 mt-1">{alert.time}</p>
+                  <p className={`text-xs ${styles.issueColor} leading-relaxed`}>{alert.issue}</p>
+                  <p className="text-xs text-[#4B5563] mt-1">{alert.time}</p>
                 </div>
                 <button
                   onClick={() => handleDismiss(alert.id)}
-                  className="text-slate-300 hover:text-slate-500 transition-colors flex-shrink-0 mt-0.5"
+                  className="text-[#4B5563] hover:text-[#94A3B8] transition-colors flex-shrink-0 mt-0.5"
                 >
                   <X size={13} />
                 </button>

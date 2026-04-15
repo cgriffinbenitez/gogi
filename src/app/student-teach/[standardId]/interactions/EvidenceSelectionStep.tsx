@@ -21,7 +21,7 @@ function renderText(text: string) {
     if (!line.trim()) return <div key={i} className="h-1.5" />;
     if (/^\d+\.\s/.test(line.trim()) || /^[-•]\s/.test(line.trim())) {
       return (
-        <p key={i} className="text-slate-700 text-sm leading-relaxed ml-3 mt-1">
+        <p key={i} className="text-[#94A3B8] text-sm leading-relaxed ml-3 mt-1">
           {line}
         </p>
       );
@@ -29,10 +29,10 @@ function renderText(text: string) {
     if (line.includes('**')) {
       const parts = line.split('**');
       return (
-        <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">
+        <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">
           {parts.map((p, j) =>
             j % 2 === 1 ? (
-              <strong key={j} className="font-semibold text-slate-900">
+              <strong key={j} className="font-semibold text-white">
                 {p}
               </strong>
             ) : (
@@ -43,12 +43,15 @@ function renderText(text: string) {
       );
     }
     return (
-      <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">
+      <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">
         {line}
       </p>
     );
   });
 }
+
+const INPUT_BASE =
+  'w-full bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm leading-relaxed placeholder:text-[#4B5563] focus:outline-none focus:border-[#1D9E75]/50 transition-all';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -61,10 +64,6 @@ export default function EvidenceSelectionStep({
   const [lineReference, setLineReference] = useState('');
 
   const canSubmit = quote.trim().length > 0;
-
-  const btnClass = scaffoldsActive
-    ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
-    : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20';
 
   function handleSubmit() {
     if (!canSubmit) return;
@@ -80,17 +79,17 @@ export default function EvidenceSelectionStep({
 
   return (
     <div className="p-4 md:p-6 space-y-5">
-      {/* ── Gogi bubble — instructions ── */}
+      {/* Gogi bubble */}
       <div className="flex items-start gap-3">
         <GogiAvatar />
-        <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
+        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
           <div className="space-y-0.5">{renderText(content)}</div>
         </div>
       </div>
 
-      {/* ── Evidence quote input ── */}
+      {/* Evidence quote input */}
       <div className="space-y-2">
-        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
+        <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest block">
           Evidence — copy or type the exact quote
         </label>
         <textarea
@@ -103,13 +102,13 @@ export default function EvidenceSelectionStep({
               : '"Paste the strongest evidence from the text…"'
           }
           rows={4}
-          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 resize-none transition-all"
+          className={`${INPUT_BASE} resize-none`}
         />
       </div>
 
-      {/* ── Line reference input ── */}
+      {/* Line reference input */}
       <div className="space-y-2">
-        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
+        <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest block">
           Location — line or paragraph number (optional)
         </label>
         <input
@@ -117,13 +116,13 @@ export default function EvidenceSelectionStep({
           value={lineReference}
           onChange={(e) => setLineReference(e.target.value)}
           placeholder="e.g. line 4, paragraph 2, sentence 3…"
-          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-slate-200 text-sm placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 transition-all"
+          className={INPUT_BASE}
         />
       </div>
 
-      {/* ── Submit row ── */}
+      {/* Submit row */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[#4B5563]">
           {scaffoldsActive
             ? 'Find the quote that makes the theme undeniable.'
             : 'No hints. Pick the strongest piece of proof you can find.'}
@@ -131,7 +130,7 @@ export default function EvidenceSelectionStep({
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className={`${btnClass} disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all shadow-lg`}
+          className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed py-2.5 px-6"
         >
           Submit
         </button>

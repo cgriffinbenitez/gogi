@@ -16,7 +16,6 @@ export interface MultipleChoiceStepProps {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-// Pattern: lines that start with A) B) C) D) or A. B. C. D.
 const OPTION_RE = /^([A-D])[)\.]\s+(.+)$/;
 
 function parseOptions(content: string): {
@@ -48,14 +47,14 @@ function renderText(text: string) {
     if (line.includes('**')) {
       const parts = line.split('**');
       return (
-        <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">
+        <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">
           {parts.map((p, j) =>
-            j % 2 === 1 ? <strong key={j} className="font-semibold text-slate-900">{p}</strong> : p
+            j % 2 === 1 ? <strong key={j} className="font-semibold text-white">{p}</strong> : p
           )}
         </p>
       );
     }
-    return <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">{line}</p>;
+    return <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">{line}</p>;
   });
 }
 
@@ -74,36 +73,34 @@ export default function MultipleChoiceStep({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Guard: content empty/whitespace or Claude returned unparseable format — never show an empty shell
   if (!content.trim() || options.length === 0) {
     return (
       <div className="p-4 md:p-6 flex items-center gap-3">
         <GogiAvatar />
-        <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-          <p className="text-slate-400 text-sm animate-pulse">Gogi is preparing this question…</p>
+        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3">
+          <p className="text-[#4B5563] text-sm animate-pulse">Gogi is preparing this question…</p>
         </div>
       </div>
     );
   }
 
   function handleSelect(letter: string, text: string) {
-    if (selected) return; // already chosen
+    if (selected) return;
     setSelected(letter);
-    // Brief visual delay so the student sees their selection before the engine transitions
     setTimeout(() => onSubmit(`${letter}) ${text}`), 350);
   }
 
   return (
     <div className="p-4 md:p-6 space-y-5">
-      {/* ── Gogi bubble — question text ── */}
+      {/* Gogi bubble */}
       <div className="flex items-start gap-3">
         <GogiAvatar />
-        <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
+        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
           <div className="space-y-0.5">{renderText(question || content)}</div>
         </div>
       </div>
 
-      {/* ── Option buttons ── */}
+      {/* Option buttons */}
       <div className="space-y-2">
         {options.map(({ letter, text }) => {
           const isSelected = selected === letter;
@@ -117,15 +114,15 @@ export default function MultipleChoiceStep({
               className={[
                 'w-full text-left px-4 py-3 rounded-xl border text-sm transition-all duration-200 flex items-start gap-2',
                 isSelected
-                  ? 'bg-violet-800/50 border-violet-500 text-violet-100 shadow-sm shadow-violet-500/20'
+                  ? 'bg-[#1D9E75]/20 border-[#1D9E75] text-white'
                   : isOther
-                    ? 'opacity-40 bg-white/3 border-white/8 text-slate-500 cursor-not-allowed'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-violet-500/40 cursor-pointer',
+                    ? 'opacity-40 bg-white/[0.04] border-white/[0.06] text-[#4B5563] cursor-not-allowed'
+                    : 'bg-white/[0.06] border-white/[0.08] text-[#94A3B8] hover:bg-white/[0.09] hover:border-[#1D9E75]/40 cursor-pointer',
               ].join(' ')}
             >
               <span
                 className={`font-bold flex-shrink-0 ${
-                  isSelected ? 'text-violet-300' : isOther ? 'text-slate-600' : 'text-violet-400'
+                  isSelected ? 'text-[#1D9E75]' : isOther ? 'text-[#4B5563]' : 'text-[#1D9E75]'
                 }`}
               >
                 {letter})
@@ -136,9 +133,8 @@ export default function MultipleChoiceStep({
         })}
       </div>
 
-      {/* ── Scaffold indicator ── */}
       {scaffoldsActive && options.length > 0 && (
-        <p className="text-xs text-slate-500 text-center">
+        <p className="text-xs text-[#4B5563] text-center">
           Select an option — your answer is recorded immediately.
         </p>
       )}

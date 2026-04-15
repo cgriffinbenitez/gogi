@@ -17,7 +17,7 @@ export default function TeacherDashboardPage() {
   const [selectedClass, setSelectedClass] = useState('period-3');
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-[#0d0f12] flex">
       {/* Sidebar */}
       <TeacherSidebar
         activeSection={activeSection}
@@ -41,18 +41,15 @@ export default function TeacherDashboardPage() {
           {/* Page header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Class Dashboard</h1>
-              <p className="text-slate-500 text-sm mt-0.5">
-                Period 3 · 8th Grade ELA · Jefferson Middle School
-                <span className="ml-2 text-xs text-slate-400">Last updated 2 min ago</span>
+              <h1 className="text-2xl font-bold text-white">Class Dashboard</h1>
+              <p className="text-[#94A3B8] text-sm mt-0.5">
+                Period 3 · 9th Grade ELA
+                <span className="ml-2 text-xs text-[#4B5563]">Last updated 2 min ago</span>
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="badge bg-emerald-100 text-emerald-700 text-xs">
+              <span className="badge bg-[#1D9E75]/20 text-[#1D9E75] text-xs border border-[#1D9E75]/30">
                 Live
-              </span>
-              <span className="badge bg-violet-100 text-violet-700 text-xs">
-                Apr 7, 2026
               </span>
             </div>
           </div>

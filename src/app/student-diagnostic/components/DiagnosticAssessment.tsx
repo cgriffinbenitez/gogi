@@ -53,22 +53,6 @@ interface StandardResult {
 type Phase = 'loading' | 'error' | 'intro' | 'assessment' | 'results';
 
 // ─── Content Parser ───────────────────────────────────────────────────────────
-// Supported format (Gutenberg diagnostic questions):
-//   PASSAGE: [full passage text, may span multiple lines]
-//   QUESTION: [question stem]
-//   A) [option]
-//   B) [option]
-//   C) [option]
-//   D) [option]
-//   CORRECT: [letter]
-//   DIAGNOSTIC_CLASSIFICATION_A: ...
-//   DIAGNOSTIC_CLASSIFICATION_B: ...
-//   DIAGNOSTIC_CLASSIFICATION_C: ...
-//   DIAGNOSTIC_CLASSIFICATION_D: ...
-//   COGNITIVE_SKILL: ...
-//   LAYER1_DISTRACTOR: ...
-//   LAYER2_DISTRACTOR: ...
-//   LAYER3_DISTRACTOR: ...
 
 const METADATA_PREFIXES = [
   'LAYER1_DISTRACTOR:',
@@ -82,7 +66,6 @@ const METADATA_PREFIXES = [
 ];
 
 function parseQuestionContent(content: string) {
-  // 1. Extract diagnostic classifications per answer letter before any stripping
   const diagnosticClassifications: Record<string, string> = {};
   const classificationRegex = /^DIAGNOSTIC_CLASSIFICATION_([A-D]):\s*(.+)$/gm;
   let cm;
@@ -90,18 +73,15 @@ function parseQuestionContent(content: string) {
     diagnosticClassifications[cm[1]] = cm[2].trim();
   }
 
-  // 2. Strip all backend metadata lines — never shown to student
   const stripped = content
     .split('\n')
     .filter(line => !METADATA_PREFIXES.some(prefix => line.trimStart().startsWith(prefix)))
     .join('\n');
 
-  // 3. Try structured PASSAGE: / QUESTION: format first (Gutenberg diagnostic questions)
   const passageMarker = stripped.match(/^PASSAGE:\s*/im);
   const questionMarker = stripped.match(/^QUESTION:\s*/im);
 
   if (passageMarker && questionMarker) {
-    // Extract correct answer letter
     const correctMatch = stripped.match(/^CORRECT:\s*([A-D])/im);
     if (!correctMatch) {
       return {
@@ -115,12 +95,10 @@ function parseQuestionContent(content: string) {
     }
     const correctLetter = correctMatch[1].toUpperCase();
 
-    // Split on the QUESTION: marker — everything before is the passage block
     const questionSplit = stripped.split(/^QUESTION:\s*/im);
     const passageBlock = questionSplit[0].replace(/^PASSAGE:\s*/i, '').trim();
     const afterQuestion = questionSplit[1] ?? '';
 
-    // Extract choices A) B) C) D) — support both ) and . delimiters
     const choices: Record<string, string> = {};
     const choiceRegex = /^([A-D])[).\s]\s*(.+)$/gm;
     let m;
@@ -128,7 +106,6 @@ function parseQuestionContent(content: string) {
       choices[m[1]] = m[2].trim();
     }
 
-    // Question stem is everything before the first choice line
     const questionText = afterQuestion
       .replace(/^([A-D])[).\s]\s*.+$/gm, '')
       .replace(/\nCORRECT:\s*[A-D][^\n]*/gi, '')
@@ -144,9 +121,6 @@ function parseQuestionContent(content: string) {
     };
   }
 
-  // 4. Fallback: legacy format — no PASSAGE:/QUESTION: markers
-  // If there is no CORRECT: marker the content is a passage-only item. Return
-  // the full text as passageText so it renders in the left panel only.
   const correctMatch = stripped.match(/CORRECT:\s*([A-D])/i);
   if (!correctMatch) {
     return {
@@ -196,12 +170,6 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function getScoreLevel(pct: number) {
-  if (pct >= 80) return { label: 'Approaching Mastery', color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/30' };
-  if (pct >= 60) return { label: 'Developing', color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' };
-  return { label: 'Beginning', color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/30' };
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function DiagnosticAssessment() {
@@ -230,14 +198,12 @@ export default function DiagnosticAssessment() {
   useEffect(() => {
     async function init() {
       try {
-        // 1. Auth check
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
           router.push('/sign-up-login-screen');
           return;
         }
 
-        // 2. Student record
         const { data: student, error: studentError } = await supabase
           .from('students')
           .select('id')
@@ -251,7 +217,6 @@ export default function DiagnosticAssessment() {
         }
         setStudentId(student.id);
 
-        // 3. Load all 3 pilot standards ordered by code
         const { data: standards, error: standardsError } = await supabase
           .from('standards')
           .select('id, code, title')
@@ -264,7 +229,6 @@ export default function DiagnosticAssessment() {
           return;
         }
 
-        // Build lookups: id → code and code → { id, title }
         const codeById: Record<string, string> = {};
         const metaByCode: Record<string, { id: string; title: string }> = {};
         standards.forEach(s => {
@@ -273,8 +237,6 @@ export default function DiagnosticAssessment() {
         });
         standardsMetaRef.current = metaByCode;
 
-        // 4. Load diagnostic questions only (difficulty_level IS NULL or 0).
-        // Gutenberg intervention passages use difficulty_level 1 or 2 and must be excluded.
         const standardIds = standards.map(s => s.id);
         const { data: dbQuestions, error: questionsError } = await supabase
           .from('questions')
@@ -289,7 +251,6 @@ export default function DiagnosticAssessment() {
           return;
         }
 
-        // Sort: by PILOT_CODES order first, then by difficulty_level within each standard
         const sorted = [...dbQuestions].sort((a, b) => {
           const aIdx = PILOT_CODES.indexOf(codeById[a.standard_id] as typeof PILOT_CODES[number]);
           const bIdx = PILOT_CODES.indexOf(codeById[b.standard_id] as typeof PILOT_CODES[number]);
@@ -307,7 +268,6 @@ export default function DiagnosticAssessment() {
 
         setQuestions(parsed);
 
-        // 5. Create one diagnostic session per standard
         const sessionInserts = await Promise.all(
           standards.map(s =>
             supabase
@@ -415,7 +375,6 @@ export default function DiagnosticAssessment() {
         return;
       }
 
-      // Last question — use updatedLog to avoid stale state in closure
       const correct = updatedLog.filter(a => a.isCorrect).length;
       const total = questions.length;
       const pct = Math.round((correct / total) * 100);
@@ -478,10 +437,10 @@ export default function DiagnosticAssessment() {
 
   if (phase === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-violet-300 text-sm">Loading your assessment…</p>
+          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">Loading your assessment…</p>
         </div>
       </div>
     );
@@ -491,16 +450,15 @@ export default function DiagnosticAssessment() {
 
   if (phase === 'error') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white/5 border border-red-500/30 rounded-2xl p-8 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white/[0.06] border border-red-500/30 rounded-2xl p-8 text-center">
           <h2 className="text-white font-bold text-xl mb-2">Unable to Load Assessment</h2>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">{errorMsg}</p>
+          <p className="text-[#94A3B8] text-sm mb-6 leading-relaxed">{errorMsg}</p>
           <button
             onClick={() => router.push('/student-home')}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl text-sm transition-all duration-200"
+            className="btn-primary w-full"
           >
-            ← Back to Home
+            Back to Home
           </button>
         </div>
       </div>
@@ -511,25 +469,25 @@ export default function DiagnosticAssessment() {
 
   if (phase === 'intro') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-2xl">
           <button
             onClick={() => router.push('/student-home')}
-            className="flex items-center gap-2 text-violet-400 hover:text-violet-300 text-sm mb-8 transition-colors"
+            className="flex items-center gap-2 text-[#94A3B8] hover:text-white text-sm mb-8 transition-colors"
           >
             ← Back to Home
           </button>
 
-          <div className="bg-white/5 border border-violet-500/30 rounded-2xl p-8 backdrop-blur-sm">
+          <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-8">
             <div className="mb-6">
-              <span className="text-xs font-bold text-violet-400 uppercase tracking-widest">Diagnostic Assessment</span>
+              <span className="text-xs font-bold text-[#1D9E75] uppercase tracking-widest">Diagnostic Assessment</span>
               <h1 className="text-white text-2xl sm:text-3xl font-extrabold mt-2 leading-tight">
                 ELA Reading Diagnostic
               </h1>
-              <p className="text-violet-300 font-mono text-sm mt-1">ELA.9.R.1.1 · ELA.9.R.1.2 · ELA.9.R.2.1</p>
+              <p className="text-[#94A3B8] font-mono text-sm mt-1">ELA.9.R.1.1 · ELA.9.R.1.2 · ELA.9.R.2.1</p>
             </div>
 
-            <p className="text-slate-300 text-sm leading-relaxed mb-6">
+            <p className="text-[#94A3B8] text-sm leading-relaxed mb-6">
               This assessment will help GOGI understand your current reading skills so we can build a personalized learning plan just for you.
             </p>
 
@@ -539,37 +497,38 @@ export default function DiagnosticAssessment() {
                 { label: 'Questions', value: String(totalQuestions) },
                 { label: 'Format', value: 'Multiple Choice' },
               ].map(item => (
-                <div key={item.label} className="bg-white/5 rounded-xl p-3 text-center">
+                <div key={item.label} className="bg-white/[0.06] rounded-xl p-3 text-center">
                   <div className="text-white font-bold text-base">{item.value}</div>
-                  <div className="text-violet-400 text-xs mt-0.5">{item.label}</div>
+                  <div className="text-[#94A3B8] text-xs mt-0.5">{item.label}</div>
                 </div>
               ))}
             </div>
 
             <div className="space-y-2 mb-6">
               {PILOT_CODES.map(code => (
-                <div key={code} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2.5">
-                  <span className="text-violet-400 font-mono text-xs w-28 flex-shrink-0">{code}</span>
-                  <span className="text-slate-300 text-sm">{STANDARD_LABELS[code]}</span>
+                <div key={code} className="flex items-center gap-3 bg-white/[0.06] rounded-xl px-4 py-2.5">
+                  <span className="text-[#1D9E75] font-mono text-xs w-28 flex-shrink-0">{code}</span>
+                  <span className="text-[#94A3B8] text-sm">{STANDARD_LABELS[code]}</span>
                 </div>
               ))}
             </div>
 
-            <div className="bg-violet-900/30 border border-violet-500/20 rounded-xl p-4 mb-8">
+            <div className="bg-white/[0.06] border border-white/[0.08] rounded-xl p-4 mb-8">
               <h3 className="text-white font-semibold text-sm mb-2">Before you begin:</h3>
-              <ul className="text-slate-300 text-sm space-y-1.5">
-                <li className="flex items-start gap-2"><span className="text-violet-400 mt-0.5">•</span> Read each passage carefully before answering</li>
-                <li className="flex items-start gap-2"><span className="text-violet-400 mt-0.5">•</span> Each question has one best answer</li>
-                <li className="flex items-start gap-2"><span className="text-violet-400 mt-0.5">•</span> You cannot go back to previous questions</li>
-                <li className="flex items-start gap-2"><span className="text-violet-400 mt-0.5">•</span> Your results will personalize your learning path</li>
+              <ul className="text-[#94A3B8] text-sm space-y-1.5">
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Read each passage carefully before answering</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Each question has one best answer</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> You cannot go back to previous questions</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Your results will personalize your learning path</li>
               </ul>
             </div>
 
             <button
               onClick={() => setPhase('assessment')}
-              className="w-full bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white font-bold py-4 rounded-xl text-base transition-all duration-200 shadow-lg hover:shadow-violet-500/30"
+              className="btn-primary w-full py-4 text-base"
             >
-              Start Diagnostic →
+              Start Diagnostic
+              <span>→</span>
             </button>
           </div>
         </div>
@@ -583,16 +542,15 @@ export default function DiagnosticAssessment() {
     const allPassed = standardResults.every(s => s.pct >= MASTERY_THRESHOLD * 100);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 px-4 py-12">
+      <div className="min-h-screen bg-[#0d0f12] px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <div className="text-5xl mb-4">{allPassed ? '🏆' : '📊'}</div>
-            <h1 className="text-white text-3xl font-extrabold mb-2">Diagnostic Complete!</h1>
-            <p className="text-violet-300 text-sm">3 Standards · {finalScore.total} Questions</p>
+            <h1 className="text-white text-3xl font-extrabold mb-2">Diagnostic Complete</h1>
+            <p className="text-[#94A3B8] text-sm">3 Standards · {finalScore.total} Questions · {finalScore.pct}% Overall</p>
           </div>
 
           {/* Per-Standard Results */}
-          <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-5 mb-6">
+          <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5 mb-6">
             <h2 className="text-white font-bold text-sm mb-4">Results by Standard</h2>
             <div className="space-y-3">
               {standardResults.map(s => {
@@ -601,33 +559,35 @@ export default function DiagnosticAssessment() {
                   <div
                     key={s.code}
                     className={`flex items-center justify-between gap-4 p-4 rounded-xl border ${
-                      passed ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'
+                      passed
+                        ? 'bg-[#1D9E75]/10 border-[#1D9E75]/20'
+                        : 'bg-red-500/10 border-red-500/20'
                     }`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-violet-400 font-mono text-xs">{s.code}</span>
-                        <span className={`text-xs font-bold ${passed ? 'text-emerald-400' : 'text-red-400'}`}>
+                        <span className="text-[#1D9E75] font-mono text-xs">{s.code}</span>
+                        <span className={`text-xs font-bold ${passed ? 'text-[#1D9E75]' : 'text-red-400'}`}>
                           {s.pct}%
                         </span>
                       </div>
-                      <p className="text-slate-300 text-sm">{s.title}</p>
+                      <p className="text-[#94A3B8] text-sm">{s.title}</p>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       {passed ? (
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                          <span className="text-emerald-400 font-bold">✓</span>
+                        <div className="w-8 h-8 rounded-full bg-[#1D9E75]/20 border border-[#1D9E75]/30 flex items-center justify-center">
+                          <span className="text-[#1D9E75] font-bold text-sm">✓</span>
                         </div>
                       ) : (
                         <>
                           <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                            <span className="text-red-400 font-bold">✗</span>
+                            <span className="text-red-400 font-bold text-sm">✗</span>
                           </div>
                           <button
                             onClick={() => router.push(`/student-teach/${s.id}`)}
-                            className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all duration-200"
+                            className="btn-primary px-4 py-2 text-xs"
                           >
-                            Start
+                            Start Lesson
                           </button>
                         </>
                       )}
@@ -639,9 +599,9 @@ export default function DiagnosticAssessment() {
           </div>
 
           {allPassed && (
-            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5 text-center">
+            <div className="bg-[#1D9E75]/10 border border-[#1D9E75]/30 rounded-2xl p-5 text-center">
               <p className="text-white font-semibold text-sm mb-1">You&apos;ve demonstrated mastery on all standards.</p>
-              <p className="text-slate-300 text-sm">Your teacher can see your results.</p>
+              <p className="text-[#94A3B8] text-sm">Your teacher can see your results.</p>
             </div>
           )}
         </div>
@@ -654,25 +614,25 @@ export default function DiagnosticAssessment() {
   if (!currentQuestion) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-[#0d0f12] flex flex-col">
       {/* Top Progress Bar */}
-      <div className="bg-slate-900/80 border-b border-white/10 px-4 py-3 flex-shrink-0">
+      <div className="bg-[#0d0f12] border-b border-white/[0.08] px-4 py-3 flex-shrink-0">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <span className="text-white font-bold text-sm">ELA Diagnostic</span>
-              <span className="text-violet-400 text-xs font-mono">{currentQuestion.standardCode}</span>
+              <span className="text-[#1D9E75] text-xs font-mono">{currentQuestion.standardCode}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-violet-300 text-sm font-mono font-bold tabular-nums">{formatTime(elapsedSeconds)}</span>
-              <span className="text-slate-400 text-xs">
+              <span className="text-[#94A3B8] text-sm font-mono font-bold tabular-nums">{formatTime(elapsedSeconds)}</span>
+              <span className="text-[#4B5563] text-xs">
                 Q {currentIndex + 1} of {totalQuestions}
               </span>
             </div>
           </div>
-          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
             <div
-              className="h-full bg-violet-500 rounded-full transition-all duration-300"
+              className="h-full bg-[#1D9E75] rounded-full transition-all duration-300"
               style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
             />
           </div>
@@ -684,24 +644,24 @@ export default function DiagnosticAssessment() {
         <div className="max-w-5xl mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Passage Panel */}
-            <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-160px)] lg:overflow-y-auto">
+            <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-160px)] lg:overflow-y-auto scrollbar-thin">
               <div className="mb-4">
-                <span className="text-xs font-bold text-violet-400 uppercase tracking-widest">Passage</span>
+                <span className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest">Passage</span>
               </div>
-              <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
-                {currentQuestion.passageText || <span className="text-slate-500 italic">No passage for this question.</span>}
+              <div className="text-[#94A3B8] text-sm leading-relaxed whitespace-pre-line">
+                {currentQuestion.passageText || <span className="text-[#4B5563] italic">No passage for this question.</span>}
               </div>
             </div>
 
             {/* Question Panel */}
             <div className="flex flex-col gap-4">
               {/* Question */}
-              <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-5">
+              <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="bg-[#1D9E75]/20 text-[#1D9E75] text-xs font-bold px-2.5 py-1 rounded-full">
                     Q{currentIndex + 1} of {totalQuestions}
                   </span>
-                  <span className="text-slate-500 text-xs">Multiple Choice</span>
+                  <span className="text-[#4B5563] text-xs">Multiple Choice</span>
                 </div>
                 <p className="text-white text-base font-medium leading-snug">
                   {currentQuestion.questionText}
@@ -711,21 +671,21 @@ export default function DiagnosticAssessment() {
               {/* Choices */}
               <div className="space-y-3">
                 {currentQuestion.choices.map((choice, idx) => {
-                  let optionStyle = 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-violet-500/40 cursor-pointer';
+                  let optionStyle = 'bg-white/[0.06] border-white/[0.08] text-[#94A3B8] hover:bg-white/[0.09] hover:border-[#1D9E75]/40 cursor-pointer';
 
                   if (showFeedback) {
                     if (idx === selectedOption) {
-                      optionStyle = 'bg-violet-600/30 border-violet-500 text-white cursor-default';
+                      optionStyle = 'bg-[#1D9E75]/20 border-[#1D9E75] text-white cursor-default';
                     } else {
-                      optionStyle = 'bg-white/5 border-white/10 text-slate-500 cursor-default opacity-60';
+                      optionStyle = 'bg-white/[0.04] border-white/[0.06] text-[#4B5563] cursor-default opacity-60';
                     }
                   } else if (selectedOption === idx) {
-                    optionStyle = 'bg-violet-600/30 border-violet-500 text-white cursor-pointer';
+                    optionStyle = 'bg-[#1D9E75]/20 border-[#1D9E75] text-white cursor-pointer';
                   }
 
-                  const letterStyle = (showFeedback || selectedOption === idx) && idx === selectedOption
-                    ? 'border-violet-400 text-violet-400'
-                    : 'border-slate-600 text-slate-500';
+                  const letterStyle = selectedOption === idx
+                    ? 'border-[#1D9E75] text-[#1D9E75]'
+                    : 'border-white/[0.16] text-[#4B5563]';
 
                   return (
                     <button
@@ -743,25 +703,23 @@ export default function DiagnosticAssessment() {
                 })}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={handleConfirmAnswer}
-                  disabled={selectedOption === null || saving || showFeedback}
-                  className="flex-1 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2"
-                >
-                  {saving ? (
-                    <>
-                      <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      Saving…
-                    </>
-                  ) : showFeedback ? (
-                    'Moving on…'
-                  ) : (
-                    'Confirm Answer'
-                  )}
-                </button>
-              </div>
+              {/* Action Button */}
+              <button
+                onClick={handleConfirmAnswer}
+                disabled={selectedOption === null || saving || showFeedback}
+                className="btn-primary w-full py-3.5 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Saving…
+                  </>
+                ) : showFeedback ? (
+                  'Moving on…'
+                ) : (
+                  'Confirm Answer'
+                )}
+              </button>
             </div>
           </div>
         </div>

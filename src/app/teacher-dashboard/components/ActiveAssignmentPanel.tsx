@@ -15,7 +15,7 @@ const ACTIVE_ASSIGNMENTS = [
     totalStudents: 31,
     submittedCount: 23,
     status: 'active' as const,
-    standards: ['ELA.8.R.1.1', 'ELA.8.R.1.3'],
+    standards: ['ELA.9.R.1.1', 'ELA.9.R.1.2'],
     lexile: '940L',
   },
   {
@@ -27,30 +27,30 @@ const ACTIVE_ASSIGNMENTS = [
     totalStudents: 31,
     submittedCount: 0,
     status: 'draft' as const,
-    standards: ['ELA.8.R.2.1', 'ELA.8.C.1.2'],
+    standards: ['ELA.9.R.2.1'],
     lexile: '1020L',
   },
 ];
 
 const STATUS_STYLES = {
-  active: 'bg-emerald-100 text-emerald-700',
-  draft: 'bg-slate-100 text-slate-600',
-  closed: 'bg-rose-100 text-rose-700',
+  active: 'bg-[#1D9E75]/20 text-[#1D9E75] border border-[#1D9E75]/30',
+  draft: 'bg-white/[0.06] text-[#94A3B8] border border-white/[0.08]',
+  closed: 'bg-rose-500/20 text-rose-400 border border-rose-500/30',
 };
 
 export default function ActiveAssignmentPanel() {
   const router = useRouter();
 
   return (
-    <div className="card p-4">
+    <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <BookOpen size={16} className="text-violet-500" />
-          <h3 className="text-sm font-bold text-slate-900">Assignments</h3>
+          <BookOpen size={16} className="text-[#1D9E75]" />
+          <h3 className="text-sm font-bold text-white">Assignments</h3>
         </div>
         <button
           onClick={() => toast.info('Assignment builder coming soon')}
-          className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 font-semibold transition-colors bg-violet-50 hover:bg-violet-100 px-2.5 py-1.5 rounded-lg"
+          className="flex items-center gap-1 text-xs text-[#1D9E75] hover:text-[#17825F] font-semibold transition-colors bg-[#1D9E75]/10 hover:bg-[#1D9E75]/20 px-2.5 py-1.5 rounded-lg"
         >
           <Plus size={12} />
           New
@@ -61,16 +61,16 @@ export default function ActiveAssignmentPanel() {
         {ACTIVE_ASSIGNMENTS.map((assign) => (
           <div
             key={assign.id}
-            className="border border-slate-200 rounded-xl p-3 hover:border-violet-300 hover:bg-violet-50/30 transition-all duration-150 cursor-pointer group"
+            className="border border-white/[0.08] rounded-xl p-3 hover:border-[#1D9E75]/40 hover:bg-white/[0.04] transition-all duration-150 cursor-pointer group"
             onClick={() => router.push('/student-reading-task-screen')}
           >
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800 truncate">{assign.title}</p>
+                <p className="text-sm font-semibold text-white truncate">{assign.title}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-xs text-slate-500">{assign.type}</span>
-                  <span className="text-slate-300">·</span>
-                  <span className="badge bg-violet-100 text-violet-600 text-xs font-mono">{assign.lexile}</span>
+                  <span className="text-xs text-[#4B5563]">{assign.type}</span>
+                  <span className="text-[#4B5563]">·</span>
+                  <span className="badge bg-white/[0.06] text-[#94A3B8] border border-white/[0.08] text-xs font-mono">{assign.lexile}</span>
                 </div>
               </div>
               <span className={`badge ${STATUS_STYLES[assign.status]} text-xs capitalize flex-shrink-0`}>
@@ -81,14 +81,14 @@ export default function ActiveAssignmentPanel() {
             {assign.status === 'active' && (
               <div className="mb-2">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
+                  <span className="text-xs text-[#4B5563] flex items-center gap-1">
                     <Users size={11} /> {assign.submittedCount}/{assign.totalStudents} submitted
                   </span>
-                  <span className="text-xs font-bold text-slate-700 tabular-nums">{assign.completionRate}%</span>
+                  <span className="text-xs font-bold text-[#94A3B8] tabular-nums">{assign.completionRate}%</span>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500"
+                    className="h-full bg-[#1D9E75] rounded-full transition-all duration-500"
                     style={{ width: `${assign.completionRate}%` }}
                   />
                 </div>
@@ -96,10 +96,10 @@ export default function ActiveAssignmentPanel() {
             )}
 
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1 text-xs text-slate-400">
+              <span className="flex items-center gap-1 text-xs text-[#4B5563]">
                 <Clock size={11} /> Due {assign.dueDate}
               </span>
-              <ChevronRight size={14} className="text-slate-300 group-hover:text-violet-500 transition-colors" />
+              <ChevronRight size={14} className="text-[#4B5563] group-hover:text-[#1D9E75] transition-colors" />
             </div>
           </div>
         ))}

@@ -64,15 +64,15 @@ export default function LoginForm() {
   return (
     <div className="flex flex-col gap-6 fade-in">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">Good to see you.</h2>
-        <p className="text-slate-500 text-sm mt-1 leading-relaxed">
-          Check in on your class — see who&apos;s struggling and what standards need attention.
+        <h2 className="text-2xl font-bold text-white">Good to see you.</h2>
+        <p className="text-[#94A3B8] text-sm mt-1 leading-relaxed">
+          Sign in to continue your learning session.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+          <label className="block text-sm font-semibold text-white mb-1.5">
             Email address
           </label>
           <input
@@ -85,12 +85,12 @@ export default function LoginForm() {
             })}
           />
           {errors.email && (
-            <p className="text-rose-500 text-xs mt-1.5 font-medium">{errors.email.message}</p>
+            <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.email.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+          <label className="block text-sm font-semibold text-white mb-1.5">
             Password
           </label>
           <div className="relative">
@@ -106,13 +106,13 @@ export default function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4B5563] hover:text-[#94A3B8] transition-colors"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-rose-500 text-xs mt-1.5 font-medium">{errors.password.message}</p>
+            <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.password.message}</p>
           )}
         </div>
 
@@ -133,11 +133,11 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="text-center text-xs text-slate-400">
+      <p className="text-center text-xs text-[#4B5563]">
         By signing in, you agree to GOGI&apos;s{' '}
-        <span className="text-violet-600 cursor-pointer hover:underline">Terms of Service</span>
+        <span className="text-[#1D9E75] cursor-pointer hover:underline">Terms of Service</span>
         {' '}and{' '}
-        <span className="text-violet-600 cursor-pointer hover:underline">Privacy Policy</span>.
+        <span className="text-[#1D9E75] cursor-pointer hover:underline">Privacy Policy</span>.
       </p>
     </div>
   );

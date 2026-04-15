@@ -127,7 +127,7 @@ function renderGogiContent(text: string) {
 
     if (trimmed.startsWith('_') && trimmed.endsWith('_') && trimmed.length > 2) {
       return (
-        <p key={i} className="text-slate-500 text-xs italic mt-2 leading-relaxed">
+        <p key={i} className="text-[#4B5563] text-xs italic mt-2 leading-relaxed">
           {trimmed.slice(1, -1)}
         </p>
       );
@@ -135,7 +135,7 @@ function renderGogiContent(text: string) {
 
     if (/^\*\*[^*]+\*\*$/.test(trimmed)) {
       return (
-        <p key={i} className="font-bold text-slate-900 mt-4 mb-1 text-sm">
+        <p key={i} className="font-bold text-white mt-4 mb-1 text-sm">
           {trimmed.replace(/\*\*/g, '')}
         </p>
       );
@@ -144,10 +144,10 @@ function renderGogiContent(text: string) {
     if (trimmed.includes('**')) {
       const parts = trimmed.split('**');
       return (
-        <p key={i} className="text-slate-700 text-sm mt-1 leading-relaxed">
+        <p key={i} className="text-[#94A3B8] text-sm mt-1 leading-relaxed">
           {parts.map((p, j) =>
             j % 2 === 1 ? (
-              <strong key={j} className="font-semibold text-slate-900">
+              <strong key={j} className="font-semibold text-white">
                 {p}
               </strong>
             ) : (
@@ -160,14 +160,14 @@ function renderGogiContent(text: string) {
 
     if (/^\d+\.\s/.test(trimmed) || /^[-•]\s/.test(trimmed)) {
       return (
-        <p key={i} className="text-slate-700 text-sm mt-2 ml-3 leading-relaxed">
+        <p key={i} className="text-[#94A3B8] text-sm mt-2 ml-3 leading-relaxed">
           {line}
         </p>
       );
     }
 
     return (
-      <p key={i} className="text-slate-700 text-sm mt-1 leading-relaxed">
+      <p key={i} className="text-[#94A3B8] text-sm mt-1 leading-relaxed">
         {line}
       </p>
     );
@@ -178,9 +178,9 @@ function renderGogiContent(text: string) {
 
 function SpinnerBlock({ label }: { label: string }) {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center gap-4">
-      <div className="w-8 h-8 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
-      <p className="text-violet-300 text-sm">{label}</p>
+    <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-8 flex flex-col items-center gap-4">
+      <div className="w-8 h-8 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin" />
+      <p className="text-[#94A3B8] text-sm">{label}</p>
     </div>
   );
 }
@@ -205,14 +205,14 @@ function StepDots({
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
                 done
-                  ? 'bg-emerald-500 w-6'
+                  ? 'bg-[#1D9E75] w-6'
                   : active
-                    ? 'bg-violet-500 w-10'
-                    : 'bg-white/20 w-6'
+                    ? 'bg-[#1D9E75] w-10'
+                    : 'bg-white/[0.12] w-6'
               }`}
             />
             {active && (
-              <span className="text-xs text-violet-300 font-medium whitespace-nowrap">
+              <span className="text-xs text-[#1D9E75] font-medium whitespace-nowrap">
                 {stepNames[i]}
               </span>
             )}
@@ -231,20 +231,20 @@ function EvalBreakdown({ eval_ }: { eval_: MasteryEval }) {
     { key: 'reasoning_explicit' as const, label: 'Connection explained explicitly' },
   ];
   return (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2">
-      <p className="text-xs text-slate-500 uppercase tracking-widest mb-3">What was checked</p>
+    <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-4 space-y-2">
+      <p className="text-xs text-[#4B5563] uppercase tracking-widest mb-3">What was checked</p>
       {checks.map(({ key, label }) => {
         const passed = eval_[key];
         return (
           <div key={key} className="flex items-center gap-2.5">
             <div
               className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                passed ? 'bg-emerald-900/60 text-emerald-400' : 'bg-red-900/40 text-red-400'
+                passed ? 'bg-[#1D9E75]/20 text-[#1D9E75]' : 'bg-red-900/40 text-red-400'
               }`}
             >
               {passed ? '✓' : '✗'}
             </div>
-            <span className={`text-sm ${passed ? 'text-slate-300' : 'text-slate-400'}`}>
+            <span className={`text-sm ${passed ? 'text-white' : 'text-[#94A3B8]'}`}>
               {label}
             </span>
           </div>
@@ -632,24 +632,21 @@ export default function ProtocolEngine({
     }
 
     return (
-      <header className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] flex-shrink-0">
         <div className="flex items-center gap-4">
           {!isReassessTrigger && (
             <button
               onClick={handleBack}
-              className="text-slate-500 hover:text-slate-300 text-xs flex items-center gap-1 transition-colors flex-shrink-0"
+              className="text-[#4B5563] hover:text-[#94A3B8] text-xs flex items-center gap-1 transition-colors flex-shrink-0"
             >
               ← Back
             </button>
           )}
           <span className="text-xl font-extrabold text-white tracking-tight">GOGI</span>
-          <span className="text-violet-400 text-xs font-medium hidden sm:block">
-            AI-Powered Literacy Platform
-          </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-violet-400 font-mono">{standardCode}</span>
-          <span className="bg-violet-500/20 text-violet-300 text-xs font-bold px-3 py-1 rounded-full border border-violet-500/30">
+          <span className="text-xs text-[#1D9E75] font-mono">{standardCode}</span>
+          <span className="bg-[#1D9E75]/20 text-[#1D9E75] text-xs font-bold px-3 py-1 rounded-full border border-[#1D9E75]/30">
             {protocol.label}
           </span>
         </div>
@@ -659,7 +656,7 @@ export default function ProtocolEngine({
 
   function ProgressBar() {
     return (
-      <div className="px-6 py-3 border-b border-white/5 flex-shrink-0">
+      <div className="px-6 py-3 border-b border-white/[0.08] flex-shrink-0">
         <div className="max-w-3xl mx-auto">
           <StepDots
             total={totalSteps}
@@ -678,10 +675,10 @@ export default function ProtocolEngine({
   // ── Props guard — passage and standard must be populated before rendering ────
   if (!passage || !standardCode) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-violet-300 text-sm">Loading your session…</p>
+          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">Loading your session…</p>
         </div>
       </div>
     );
@@ -690,10 +687,10 @@ export default function ProtocolEngine({
   // ── Init / loading ───────────────────────────────────────────────────────────
   if (view === 'init') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-violet-300 text-sm">Loading your session…</p>
+          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">Loading your session…</p>
         </div>
       </div>
     );
@@ -702,17 +699,16 @@ export default function ProtocolEngine({
   // ── Error ────────────────────────────────────────────────────────────────────
   if (view === 'error') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white/5 border border-red-500/30 rounded-2xl p-8 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white/[0.06] border border-red-500/30 rounded-2xl p-8 text-center">
           <h2 className="text-white font-bold text-xl mb-2">Unable to Load Step</h2>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">{errorMsg}</p>
+          <p className="text-[#94A3B8] text-sm mb-6 leading-relaxed">{errorMsg}</p>
           <button
             onClick={() => {
               setErrorMsg('');
               setView(standardCode ? 'generating' : 'init');
             }}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl text-sm transition-all"
+            className="btn-primary w-full"
           >
             Try Again
           </button>
@@ -724,15 +720,14 @@ export default function ProtocolEngine({
   // ── Complete (step 8 done — parent handles redirect) ─────────────────────────
   if (view === 'complete') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col">
         <EngineHeader />
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="max-w-xl w-full text-center space-y-6">
-            <div className="text-6xl">🎯</div>
             <h1 className="text-white text-3xl font-extrabold">Protocol Complete</h1>
-            <p className="text-violet-300 text-sm">Moving to your Reassessment…</p>
+            <p className="text-[#94A3B8] text-sm">Moving to your Practice session…</p>
             <div className="flex justify-center">
-              <div className="w-8 h-8 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+              <div className="w-8 h-8 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin" />
             </div>
           </div>
         </div>
@@ -749,7 +744,7 @@ export default function ProtocolEngine({
           ? 'Setting up your session…'
           : `Preparing ${step?.name ?? 'next step'}…`;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col">
         <EngineHeader />
         <ProgressBar />
         <div className="flex-1 flex items-center justify-center px-4">
@@ -763,41 +758,31 @@ export default function ProtocolEngine({
 
   // ── Read-only step (Orientation, MicroModel, ReassessTrigger) ─────────────────
   if (view === 'read_only' && step) {
-    const stepColors: Record<string, { accent: string; badge: string; border: string; btn: string }> = {
-      Orientation:      { accent: 'text-violet-400', badge: 'bg-violet-600/30 border-violet-500/30', border: 'border-violet-500/20', btn: 'bg-violet-600 hover:bg-violet-500 shadow-violet-500/30' },
-      MicroModel:       { accent: 'text-blue-400',   badge: 'bg-blue-600/30 border-blue-500/30',     border: 'border-blue-500/20',   btn: 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/30' },
-      ReassessTrigger:  { accent: 'text-emerald-400', badge: 'bg-emerald-600/30 border-emerald-500/30', border: 'border-emerald-500/20', btn: 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/30' },
-    };
-    const colors = stepColors[step.name] ?? stepColors['Orientation'];
+    const isReassess = step.name === 'ReassessTrigger';
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col">
         <EngineHeader />
         <ProgressBar />
         <div className="flex-1 overflow-y-auto px-4 py-8">
           <div className="max-w-3xl mx-auto">
 
             {/* Step label */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`w-12 h-12 rounded-xl ${colors.badge} border flex items-center justify-center text-2xl flex-shrink-0`}>
-                {step.name === 'Orientation' ? '🧭' : step.name === 'MicroModel' ? '👁️' : '🎯'}
+            <div className="mb-6">
+              <div className="text-xs font-bold text-[#1D9E75] uppercase tracking-widest mb-1">
+                Step {step.stepNumber} of {totalSteps} — {step.name}
               </div>
-              <div>
-                <div className={`text-xs font-bold ${colors.accent} uppercase tracking-widest mb-0.5`}>
-                  Step {step.stepNumber} of {totalSteps} — {step.name}
-                </div>
-                <h1 className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
-                  {step.name === 'Orientation' && 'Where you are going and why'}
-                  {step.name === 'MicroModel' && 'Watch the thinking in action'}
-                  {step.name === 'ReassessTrigger' && 'You did it'}
-                </h1>
-              </div>
+              <h1 className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
+                {step.name === 'Orientation' && 'Where you are going and why'}
+                {step.name === 'MicroModel' && 'Watch the thinking in action'}
+                {step.name === 'ReassessTrigger' && 'Session complete'}
+              </h1>
             </div>
 
             {/* Gogi speech bubble */}
             <div className="flex items-start gap-3 mb-8">
               <GogiAvatar />
-              <div className={`bg-blue-50 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm border-0 flex-1`}>
+              <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-5 py-4 flex-1">
                 <div className="space-y-0.5">{renderGogiContent(stepContent)}</div>
               </div>
             </div>
@@ -806,9 +791,9 @@ export default function ProtocolEngine({
             <div className="flex justify-end">
               <button
                 onClick={handleContinue}
-                className={`${colors.btn} text-white font-bold py-3.5 px-8 rounded-xl text-sm transition-all duration-200 flex items-center gap-2 shadow-lg`}
+                className="btn-primary py-3.5 px-8"
               >
-                <span>{step.name === 'ReassessTrigger' ? 'Go to Reassessment' : 'Continue'}</span>
+                <span>{isReassess ? 'Go to Reassessment' : 'Continue'}</span>
                 <span>→</span>
               </button>
             </div>
@@ -821,18 +806,16 @@ export default function ProtocolEngine({
 
   // ── Interactive step — split panel (passage left, response right) ─────────────
   if ((view === 'interactive' || view === 'feedback') && step) {
-    const accentClass = step.masteryRelevant ? 'text-emerald-400' : 'text-amber-400';
-
     return (
-      <div className="h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#0d0f12] flex flex-col overflow-hidden">
         <EngineHeader />
         <ProgressBar />
 
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
 
-          {/* ── Left panel: Passage + step context (unchanged) ───────────────── */}
-          <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 max-h-48 md:max-h-none">
-            <div className={`text-xs font-bold ${accentClass} uppercase tracking-widest mb-2`}>
+          {/* ── Left panel: Passage + step context ───────────────── */}
+          <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/[0.08] p-4 md:p-6 max-h-48 md:max-h-none">
+            <div className="text-xs font-bold text-[#1D9E75] uppercase tracking-widest mb-2">
               Step {step.stepNumber} of {totalSteps} — {step.name}
             </div>
             <h2 className="text-white font-extrabold text-lg mb-4 leading-tight">
@@ -840,12 +823,12 @@ export default function ProtocolEngine({
             </h2>
 
             {passage && (
-              <div className="mt-2 bg-white/[0.03] border border-white/10 rounded-2xl p-6">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+              <div className="mt-2 bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6">
+                <p className="text-[11px] font-bold text-[#4B5563] uppercase tracking-widest mb-3">
                   Literary Selection
                 </p>
-                <hr className="border-white/10 mb-4" />
-                <p className="text-slate-300 text-sm whitespace-pre-line" style={{ lineHeight: '1.8' }}>
+                <hr className="border-white/[0.08] mb-4" />
+                <p className="text-[#94A3B8] text-sm whitespace-pre-line" style={{ lineHeight: '1.8' }}>
                   {passage}
                 </p>
               </div>
@@ -862,7 +845,6 @@ export default function ProtocolEngine({
           <div className="flex-1 flex flex-col min-h-0">
 
             {view === 'interactive' ? (
-              /* ── Typed interaction component (replaces temporary textarea) ── */
               <div className="flex-1 overflow-y-auto">
                 {step.interactionType === 'multiple_choice' && (
                   <MultipleChoiceStep
@@ -922,15 +904,15 @@ export default function ProtocolEngine({
                 )}
               </div>
             ) : (
-              /* ── Feedback view: Gogi feedback + EvalBreakdown + retry ──────── */
+              /* ── Feedback view ──────────────────────────────────────────────── */
               <>
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
                   {/* Gogi feedback bubble */}
                   {evalFeedback && (
                     <div className="flex items-start gap-3">
                       <GogiAvatar />
-                      <div className="bg-blue-50 text-slate-900 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
-                        <p className="text-slate-700 text-sm leading-relaxed">{evalFeedback}</p>
+                      <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+                        <p className="text-[#94A3B8] text-sm leading-relaxed">{evalFeedback}</p>
                       </div>
                     </div>
                   )}
@@ -938,7 +920,7 @@ export default function ProtocolEngine({
                   {/* Mastery condition breakdown */}
                   {lastEval && <EvalBreakdown eval_={lastEval} />}
 
-                  {/* Hint unlock — shown on attempt 2, cleared on retry */}
+                  {/* Hint unlock */}
                   {showHint && (
                     <div className="bg-amber-900/30 border border-amber-500/30 rounded-2xl px-4 py-4">
                       <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2">
@@ -950,10 +932,10 @@ export default function ProtocolEngine({
                     </div>
                   )}
 
-                  {/* Student's prior response (displayed as a chat bubble) */}
+                  {/* Student's prior response */}
                   {stepResponses[currentStepIndex] && (
                     <div className="flex justify-end">
-                      <div className="bg-blue-900 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%] shadow-sm">
+                      <div className="bg-[#1D9E75]/20 border border-[#1D9E75]/20 text-white rounded-2xl rounded-tr-sm px-4 py-3 max-w-[85%]">
                         <p className="text-sm leading-relaxed">{stepResponses[currentStepIndex]}</p>
                       </div>
                     </div>
@@ -961,14 +943,14 @@ export default function ProtocolEngine({
                 </div>
 
                 {/* Retry bar */}
-                <div className="flex-shrink-0 border-t border-white/10 p-4">
+                <div className="flex-shrink-0 border-t border-white/[0.08] p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
                       {attemptCount === -99 ? 'Keep going' : 'Not quite yet — try again'}
                     </span>
                     <button
                       onClick={handleRetry}
-                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/20"
+                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2"
                     >
                       {attemptCount === -99 ? 'Continue →' : 'Try Again'}
                     </button>

@@ -2,45 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 @layer base {
   :root {
-    --background: 250 250 255;
-    --foreground: 15 10 40;
-    --card: 255 255 255;
-    --card-foreground: 15 10 40;
-    --border: 226 220 240;
-    --input: 226 220 240;
-    --primary: 124 58 237;
+    --background: 13 15 18;
+    --foreground: 255 255 255;
+    --card: 255 255 255 / 0.06;
+    --card-foreground: 255 255 255;
+    --border: 255 255 255 / 0.08;
+    --input: 255 255 255 / 0.06;
+    --primary: 29 158 117;
     --primary-foreground: 255 255 255;
     --secondary: 245 158 11;
     --secondary-foreground: 255 255 255;
-    --muted: 243 240 252;
-    --muted-foreground: 107 99 130;
-    --accent: 245 158 11;
+    --muted: 255 255 255 / 0.04;
+    --muted-foreground: 148 163 184;
+    --accent: 29 158 117;
     --accent-foreground: 255 255 255;
-    --success: 16 185 129;
+    --success: 29 158 117;
     --success-foreground: 255 255 255;
     --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
     --warning: 245 158 11;
     --warning-foreground: 255 255 255;
-    --info: 59 130 246;
     --radius: 0.75rem;
     --font-sans: 'Plus Jakarta Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
   * {
-    border-color: hsl(var(--border));
+    border-color: rgba(255, 255, 255, 0.08);
     box-sizing: border-box;
   }
 
+  html {
+    background-color: #0d0f12;
+  }
+
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: #0d0f12;
+    color: #ffffff;
     font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -61,19 +64,19 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 flex items-center gap-2 justify-center;
+    @apply bg-[#1D9E75] hover:bg-[#17825F] active:scale-95 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 flex items-center gap-2 justify-center;
   }
 
   .btn-secondary {
-    @apply bg-amber-400 hover:bg-amber-500 active:scale-95 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 flex items-center gap-2 justify-center;
+    @apply bg-white/[0.06] hover:bg-white/[0.09] active:scale-95 text-white font-semibold px-5 py-2.5 rounded-xl border border-white/[0.08] transition-all duration-150 flex items-center gap-2 justify-center;
   }
 
   .btn-ghost {
-    @apply hover:bg-violet-50 active:scale-95 text-violet-700 font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 flex items-center gap-2 justify-center;
+    @apply hover:bg-white/[0.06] active:scale-95 text-[#1D9E75] font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 flex items-center gap-2 justify-center;
   }
 
   .card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
+    @apply bg-white/[0.06] rounded-2xl border border-white/[0.08];
   }
 
   .badge {
@@ -81,7 +84,7 @@
   }
 
   .input-field {
-    @apply w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent transition-all duration-150 bg-white;
+    @apply w-full border border-white/[0.08] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#1D9E75] focus:border-transparent transition-all duration-150 bg-white/[0.06];
   }
 
   .sidebar-item {
@@ -89,34 +92,34 @@
   }
 
   .sidebar-item-active {
-    @apply bg-violet-100 text-violet-700;
+    @apply bg-[#1D9E75]/20 text-[#1D9E75];
   }
 
   .sidebar-item-inactive {
-    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    @apply text-[#94A3B8] hover:bg-white/[0.06] hover:text-white;
   }
 
   .metric-card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-2;
+    @apply bg-white/[0.06] rounded-2xl border border-white/[0.08] p-5 flex flex-col gap-2;
   }
 
   .highlight-text {
-    @apply bg-amber-200 rounded cursor-pointer transition-colors duration-150 hover:bg-amber-300;
+    @apply bg-[#1D9E75]/20 rounded cursor-pointer transition-colors duration-150 hover:bg-[#1D9E75]/30;
   }
 
   .highlight-text-selected {
-    @apply bg-violet-200 rounded cursor-pointer;
+    @apply bg-[#1D9E75]/30 rounded cursor-pointer;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#1D9E75] to-teal-400 bg-clip-text text-transparent;
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #c4b5fd #f5f3ff;
+    scrollbar-color: rgba(29, 158, 117, 0.3) transparent;
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -124,12 +127,12 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: #f5f3ff;
+    background: transparent;
     border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: #c4b5fd;
+    background-color: rgba(29, 158, 117, 0.3);
     border-radius: 3px;
   }
 
@@ -156,7 +159,11 @@
   }
 
   @keyframes pulseHighlight {
-    0% { background-color: #fef3c7; }
+    0% { background-color: rgba(29, 158, 117, 0.2); }
     100% { background-color: transparent; }
+  }
+
+  .gogi-shadow {
+    box-shadow: 0 0 12px rgba(29, 158, 117, 0.4);
   }
 }

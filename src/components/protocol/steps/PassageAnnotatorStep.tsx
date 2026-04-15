@@ -119,16 +119,16 @@ function renderInstruction(text: string) {
     if (line.includes('**')) {
       const parts = line.split('**');
       return (
-        <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">
+        <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">
           {parts.map((p, j) =>
             j % 2 === 1 ? (
-              <strong key={j} className="font-semibold text-slate-900">{p}</strong>
+              <strong key={j} className="font-semibold text-white">{p}</strong>
             ) : p,
           )}
         </p>
       );
     }
-    return <p key={i} className="text-slate-700 text-sm leading-relaxed mt-1">{line}</p>;
+    return <p key={i} className="text-[#94A3B8] text-sm leading-relaxed mt-1">{line}</p>;
   });
 }
 
@@ -195,10 +195,6 @@ export default function PassageAnnotatorStep({
   const [explanation, setExplanation] = useState('');
 
   const canSubmit = highlights.length > 0 && explanation.trim().length > 0;
-
-  const btnClass = scaffoldsActive
-    ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
-    : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20';
 
   // ── Close tag menu on outside click ────────────────────────────────────────
   useEffect(() => {
@@ -361,21 +357,21 @@ export default function PassageAnnotatorStep({
   return (
     <div className="p-4 md:p-6 space-y-5">
 
-      {/* ── Gogi bubble — instruction ── */}
+      {/* Gogi bubble */}
       <div className="flex items-start gap-3">
         <GogiAvatar />
-        <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
+        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
           <div className="space-y-0.5">{renderInstruction(instruction || content)}</div>
         </div>
       </div>
 
-      {/* ── Passage panel ── */}
+      {/* Passage panel */}
       {passage ? (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl overflow-hidden">
 
           {/* Panel header */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.08] bg-white/[0.04]">
+            <span className="text-xs font-bold text-[#4B5563] uppercase tracking-widest">
               {scaffoldsActive
                 ? 'Select text → choose a tag → explain below'
                 : 'Annotate the passage'}
@@ -383,7 +379,7 @@ export default function PassageAnnotatorStep({
             {highlights.length > 0 && (
               <button
                 onClick={handleClear}
-                className="text-xs text-slate-400 hover:text-red-500 transition-colors font-semibold"
+                className="text-xs text-[#4B5563] hover:text-red-400 transition-colors font-semibold"
               >
                 Clear all
               </button>
@@ -395,7 +391,7 @@ export default function PassageAnnotatorStep({
             ref={passageRef}
             onMouseUp={handleMouseUp}
             onTouchEnd={handleTouchEnd}
-            className="px-5 py-5 text-slate-800 text-[15px] leading-8 select-text cursor-text"
+            className="px-5 py-5 text-[#94A3B8] text-[15px] leading-8 select-text cursor-text"
             style={{ fontFamily: 'Georgia, serif', WebkitUserSelect: 'text', userSelect: 'text' }}
           >
             <PassageWithHighlights text={passage} highlights={highlights} />
@@ -403,7 +399,7 @@ export default function PassageAnnotatorStep({
 
           {/* Active highlight legend */}
           {highlights.length > 0 && (
-            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex flex-wrap gap-2">
+            <div className="px-4 py-3 border-t border-white/[0.08] bg-white/[0.04] flex flex-wrap gap-2">
               {highlights.map(h => (
                 <span
                   key={h.id}
@@ -459,9 +455,9 @@ export default function PassageAnnotatorStep({
         </div>
       )}
 
-      {/* ── Explanation ── */}
+      {/* Explanation */}
       <div className="space-y-2">
-        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
+        <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest block">
           Explain what you found
         </label>
         <textarea
@@ -476,13 +472,13 @@ export default function PassageAnnotatorStep({
                 : 'Explain what you found and why it matters.'
           }
           rows={3}
-          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-slate-200 text-sm leading-relaxed placeholder:text-slate-600 focus:outline-none focus:border-violet-500/50 resize-none transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full bg-white/[0.06] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm leading-relaxed placeholder:text-[#4B5563] focus:outline-none focus:border-[#1D9E75]/50 resize-none transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         />
       </div>
 
-      {/* ── Submit row ── */}
+      {/* Submit row */}
       <div className="flex items-center justify-between gap-4">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[#4B5563]">
           {canSubmit
             ? `${highlights.length} highlight${highlights.length !== 1 ? 's' : ''} tagged — ready to submit.`
             : highlights.length === 0
@@ -492,7 +488,7 @@ export default function PassageAnnotatorStep({
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className={`flex-shrink-0 ${btnClass} disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all shadow-lg`}
+          className="flex-shrink-0 btn-primary disabled:opacity-40 disabled:cursor-not-allowed py-2.5 px-6"
         >
           Submit
         </button>

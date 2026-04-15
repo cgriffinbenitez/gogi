@@ -240,10 +240,10 @@ export default function TeachSession() {
 
   if (view === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-violet-300 text-sm">Setting up your lesson…</p>
+          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">Setting up your lesson…</p>
         </div>
       </div>
     );
@@ -251,16 +251,15 @@ export default function TeachSession() {
 
   if (view === 'error') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white/5 border border-red-500/30 rounded-2xl p-8 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white/[0.06] border border-red-500/30 rounded-2xl p-8 text-center">
           <h2 className="text-white font-bold text-xl mb-2">Unable to Load Lesson</h2>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">{errorMsg}</p>
+          <p className="text-[#94A3B8] text-sm mb-6 leading-relaxed">{errorMsg}</p>
           <button
             onClick={() => router.push('/student-home')}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl text-sm transition-all duration-200"
+            className="btn-primary w-full"
           >
-            ← Back to Home
+            Back to Home
           </button>
         </div>
       </div>
@@ -270,26 +269,26 @@ export default function TeachSession() {
   // GenericTeach — standard exists but has no protocol file yet
   if (protocolName === 'GenericTeach' || !protocol) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
         <div className="max-w-md w-full space-y-4">
-          <div className="bg-white/5 border border-violet-500/20 rounded-2xl p-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-blue-900 border border-blue-700 flex items-center justify-center mx-auto mb-5">
-              <span className="text-white text-xl font-extrabold leading-none select-none">G</span>
+          <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-8 text-center">
+            <div className="w-14 h-14 rounded-full bg-[#0d1f18] border border-[#1D9E75]/40 flex items-center justify-center mx-auto mb-5">
+              <span className="text-[#1D9E75] text-xl font-extrabold leading-none select-none">G</span>
             </div>
             <h1 className="text-white text-xl font-extrabold mb-3 leading-tight">
               This standard is not yet available.
             </h1>
-            <p className="text-slate-300 text-sm leading-relaxed mb-4">
+            <p className="text-[#94A3B8] text-sm leading-relaxed mb-4">
               {standardCode ? `${standardCode} — ${standardTitle}` : 'This standard'} does not have
               a personalized lesson ready yet. Your teacher has been notified.
             </p>
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-[#4B5563] text-sm leading-relaxed">
               Talk to your teacher directly — they can work through this skill with you.
             </p>
           </div>
           <button
             onClick={() => router.push('/student-home')}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 shadow-lg hover:shadow-violet-500/30"
+            className="btn-primary w-full py-3.5"
           >
             Back to Home
           </button>

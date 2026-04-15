@@ -45,11 +45,11 @@ type SortKey = keyof DbStudent | 'status';
 type SortDir = 'asc' | 'desc' | null;
 
 const STATUS_STYLES: Record<Status, string> = {
-  'exceeding': 'bg-violet-100 text-violet-700',
-  'on-track': 'bg-emerald-100 text-emerald-700',
-  'at-risk': 'bg-amber-100 text-amber-700',
-  'needs-support': 'bg-rose-100 text-rose-600',
-  'no-data': 'bg-slate-100 text-slate-500',
+  'exceeding': 'bg-[#1D9E75]/20 text-[#1D9E75] border border-[#1D9E75]/30',
+  'on-track': 'bg-[#1D9E75]/10 text-[#1D9E75]/80 border border-[#1D9E75]/20',
+  'at-risk': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+  'needs-support': 'bg-rose-500/20 text-rose-400 border border-rose-500/30',
+  'no-data': 'bg-white/[0.06] text-[#4B5563] border border-white/[0.08]',
 };
 
 const STATUS_LABELS: Record<Status, string> = {
@@ -62,13 +62,13 @@ const STATUS_LABELS: Record<Status, string> = {
 
 const ScoreBar = ({ value, max = 100, color }: { value: number; max?: number; color: string }) => (
   <div className="flex items-center gap-2">
-    <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+    <div className="w-16 h-1.5 bg-white/[0.06] rounded-full overflow-hidden flex-shrink-0">
       <div
         className={`h-full rounded-full ${color}`}
         style={{ width: `${(value / max) * 100}%` }}
       />
     </div>
-    <span className="text-xs font-mono tabular-nums text-slate-700 w-8">{value}</span>
+    <span className="text-xs font-mono tabular-nums text-[#94A3B8] w-8">{value}</span>
   </div>
 );
 
@@ -181,25 +181,25 @@ export default function StudentPerformanceTable() {
   };
 
   const SortIcon = ({ col }: { col: SortKey }) => {
-    if (sortKey !== col) return <ChevronsUpDown size={13} className="text-slate-300" />;
-    if (sortDir === 'asc') return <ChevronUp size={13} className="text-violet-600" />;
-    if (sortDir === 'desc') return <ChevronDown size={13} className="text-violet-600" />;
-    return <ChevronsUpDown size={13} className="text-slate-300" />;
+    if (sortKey !== col) return <ChevronsUpDown size={13} className="text-[#4B5563]" />;
+    if (sortDir === 'asc') return <ChevronUp size={13} className="text-[#1D9E75]" />;
+    if (sortDir === 'desc') return <ChevronDown size={13} className="text-[#1D9E75]" />;
+    return <ChevronsUpDown size={13} className="text-[#4B5563]" />;
   };
 
   return (
-    <div className="card overflow-hidden">
+    <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden">
       {/* Table header */}
-      <div className="px-5 py-4 border-b border-slate-100 flex flex-col gap-3">
+      <div className="px-5 py-4 border-b border-white/[0.08] flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Student Performance</h3>
-            <p className="text-xs text-slate-500 mt-0.5">{filtered.length} students</p>
+            <h3 className="text-base font-bold text-white">Student Performance</h3>
+            <p className="text-xs text-[#4B5563] mt-0.5">{filtered.length} students</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => toast.success('Export started — CSV will download shortly')}
-              className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8] hover:text-white bg-white/[0.06] hover:bg-white/[0.09] px-3 py-2 rounded-xl transition-colors border border-white/[0.08]"
             >
               <Download size={14} />
               Export
@@ -210,18 +210,18 @@ export default function StudentPerformanceTable() {
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[200px] max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4B5563]" />
             <input
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search students…"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-4 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent transition-all"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-xl pl-8 pr-4 py-2 text-sm text-white placeholder:text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-transparent transition-all"
             />
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="flex items-center gap-1 text-xs text-slate-500">
+            <span className="flex items-center gap-1 text-xs text-[#4B5563]">
               <Filter size={12} /> Status:
             </span>
             {(['all', 'exceeding', 'on-track', 'at-risk', 'needs-support'] as const).map((s) => (
@@ -230,8 +230,8 @@ export default function StudentPerformanceTable() {
                 onClick={() => { setStatusFilter(s); setPage(1); }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                   statusFilter === s
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-[#1D9E75] text-white'
+                    : 'bg-white/[0.06] text-[#94A3B8] hover:bg-white/[0.09] border border-white/[0.08]'
                 }`}
               >
                 {s === 'all' ? 'All' : STATUS_LABELS[s]}
@@ -243,26 +243,26 @@ export default function StudentPerformanceTable() {
 
       {/* Bulk action bar */}
       {selectedIds.length > 0 && (
-        <div className="bg-violet-600 px-5 py-3 flex items-center justify-between gap-4 slide-up">
-          <span className="text-white text-sm font-semibold">
+        <div className="bg-[#1D9E75]/20 border-b border-[#1D9E75]/30 px-5 py-3 flex items-center justify-between gap-4 slide-up">
+          <span className="text-[#1D9E75] text-sm font-semibold">
             {selectedIds.length} student{selectedIds.length > 1 ? 's' : ''} selected
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleBulkAction('Message sent')}
-              className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 bg-white/[0.09] hover:bg-white/[0.12] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
             >
               <MessageSquare size={13} /> Message
             </button>
             <button
               onClick={() => handleBulkAction('Flagged for review')}
-              className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+              className="flex items-center gap-1.5 bg-white/[0.09] hover:bg-white/[0.12] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
             >
               <Flag size={13} /> Flag
             </button>
             <button
               onClick={() => setSelectedIds([])}
-              className="p-1.5 hover:bg-white/20 rounded-xl text-white/70 hover:text-white transition-colors"
+              className="p-1.5 hover:bg-white/[0.09] rounded-xl text-[#94A3B8] hover:text-white transition-colors"
             >
               <X size={15} />
             </button>
@@ -272,8 +272,8 @@ export default function StudentPerformanceTable() {
 
       {/* Loading state */}
       {loading && (
-        <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
-          <Loader2 size={20} className="animate-spin" />
+        <div className="flex items-center justify-center py-16 gap-3 text-[#4B5563]">
+          <Loader2 size={20} className="animate-spin text-[#1D9E75]" />
           <span className="text-sm">Loading students…</span>
         </div>
       )}
@@ -281,8 +281,8 @@ export default function StudentPerformanceTable() {
       {/* Error state */}
       {!loading && error && (
         <div className="text-center py-16">
-          <p className="text-base font-semibold text-rose-600">Failed to load students</p>
-          <p className="text-sm text-slate-400 mt-1">{error}</p>
+          <p className="text-base font-semibold text-rose-400">Failed to load students</p>
+          <p className="text-sm text-[#4B5563] mt-1">{error}</p>
         </div>
       )}
 
@@ -291,11 +291,11 @@ export default function StudentPerformanceTable() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
+              <tr className="bg-white/[0.03] border-b border-white/[0.08]">
                 <th className="w-10 px-4 py-3">
-                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-violet-600 transition-colors">
+                  <button onClick={toggleSelectAll} className="text-[#4B5563] hover:text-[#1D9E75] transition-colors">
                     {selectedIds.length === paginated.length && paginated.length > 0 ? (
-                      <CheckSquare size={16} className="text-violet-600" />
+                      <CheckSquare size={16} className="text-[#1D9E75]" />
                     ) : (
                       <Square size={16} />
                     )}
@@ -311,7 +311,7 @@ export default function StudentPerformanceTable() {
                   <th
                     key={`th-${col.key}`}
                     onClick={() => handleSort(col.key)}
-                    className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide cursor-pointer hover:text-slate-800 transition-colors whitespace-nowrap"
+                    className="px-3 py-3 text-left text-xs font-semibold text-[#4B5563] uppercase tracking-wide cursor-pointer hover:text-[#94A3B8] transition-colors whitespace-nowrap"
                   >
                     <span className="flex items-center gap-1">
                       {col.label}
@@ -319,12 +319,12 @@ export default function StudentPerformanceTable() {
                     </span>
                   </th>
                 ))}
-                <th className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                <th className="px-3 py-3 text-left text-xs font-semibold text-[#4B5563] uppercase tracking-wide">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-white/[0.04]">
               {paginated.map((student) => {
                 const isSelected = selectedIds.includes(student.id);
                 const status = deriveStatus(student.fast_pm1_score, student.fast_pm2_score);
@@ -332,16 +332,16 @@ export default function StudentPerformanceTable() {
                   <tr
                     key={student.id}
                     className={`group transition-colors duration-100 ${
-                      isSelected ? 'bg-violet-50' : 'hover:bg-slate-50/80'
+                      isSelected ? 'bg-[#1D9E75]/10' : 'hover:bg-white/[0.03]'
                     }`}
                   >
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleSelect(student.id)}
-                        className="text-slate-300 hover:text-violet-600 transition-colors"
+                        className="text-[#4B5563] hover:text-[#1D9E75] transition-colors"
                       >
                         {isSelected ? (
-                          <CheckSquare size={16} className="text-violet-600" />
+                          <CheckSquare size={16} className="text-[#1D9E75]" />
                         ) : (
                           <Square size={16} />
                         )}
@@ -351,16 +351,16 @@ export default function StudentPerformanceTable() {
                     {/* Name */}
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-[#1D9E75]/20 border border-[#1D9E75]/30 flex items-center justify-center text-[#1D9E75] text-xs font-bold flex-shrink-0">
                           {student.full_name.split(' ').map((n) => n[0]).join('')}
                         </div>
-                        <span className="font-semibold text-slate-800 whitespace-nowrap">{student.full_name}</span>
+                        <span className="font-semibold text-white whitespace-nowrap">{student.full_name}</span>
                       </div>
                     </td>
 
                     {/* Grade */}
                     <td className="px-3 py-3">
-                      <span className="text-xs font-semibold text-slate-700">{student.grade_level ?? '—'}</span>
+                      <span className="text-xs font-semibold text-[#94A3B8]">{student.grade_level ?? '—'}</span>
                     </td>
 
                     {/* FAST PM1 */}
@@ -369,12 +369,12 @@ export default function StudentPerformanceTable() {
                         <ScoreBar
                           value={student.fast_pm1_score}
                           color={
-                            student.fast_pm1_score >= 80 ? 'bg-emerald-500' :
+                            student.fast_pm1_score >= 80 ? 'bg-[#1D9E75]' :
                             student.fast_pm1_score >= 50 ? 'bg-amber-400' : 'bg-rose-500'
                           }
                         />
                       ) : (
-                        <span className="text-xs text-slate-400">—</span>
+                        <span className="text-xs text-[#4B5563]">—</span>
                       )}
                     </td>
 
@@ -384,12 +384,12 @@ export default function StudentPerformanceTable() {
                         <ScoreBar
                           value={student.fast_pm2_score}
                           color={
-                            student.fast_pm2_score >= 80 ? 'bg-emerald-500' :
+                            student.fast_pm2_score >= 80 ? 'bg-[#1D9E75]' :
                             student.fast_pm2_score >= 50 ? 'bg-amber-400' : 'bg-rose-500'
                           }
                         />
                       ) : (
-                        <span className="text-xs text-slate-400">—</span>
+                        <span className="text-xs text-[#4B5563]">—</span>
                       )}
                     </td>
 
@@ -405,21 +405,21 @@ export default function StudentPerformanceTable() {
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => router.push('/student-reading-task-screen')}
-                          className="p-1.5 rounded-lg hover:bg-violet-100 text-slate-400 hover:text-violet-600 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-[#1D9E75]/20 text-[#4B5563] hover:text-[#1D9E75] transition-colors"
                           title="View student work"
                         >
                           <Eye size={14} />
                         </button>
                         <button
                           onClick={() => toast.success(`Message sent to ${student.full_name}`)}
-                          className="p-1.5 rounded-lg hover:bg-sky-100 text-slate-400 hover:text-sky-600 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-white/[0.09] text-[#4B5563] hover:text-[#94A3B8] transition-colors"
                           title="Message student"
                         >
                           <MessageSquare size={14} />
                         </button>
                         <button
                           onClick={() => toast.info(`${student.full_name} flagged for intervention`)}
-                          className="p-1.5 rounded-lg hover:bg-amber-100 text-slate-400 hover:text-amber-600 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-amber-500/20 text-[#4B5563] hover:text-amber-400 transition-colors"
                           title="Flag for intervention"
                         >
                           <Flag size={14} />
@@ -434,12 +434,11 @@ export default function StudentPerformanceTable() {
 
           {filtered.length === 0 && students.length > 0 && (
             <div className="text-center py-16">
-              <span className="text-4xl block mb-3">🔍</span>
-              <p className="text-base font-semibold text-slate-700">No students match your search</p>
-              <p className="text-sm text-slate-400 mt-1">Try adjusting the search or status filter.</p>
+              <p className="text-base font-semibold text-white">No students match your search</p>
+              <p className="text-sm text-[#4B5563] mt-1">Try adjusting the search or status filter.</p>
               <button
                 onClick={() => { setSearch(''); setStatusFilter('all'); }}
-                className="mt-3 text-sm text-violet-600 font-semibold hover:underline"
+                className="mt-3 text-sm text-[#1D9E75] font-semibold hover:underline"
               >
                 Clear filters
               </button>
@@ -448,8 +447,8 @@ export default function StudentPerformanceTable() {
 
           {students.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-base font-semibold text-slate-700">No students yet</p>
-              <p className="text-sm text-slate-400 mt-1">Students assigned to you will appear here.</p>
+              <p className="text-base font-semibold text-white">No students yet</p>
+              <p className="text-sm text-[#4B5563] mt-1">Students assigned to you will appear here.</p>
             </div>
           )}
         </div>
@@ -457,13 +456,13 @@ export default function StudentPerformanceTable() {
 
       {/* Pagination */}
       {!loading && !error && filtered.length > 0 && (
-        <div className="px-5 py-4 border-t border-slate-100 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+        <div className="px-5 py-4 border-t border-white/[0.08] flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-[#4B5563]">
             <span>Show</span>
             <select
               value={perPage}
               onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
-              className="border border-slate-200 rounded-lg px-2 py-1 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white"
+              className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-2 py-1 text-sm text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50"
             >
               {[5, 10, 20].map((n) => (
                 <option key={`per-page-${n}`} value={n}>{n}</option>
@@ -476,7 +475,7 @@ export default function StudentPerformanceTable() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 rounded-xl text-sm font-medium text-[#94A3B8] hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
@@ -486,8 +485,8 @@ export default function StudentPerformanceTable() {
                 onClick={() => setPage(p)}
                 className={`w-8 h-8 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   page === p
-                    ? 'bg-violet-600 text-white'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'bg-[#1D9E75] text-white'
+                    : 'text-[#94A3B8] hover:bg-white/[0.06]'
                 }`}
               >
                 {p}
@@ -496,7 +495,7 @@ export default function StudentPerformanceTable() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-3 py-1.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 rounded-xl text-sm font-medium text-[#94A3B8] hover:bg-white/[0.06] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

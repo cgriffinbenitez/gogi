@@ -34,9 +34,9 @@ type InteractionType =
 
 interface GeneratedQuestion {
   instruction: string;
-  choices?: string[];    // multiple_choice
-  items?: string[];      // drag_and_drop
-  categories?: string[]; // drag_and_drop
+  choices?: string[];
+  items?: string[];
+  categories?: string[];
 }
 
 interface PracticeEval {
@@ -108,7 +108,6 @@ export default function PracticeSession() {
   const [view, setView] = useState<PracticeView>('loading');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Session data
   const [studentId, setStudentId] = useState('');
   const [practiceSessionId, setPracticeSessionId] = useState('');
   const [standardCode, setStandardCode] = useState('');
@@ -117,7 +116,6 @@ export default function PracticeSession() {
   const [protocolName, setProtocolName] = useState('');
   const [cognitiveSkillTargeted, setCognitiveSkillTargeted] = useState('');
 
-  // Practice questions
   const [questions, setQuestions] = useState<GeneratedQuestion[]>([]);
   const [qNum, setQNum] = useState<QNum>(1);
   const [currentFeedback, setCurrentFeedback] = useState('');
@@ -166,7 +164,6 @@ export default function PracticeSession() {
         setStandardCode(standard.code);
         setStandardTitle(standard.title);
 
-        // Get protocol context from most recent teach response
         const { data: teachResponse } = await supabase
           .from('responses')
           .select('intervention_type, cognitive_skill_targeted')
@@ -182,7 +179,6 @@ export default function PracticeSession() {
         setProtocolName(pName);
         setCognitiveSkillTargeted(skill);
 
-        // Get intervention passage (same approach as TeachSession)
         let passageText = '';
         const { data: interventionPassage } = await supabase
           .from('questions')
@@ -195,7 +191,6 @@ export default function PracticeSession() {
         if (interventionPassage?.content) {
           passageText = interventionPassage.content;
         } else {
-          // Fall back to most recent wrong response's question content
           const { data: wrongResponse } = await supabase
             .from('responses')
             .select('question_id')
@@ -217,7 +212,6 @@ export default function PracticeSession() {
         }
         setPassage(passageText);
 
-        // Create practice session
         const { data: session, error: sessionError } = await supabase
           .from('sessions')
           .insert({
@@ -237,7 +231,6 @@ export default function PracticeSession() {
         setPracticeSessionId(session.id);
         sessionStartRef.current = Date.now();
 
-        // Generate all 3 questions
         setView('generating');
         const raw = await callClaude('generate_practice_questions', {
           standardCode: standard.code,
@@ -277,8 +270,6 @@ export default function PracticeSession() {
     setView('evaluating');
 
     const q = questions[qNum - 1];
-    const interactionType = getInteractionType(standardCode, qNum);
-    const questionContent = buildContent(q, interactionType, passage);
     const scaffoldLevel = SCAFFOLD_LEVELS[qNum];
 
     try {
@@ -293,11 +284,10 @@ export default function PracticeSession() {
 
       const eval_ = parseJsonSafe<PracticeEval>(rawEval);
       const mastery = eval_?.mastery_achieved ?? false;
-      const feedback = eval_?.feedback ?? 'Keep going — you\'re building the skill.';
+      const feedback = eval_?.feedback ?? "Keep going — you're building the skill.";
 
       if (qNum === 3) setQ3Passed(mastery);
 
-      // Save response
       try {
         await supabase.from('responses').insert({
           session_id: practiceSessionId,
@@ -323,7 +313,7 @@ export default function PracticeSession() {
     } finally {
       submittingRef.current = false;
     }
-  }, [questions, qNum, standardCode, standardTitle, passage, cognitiveSkillTargeted, practiceSessionId, studentId, standardId]);
+  }, [questions, qNum, standardCode, standardTitle, cognitiveSkillTargeted, practiceSessionId, studentId, standardId]);
 
   // ─── Advance after feedback ───────────────────────────────────────────────
 
@@ -335,7 +325,6 @@ export default function PracticeSession() {
       return;
     }
 
-    // Q3 done — close session and go to complete view
     const timeSpent = sessionStartRef.current
       ? Math.floor((Date.now() - sessionStartRef.current) / 1000)
       : 0;
@@ -372,10 +361,10 @@ export default function PracticeSession() {
   if (view === 'loading' || view === 'generating') {
     const label = view === 'generating' ? 'Building your practice questions…' : 'Setting up your practice…';
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-violet-300 text-sm">{label}</p>
+          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">{label}</p>
         </div>
       </div>
     );
@@ -385,16 +374,15 @@ export default function PracticeSession() {
 
   if (view === 'error') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white/5 border border-red-500/30 rounded-2xl p-8 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white/[0.06] border border-red-500/30 rounded-2xl p-8 text-center">
           <h2 className="text-white font-bold text-xl mb-2">Unable to Load Practice</h2>
-          <p className="text-slate-300 text-sm mb-6 leading-relaxed">{errorMsg}</p>
+          <p className="text-[#94A3B8] text-sm mb-6 leading-relaxed">{errorMsg}</p>
           <button
             onClick={() => router.push('/student-home')}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl text-sm transition-all duration-200"
+            className="btn-primary w-full"
           >
-            ← Back to Home
+            Back to Home
           </button>
         </div>
       </div>
@@ -405,25 +393,25 @@ export default function PracticeSession() {
 
   if (view === 'complete') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col items-center justify-center px-4 py-12">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col items-center justify-center px-4 py-12">
         <div className="max-w-md w-full text-center space-y-6">
-          <div className="text-6xl">🎯</div>
           <h1 className="text-white text-3xl font-extrabold">Practice complete.</h1>
           <div className="flex items-start gap-3 text-left">
             <GogiAvatar />
-            <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
-              <p className="text-slate-700 text-sm leading-relaxed">
+            <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+              <p className="text-[#94A3B8] text-sm leading-relaxed">
                 {q3Passed
-                  ? "You took that skill all the way to independent. Now let\'s make it official — your check is next."
-                  : "You worked through all three questions. That\'s the reps. Your check is next — everything you practiced is already in there."}
+                  ? "You took that skill all the way to independent. Now let's make it official — your check is next."
+                  : "You worked through all three questions. That's the reps. Your check is next — everything you practiced is already in there."}
               </p>
             </div>
           </div>
           <button
             onClick={() => router.push(`/student-reassess/${standardId}`)}
-            className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 rounded-xl text-base transition-all duration-200 shadow-lg hover:shadow-violet-500/30"
+            className="btn-primary w-full py-4 text-base"
           >
-            Continue to Reassessment →
+            Continue to Reassessment
+            <span>→</span>
           </button>
         </div>
       </div>
@@ -434,13 +422,13 @@ export default function PracticeSession() {
 
   if (view === 'evaluating') {
     return (
-      <div className="h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#0d0f12] flex flex-col overflow-hidden">
         <PracticeHeader standardCode={standardCode} qNum={qNum} />
         <PracticeProgress qNum={qNum} />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-8 h-8 rounded-full border-2 border-violet-500 border-t-transparent animate-spin mx-auto mb-3" />
-            <p className="text-violet-300 text-sm">Evaluating your response…</p>
+            <div className="w-8 h-8 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-3" />
+            <p className="text-[#94A3B8] text-sm">Evaluating your response…</p>
           </div>
         </div>
       </div>
@@ -450,14 +438,14 @@ export default function PracticeSession() {
   // ─── Question + Feedback (split panel) ────────────────────────────────────
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#0d0f12] flex flex-col overflow-hidden">
       <PracticeHeader standardCode={standardCode} qNum={qNum} />
       <PracticeProgress qNum={qNum} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
 
-        {/* ── Left: Passage Panel ────────────────────────────────────────── */}
-        <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 max-h-48 md:max-h-none">
+        {/* Left: Passage Panel */}
+        <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/[0.08] p-4 md:p-6 max-h-48 md:max-h-none">
           <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2">
             Question {qNum} of 3 — {SCAFFOLD_LABELS[qNum]}
           </div>
@@ -466,12 +454,12 @@ export default function PracticeSession() {
           </h2>
 
           {passage && (
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5">
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5">
+              <p className="text-[11px] font-bold text-[#4B5563] uppercase tracking-widest mb-3">
                 Literary Selection
               </p>
-              <hr className="border-white/10 mb-4" />
-              <p className="text-slate-300 text-sm whitespace-pre-line leading-7">
+              <hr className="border-white/[0.08] mb-4" />
+              <p className="text-[#94A3B8] text-sm whitespace-pre-line leading-7">
                 {passage}
               </p>
             </div>
@@ -484,30 +472,29 @@ export default function PracticeSession() {
           )}
         </div>
 
-        {/* ── Right: Interaction or Feedback ────────────────────────────── */}
+        {/* Right: Interaction or Feedback */}
         <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
           {view === 'feedback' ? (
-            /* Feedback view */
             <div className="flex-1 flex flex-col p-4 md:p-6 gap-4">
               {currentFeedback && (
                 <div className="flex items-start gap-3">
                   <GogiAvatar />
-                  <div className="bg-blue-50 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex-1">
-                    <p className="text-slate-700 text-sm leading-relaxed">{currentFeedback}</p>
+                  <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+                    <p className="text-[#94A3B8] text-sm leading-relaxed">{currentFeedback}</p>
                   </div>
                 </div>
               )}
               <div className="flex justify-end mt-auto pt-4">
                 <button
                   onClick={handleContinue}
-                  className="bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-8 rounded-xl text-sm transition-all duration-200 shadow-lg hover:shadow-violet-500/30 flex items-center gap-2"
+                  className="btn-primary py-3 px-8"
                 >
-                  <span>{qNum < 3 ? `Question ${qNum + 1} →` : 'See Results →'}</span>
+                  <span>{qNum < 3 ? `Question ${qNum + 1}` : 'See Results'}</span>
+                  <span>→</span>
                 </button>
               </div>
             </div>
           ) : (
-            /* Question interaction */
             <>
               {interactionType === 'multiple_choice' && (
                 <MultipleChoiceStep
@@ -564,7 +551,7 @@ export default function PracticeSession() {
 function PracticeHeader({ standardCode, qNum }: { standardCode: string; qNum: QNum }) {
   const router = useRouter();
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
+    <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] flex-shrink-0">
       <div className="flex items-center gap-4">
         <button
           onClick={() => {
@@ -572,14 +559,14 @@ function PracticeHeader({ standardCode, qNum }: { standardCode: string; qNum: QN
               router.push('/student-home');
             }
           }}
-          className="text-slate-500 hover:text-slate-300 text-xs flex items-center gap-1 transition-colors"
+          className="text-[#4B5563] hover:text-[#94A3B8] text-xs flex items-center gap-1 transition-colors"
         >
           ← Back
         </button>
         <span className="text-xl font-extrabold text-white tracking-tight">GOGI</span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-xs text-violet-400 font-mono">{standardCode}</span>
+        <span className="text-xs text-[#1D9E75] font-mono">{standardCode}</span>
         <span className="bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">
           Practice — Q{qNum} of 3
         </span>
@@ -591,7 +578,7 @@ function PracticeHeader({ standardCode, qNum }: { standardCode: string; qNum: QN
 function PracticeProgress({ qNum }: { qNum: QNum }) {
   const labels: Record<QNum, string> = { 1: 'Guided', 2: 'Some support', 3: 'On your own' };
   return (
-    <div className="px-6 py-3 border-b border-white/5 flex-shrink-0">
+    <div className="px-6 py-3 border-b border-white/[0.08] flex-shrink-0">
       <div className="max-w-3xl mx-auto flex items-center gap-2">
         {([1, 2, 3] as QNum[]).map((n) => {
           const done = n < qNum;
@@ -600,7 +587,7 @@ function PracticeProgress({ qNum }: { qNum: QNum }) {
             <div key={n} className="flex items-center gap-1.5">
               <div
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  done ? 'bg-emerald-500 w-16' : active ? 'bg-amber-500 w-24' : 'bg-white/20 w-16'
+                  done ? 'bg-[#1D9E75] w-16' : active ? 'bg-amber-500 w-24' : 'bg-white/[0.12] w-16'
                 }`}
               />
               {active && (
