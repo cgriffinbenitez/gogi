@@ -404,9 +404,9 @@ export default function StudentPerformanceTable() {
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() => router.push('/student-reading-task-screen')}
+                          onClick={() => router.push(`/teacher-dashboard/students/${student.id}`)}
                           className="p-1.5 rounded-lg hover:bg-[#1D9E75]/20 text-[#4B5563] hover:text-[#1D9E75] transition-colors"
-                          title="View student work"
+                          title="View student profile"
                         >
                           <Eye size={14} />
                         </button>
