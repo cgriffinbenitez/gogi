@@ -1,5 +1,19 @@
 'use client';
 
+// ─── SUPABASE MIGRATION REQUIRED ─────────────────────────────────────────────
+// Carlos: run this SQL in the Supabase SQL editor before deploying this file.
+//
+// CREATE TABLE reassess_passages (
+//   id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+//   student_id  uuid REFERENCES students(id),
+//   standard_id uuid REFERENCES standards(id),
+//   passage_text text NOT NULL,
+//   questions   jsonb NOT NULL,
+//   created_at  timestamptz DEFAULT now(),
+//   UNIQUE(student_id, standard_id)
+// );
+// ─────────────────────────────────────────────────────────────────────────────
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -113,13 +127,46 @@ export default function ReassessSession() {
 
         setContentLoading(true);
         try {
-          const text = await callClaude('generate_reassess', {
-            standardCode: standard.code,
-            standardTitle: standard.title,
-          });
-          const parsed = parseReassessContent(text);
-          setPassage(parsed.passage);
-          setQuestions(parsed.questions);
+          // ── Check pool first ────────────────────────────────────────────────
+          // Every student gets one stable passage+questions per standard so
+          // repeated attempts measure growth against the same instrument.
+          const { data: stored } = await supabase
+            .from('reassess_passages')
+            .select('passage_text, questions')
+            .eq('student_id', student.id)
+            .eq('standard_id', standardId)
+            .maybeSingle();
+
+          if (stored) {
+            // Reuse the stored instrument — no Claude call needed.
+            setPassage(stored.passage_text);
+            setQuestions(stored.questions as string[]);
+          } else {
+            // First attempt: generate fresh content and persist it.
+            const text = await callClaude('generate_reassess', {
+              standardCode: standard.code,
+              standardTitle: standard.title,
+            });
+            const parsed = parseReassessContent(text);
+            setPassage(parsed.passage);
+            setQuestions(parsed.questions);
+
+            // Fire-and-forget save — don't block or fail the session if this
+            // insert errors (e.g., table not yet created in this environment).
+            supabase
+              .from('reassess_passages')
+              .insert({
+                student_id: student.id,
+                standard_id: standardId,
+                passage_text: parsed.passage,
+                questions: parsed.questions,
+              })
+              .then(({ error }) => {
+                if (error) {
+                  console.warn('[ReassessSession] Pool save failed:', error.message);
+                }
+              });
+          }
         } catch (err) {
           console.error('[ReassessSession] Generate error:', err);
           setErrorMsg('Failed to generate your reassessment. Please try again.');

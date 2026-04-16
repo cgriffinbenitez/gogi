@@ -11,6 +11,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
+import { useStreamingClaude } from '@/lib/useStreamingClaude';
 import GogiAvatar from '@/components/GogiAvatar';
 import MultipleChoiceStep from '@/app/student-teach/[standardId]/interactions/MultipleChoiceStep';
 import FillInStep from '@/app/student-teach/[standardId]/interactions/FillInStep';
@@ -123,6 +124,7 @@ export default function PracticeSession() {
 
   const sessionStartRef = useRef<number>(0);
   const submittingRef = useRef(false);
+  const feedbackStreaming = useStreamingClaude();
 
   // ─── Init ────────────────────────────────────────────────────────────────
 
@@ -284,7 +286,6 @@ export default function PracticeSession() {
 
       const eval_ = parseJsonSafe<PracticeEval>(rawEval);
       const mastery = eval_?.mastery_achieved ?? false;
-      const feedback = eval_?.feedback ?? "Keep going — you're building the skill.";
 
       if (qNum === 3) setQ3Passed(mastery);
 
@@ -298,14 +299,23 @@ export default function PracticeSession() {
           attempt_number: qNum,
           mastery_achieved: mastery,
           student_response: text,
-          ai_feedback: feedback,
+          ai_feedback: eval_?.feedback ?? null,
         });
       } catch (saveErr) {
         console.error('[PracticeSession] Response save error:', saveErr);
       }
 
-      setCurrentFeedback(feedback);
+      // Switch to feedback view immediately, then stream Gogi feedback
       setView('feedback');
+      const streamedFeedback = await feedbackStreaming.startStreaming('generate_protocol_feedback', {
+        standardCode,
+        standardTitle,
+        studentResponse: text.substring(0, 400),
+        passageContext: passage.substring(0, 150),
+        masteryAchieved: String(mastery),
+        feedbackContext: `Practice Q${qNum}, scaffold level: ${scaffoldLevel}`,
+      });
+      setCurrentFeedback(streamedFeedback);
     } catch (err) {
       console.error('[PracticeSession] Evaluate error:', err);
       setCurrentFeedback('Something went wrong evaluating your response. Keep going.');
@@ -476,18 +486,24 @@ export default function PracticeSession() {
         <div className="flex-1 flex flex-col min-h-0 overflow-y-auto">
           {view === 'feedback' ? (
             <div className="flex-1 flex flex-col p-4 md:p-6 gap-4">
-              {currentFeedback && (
+              {(feedbackStreaming.isStreaming || currentFeedback) && (
                 <div className="flex items-start gap-3">
                   <GogiAvatar />
                   <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
-                    <p className="text-[#94A3B8] text-sm leading-relaxed">{currentFeedback}</p>
+                    <p className="text-[#94A3B8] text-sm leading-relaxed">
+                      {feedbackStreaming.isStreaming ? feedbackStreaming.content : currentFeedback}
+                      {feedbackStreaming.isStreaming && (
+                        <span className="inline-block w-0.5 h-3.5 bg-[#1D9E75] ml-0.5 align-middle animate-pulse" />
+                      )}
+                    </p>
                   </div>
                 </div>
               )}
               <div className="flex justify-end mt-auto pt-4">
                 <button
                   onClick={handleContinue}
-                  className="btn-primary py-3 px-8"
+                  disabled={feedbackStreaming.isStreaming}
+                  className="btn-primary py-3 px-8 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <span>{qNum < 3 ? `Question ${qNum + 1}` : 'See Results'}</span>
                   <span>→</span>

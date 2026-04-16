@@ -22,6 +22,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
+import { useStreamingClaude } from '@/lib/useStreamingClaude';
 import GogiAvatar from '@/components/GogiAvatar';
 import { Protocol, ProtocolStep } from './types';
 import MultipleChoiceStep from '../interactions/MultipleChoiceStep';
@@ -303,6 +304,11 @@ export default function ProtocolEngine({
   // Guard against double-submit
   const submittingRef = useRef(false);
 
+  // Streaming hook — shared for both step content and feedback.
+  // streamPurposeRef tells render which surface `streaming.content` belongs to.
+  const streaming = useStreamingClaude();
+  const streamPurposeRef = useRef<'step' | 'feedback'>('step');
+
   const router = useRouter();
 
   // ── Derived ─────────────────────────────────────────────────────────────────
@@ -357,33 +363,47 @@ export default function ProtocolEngine({
     let cancelled = false;
 
     async function generate() {
-      try {
-        const content = await callClaude('generate_protocol_step_content', {
-          standardCode,
-          standardTitle,
-          protocolName: protocol.name,
-          protocolLabel: protocol.label,
-          stepName: step!.name,
-          stepNumber: String(step!.stepNumber),
-          stepPurpose: step!.stepPurpose,
-          claudeGenerates: step!.claudeGenerates.join('\n\n'),
-          interactionType: step!.interactionType,
-          scaffoldsActive: String(step!.scaffoldsActive),
-          passage,
-          advancementCondition: step!.advancementCondition,
-          diagnosticClassification: protocol.triggerClassifications[0] ?? '',
-        });
+      const payload = {
+        standardCode,
+        standardTitle,
+        protocolName: protocol.name,
+        protocolLabel: protocol.label,
+        stepName: step!.name,
+        stepNumber: String(step!.stepNumber),
+        stepPurpose: step!.stepPurpose,
+        claudeGenerates: step!.claudeGenerates.join('\n\n'),
+        interactionType: step!.interactionType,
+        scaffoldsActive: String(step!.scaffoldsActive),
+        passage,
+        advancementCondition: step!.advancementCondition,
+        diagnosticClassification: protocol.triggerClassifications[0] ?? '',
+      };
 
+      const isReadOnly = step!.interactionType === 'read_only';
+      streamPurposeRef.current = 'step';
+      setScaffoldsActive(step!.scaffoldsActive);
+
+      if (isReadOnly) {
+        // Switch to read_only immediately — content streams into the Gogi bubble.
+        // Continue button stays disabled while streaming.isStreaming.
+        setView('read_only');
+        const content = await streaming.startStreaming('generate_protocol_step_content', payload);
         if (cancelled) return;
-
         setStepContent(content);
-        setScaffoldsActive(step!.scaffoldsActive);
-        setView(step!.interactionType === 'read_only' ? 'read_only' : 'interactive');
-      } catch (err) {
-        if (cancelled) return;
-        console.error('[ProtocolEngine] generate error:', err);
-        setErrorMsg('Something went wrong generating this step. Please refresh.');
-        setView('error');
+      } else {
+        // Interactive steps: stream in the background, switch view when complete
+        // so the interaction component always receives full content.
+        try {
+          const content = await streaming.startStreaming('generate_protocol_step_content', payload);
+          if (cancelled) return;
+          setStepContent(content);
+          setView('interactive');
+        } catch (err) {
+          if (cancelled) return;
+          console.error('[ProtocolEngine] generate error:', err);
+          setErrorMsg('Something went wrong generating this step. Please refresh.');
+          setView('error');
+        }
       }
     }
 
@@ -392,6 +412,7 @@ export default function ProtocolEngine({
     return () => {
       cancelled = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, standardCode, standardTitle, step, protocol, passage]);
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -481,25 +502,19 @@ export default function ProtocolEngine({
         masteryAchievedForStep: false,
         attemptNumber: currentAttempt,
       });
-      // Show brief acknowledgment before advancing
-      const ack = await callClaude('generate_protocol_step_content', {
+      // Stream a brief acknowledgment before advancing
+      setAttemptCount(-99); // sentinel value — feedback view will advance not retry
+      streamPurposeRef.current = 'feedback';
+      setView('feedback');
+      const ack = await streaming.startStreaming('generate_protocol_feedback', {
         standardCode,
         standardTitle,
-        protocolName: protocol.name,
-        protocolLabel: protocol.label,
-        stepName: step.name,
-        stepNumber: String(step.stepNumber),
-        stepPurpose: 'Give brief 1-sentence acknowledgment of the student response and confirm they are ready to move forward. Be specific to what they wrote.',
-        claudeGenerates: 'One sentence acknowledging what the student did. No praise words like great or excellent. Just name what they did correctly.',
-        interactionType: 'read_only',
-        scaffoldsActive: String(step.scaffoldsActive),
-        passage: passage.substring(0, 400),
-        advancementCondition: '',
+        studentResponse: text.substring(0, 400),
+        passageContext: passage.substring(0, 150),
+        masteryAchieved: 'false',
+        feedbackContext: 'Brief 1-sentence acknowledgment of what the student did.',
       });
       setEvalFeedback(ack);
-      setView('feedback');
-      // Override retry button to advance instead of retry
-      setAttemptCount(-99); // sentinel value — feedback view will advance not retry
       submittingRef.current = false;
       return;
     }
@@ -550,13 +565,21 @@ export default function ProtocolEngine({
 
       if (passed) {
         setMasteryAchieved(true);
-        setEvalFeedback(eval_.feedback || "That's the move. You just did exactly what a strong reader does — let's keep going.");
         setLastEval(eval_);
         setAttemptCount(-99); // sentinel: feedback view will advance not retry
+        streamPurposeRef.current = 'feedback';
         setView('feedback');
+        const passFeedback = await streaming.startStreaming('generate_protocol_feedback', {
+          standardCode,
+          standardTitle,
+          studentResponse: text.substring(0, 400),
+          passageContext: passage.substring(0, 150),
+          masteryAchieved: 'true',
+        });
+        setEvalFeedback(passFeedback);
         submittingRef.current = false;
         return;
-        // advanceStep() is now called from handleRetry when attemptCount === -99
+        // advanceStep() is called from handleRetry when attemptCount === -99
       }
 
       // Not passed — check reclassification threshold
@@ -574,9 +597,17 @@ export default function ProtocolEngine({
         setShowHint(true);
       }
 
-      // Show feedback, allow retry
-      setEvalFeedback(feedback);
+      // Stream failure feedback, allow retry
+      streamPurposeRef.current = 'feedback';
       setView('feedback');
+      const failFeedback = await streaming.startStreaming('generate_protocol_feedback', {
+        standardCode,
+        standardTitle,
+        studentResponse: text.substring(0, 400),
+        passageContext: passage.substring(0, 150),
+        masteryAchieved: 'false',
+      });
+      setEvalFeedback(failFeedback);
     } catch (err) {
       console.error('[ProtocolEngine] handleSubmit eval error:', err);
       setEvalFeedback(
@@ -759,6 +790,9 @@ export default function ProtocolEngine({
   // ── Read-only step (Orientation, MicroModel, ReassessTrigger) ─────────────────
   if (view === 'read_only' && step) {
     const isReassess = step.name === 'ReassessTrigger';
+    // During streaming: show live content; after streaming: show synced stepContent
+    const isStreamingStep = streaming.isStreaming && streamPurposeRef.current === 'step';
+    const displayContent = isStreamingStep ? streaming.content : stepContent;
 
     return (
       <div className="min-h-screen bg-[#0d0f12] flex flex-col">
@@ -779,19 +813,27 @@ export default function ProtocolEngine({
               </h1>
             </div>
 
-            {/* Gogi speech bubble */}
+            {/* Gogi speech bubble — progressive text while streaming */}
             <div className="flex items-start gap-3 mb-8">
               <GogiAvatar />
               <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-5 py-4 flex-1">
-                <div className="space-y-0.5">{renderGogiContent(stepContent)}</div>
+                {displayContent ? (
+                  <div className="space-y-0.5">{renderGogiContent(displayContent)}</div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin flex-shrink-0" />
+                    <p className="text-[#4B5563] text-sm">Gogi is thinking…</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Continue button */}
+            {/* Continue button — disabled while streaming */}
             <div className="flex justify-end">
               <button
                 onClick={handleContinue}
-                className="btn-primary py-3.5 px-8"
+                disabled={isStreamingStep}
+                className="btn-primary py-3.5 px-8 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <span>{isReassess ? 'Go to Reassessment' : 'Continue'}</span>
                 <span>→</span>
@@ -907,15 +949,32 @@ export default function ProtocolEngine({
               /* ── Feedback view ──────────────────────────────────────────────── */
               <>
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-                  {/* Gogi feedback bubble */}
-                  {evalFeedback && (
-                    <div className="flex items-start gap-3">
-                      <GogiAvatar />
-                      <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
-                        <p className="text-[#94A3B8] text-sm leading-relaxed">{evalFeedback}</p>
+                  {/* Gogi feedback bubble — streams in progressively */}
+                  {(() => {
+                    const isStreamingFeedback =
+                      streaming.isStreaming && streamPurposeRef.current === 'feedback';
+                    const displayFeedback = isStreamingFeedback
+                      ? streaming.content
+                      : evalFeedback;
+                    return displayFeedback ? (
+                      <div className="flex items-start gap-3">
+                        <GogiAvatar />
+                        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+                          <p className="text-[#94A3B8] text-sm leading-relaxed">
+                            {displayFeedback}
+                            {isStreamingFeedback && (
+                              <span className="inline-block w-0.5 h-3.5 bg-[#1D9E75] ml-0.5 animate-pulse align-middle" />
+                            )}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="flex items-center gap-3 px-1">
+                        <div className="w-4 h-4 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin flex-shrink-0" />
+                        <p className="text-[#4B5563] text-sm">Gogi is thinking…</p>
+                      </div>
+                    );
+                  })()}
 
                   {/* Mastery condition breakdown */}
                   {lastEval && <EvalBreakdown eval_={lastEval} />}
@@ -942,7 +1001,7 @@ export default function ProtocolEngine({
                   )}
                 </div>
 
-                {/* Retry bar */}
+                {/* Retry bar — disabled while streaming feedback */}
                 <div className="flex-shrink-0 border-t border-white/[0.08] p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">
@@ -950,7 +1009,8 @@ export default function ProtocolEngine({
                     </span>
                     <button
                       onClick={handleRetry}
-                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2"
+                      disabled={streaming.isStreaming && streamPurposeRef.current === 'feedback'}
+                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {attemptCount === -99 ? 'Continue →' : 'Try Again'}
                     </button>

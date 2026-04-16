@@ -100,6 +100,7 @@ type ClaudeAction =
   | 'generate_diagnostic_questions'
   // ─── Canonical Protocol Engine (ProtocolEngine.tsx) ───────────────────────
   | 'generate_protocol_step_content'
+  | 'generate_protocol_feedback'
   | 'evaluate_mastery_structured'
   // ─── Practice Phase (PracticeSession.tsx) ─────────────────────────────────
   | 'generate_practice_questions'
@@ -518,6 +519,33 @@ ${interactionType === 'structured_response' ? 'Give clear instructions for a 3-p
 Maximum 150 words. Never supply the answer. Coach voice only.`;
     }
 
+    case 'generate_protocol_feedback': {
+      const {
+        studentResponse = '',
+        passageContext = '',
+        masteryAchieved = 'false',
+        feedbackContext = '',
+      } = params;
+
+      const passed = masteryAchieved === 'true';
+
+      return `You are Gogi, a peer tutor for 9th grade ELA students in Title I schools in Miami-Dade County.
+
+Standard: ${standardCode} — ${standardTitle}
+${passageContext ? `Passage context: "${passageContext.substring(0, 200)}"` : ''}
+${feedbackContext ? `Note: ${feedbackContext}` : ''}
+Student wrote: "${studentResponse.substring(0, 400)}"
+
+Write exactly 2 sentences in Gogi voice.
+${
+  passed
+    ? 'Sentence 1: Name exactly what cognitive move the student\'s brain just made — specific, reference their actual words, no generic praise. Sentence 2: Connect that exact skill to one concrete real-life situation outside school where it gives them actual power.'
+    : 'Sentence 1: Name one specific thing they got right — reference their actual words. Sentence 2: Name the one thing to look at differently — do not give the answer, point toward it. Never say "however" or "unfortunately." Always point forward.'
+}
+
+2 sentences only. Direct, warm, peer energy. Output only the 2 sentences.`;
+    }
+
     case 'evaluate_mastery_structured': {
       const {
         studentResponse = '',
@@ -764,7 +792,9 @@ export async function POST(req: NextRequest) {
       action === 'generate_practice_questions' ||
       action === 'evaluate_practice_response';
 
-    const isProtocolContentAction = action === 'generate_protocol_step_content';
+    const isProtocolContentAction =
+      action === 'generate_protocol_step_content' || action === 'generate_protocol_feedback';
+    const isStreamingAction = isProtocolContentAction;
 
     const systemPrompt = isExtractPassages
       ? EXTRACT_PASSAGES_SYSTEM_PROMPT
@@ -776,6 +806,43 @@ export async function POST(req: NextRequest) {
             ? PROTOCOL_SYSTEM_PROMPT
             : SYSTEM_PROMPT;
 
+    // ── Streaming path ───────────────────────────────────────────────────────
+    // For generate_protocol_step_content and generate_protocol_feedback, pipe
+    // the Anthropic SSE stream directly to the client so the UI can render
+    // content progressively rather than waiting for the full response.
+    if (isStreamingAction) {
+      const streamRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1024,
+          stream: true,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      });
+
+      if (!streamRes.ok || !streamRes.body) {
+        const errText = await streamRes.text();
+        console.error('[Claude API] Stream error:', streamRes.status, errText);
+        return NextResponse.json({ error: 'Claude API error' }, { status: 502 });
+      }
+
+      return new Response(streamRes.body, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
+
+    // ── Non-streaming path (all other actions) ───────────────────────────────
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
