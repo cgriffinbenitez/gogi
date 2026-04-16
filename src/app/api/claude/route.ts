@@ -57,7 +57,20 @@ Voice (when writing to students): direct, warm, peer-to-peer. Speak like a peer 
 
 When returning JSON: return ONLY valid JSON. No preamble. No markdown. No explanation. Raw JSON only.`;
 
+// Used for generate_protocol_step_content — no word cap, length scales to step type.
 const PROTOCOL_CONTENT_SYSTEM_PROMPT = `You are Gogi, a peer tutor for 9th grade ELA students in Title I schools in Miami-Dade County, Florida.
+
+Voice: casual, direct, warm, teen peer energy. You believe in this student completely. No academic language. Every word earns its place. Speak directly to the student as "you."
+
+Rules that never break:
+- Never return JSON. Never use code blocks. Never use markdown headers.
+- Never give away the answer. Guide the thinking, never do it.
+- Connect every skill to real power in the student's actual life.
+
+Length: Match your length to the instructional demand of the step. Orientation and ReassessTrigger: 3-5 sentences maximum. MicroModel: use as many words as needed to fully demonstrate the skill with examples — never compress a demonstration into a summary. All other steps: match length to what the student needs to successfully complete the interaction.`;
+
+// Used for generate_protocol_feedback — short feedback only, 150-word cap enforced.
+const PROTOCOL_FEEDBACK_SYSTEM_PROMPT = `You are Gogi, a peer tutor for 9th grade ELA students in Title I schools in Miami-Dade County, Florida.
 
 Voice: casual, direct, warm, teen peer energy. You believe in this student completely. No academic language. No walls of text. Every word earns its place. Speak directly to the student as "you."
 
@@ -497,6 +510,18 @@ Return ONLY the JSON array. No markdown. No preamble. No explanation.`;
         diagnosticClassification = '',
       } = params;
 
+      // read_only format spec is step-name-aware:
+      // Orientation → brief framing (3-5 sentences, no lists)
+      // MicroModel  → structured demonstration required (lists, numbered steps allowed)
+      // ReassessTrigger → emotional closure (2-3 sentences, no lists)
+      // All other read_only → default brief format
+      const readOnlyFormatSpec =
+        stepName === 'MicroModel'
+          ? 'Use numbered steps, labeled examples, and structured demonstrations. Lists and structure are required here — the structure IS the instruction. Show the student exactly how to do the skill step by step using the passage. Never compress a multi-step demonstration into a prose paragraph.'
+          : stepName === 'ReassessTrigger'
+            ? 'Speak directly to the student in 2-3 sentences. No lists. No headers. Emotional closure only.'
+            : 'Speak directly to the student in 3-5 sentences. No lists. No headers. Just Gogi talking.';
+
       return `You are Gogi, an AI peer tutor for 9th grade ELA students. Speak directly to the student in casual, energetic teen voice. Never return JSON. Never use code blocks. Speak in plain conversational paragraphs.
 
 You are delivering Step ${stepNumber} (${stepName}) of the ${protocolLabel} intervention for standard ${standardCode}.
@@ -512,11 +537,10 @@ Specifically generate: ${claudeGenerates}
 Interaction type: ${interactionType}
 ${interactionType === 'multiple_choice' ? 'Format your response as: question text, then exactly 4 options labeled A) B) C) D) on separate lines. Nothing else.' : ''}
 ${interactionType === 'fill_in' ? 'Format your response as instructions followed by fill-in sentences using ___ for blanks.' : ''}
-${interactionType === 'read_only' ? 'Speak directly to the student in 3-5 sentences. No lists. No headers. Just Gogi talking.' : ''}
+${interactionType === 'read_only' ? readOnlyFormatSpec : ''}
 ${interactionType === 'short_response' ? 'Ask one clear question. End with an italicized response anchor on a new line telling the student what shape their answer should take.' : ''}
-${interactionType === 'structured_response' ? 'Give clear instructions for a 3-part response: theme, evidence, reasoning.' : ''}
 
-Maximum 150 words. Never supply the answer. Coach voice only.`;
+Never supply the answer. Coach voice only.`;
     }
 
     case 'generate_protocol_feedback': {
@@ -810,11 +834,13 @@ export async function POST(req: NextRequest) {
       ? EXTRACT_PASSAGES_SYSTEM_PROMPT
       : isGenerateDiagnostic
         ? GENERATE_DIAGNOSTIC_QUESTIONS_SYSTEM_PROMPT
-        : isProtocolContentAction
+        : action === 'generate_protocol_step_content'
           ? PROTOCOL_CONTENT_SYSTEM_PROMPT
-          : isProtocolAction
-            ? PROTOCOL_SYSTEM_PROMPT
-            : SYSTEM_PROMPT;
+          : action === 'generate_protocol_feedback'
+            ? PROTOCOL_FEEDBACK_SYSTEM_PROMPT
+            : isProtocolAction
+              ? PROTOCOL_SYSTEM_PROMPT
+              : SYSTEM_PROMPT;
 
     // ── Streaming path ───────────────────────────────────────────────────────
     // For generate_protocol_step_content and generate_protocol_feedback, pipe
@@ -830,7 +856,9 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1024,
+          // MicroModel steps require 300-500 words; give step content room to breathe.
+          // Feedback stays at 1024 — it is always 2 sentences.
+          max_tokens: action === 'generate_protocol_step_content' ? 2048 : 1024,
           stream: true,
           system: systemPrompt,
           messages: [{ role: 'user', content: prompt }],
