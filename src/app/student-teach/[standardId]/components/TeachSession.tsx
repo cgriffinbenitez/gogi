@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import GogiAvatar from '@/components/GogiAvatar';
 import ProtocolEngine from '../protocol/ProtocolEngine';
 import { routeToProtocol, type StandardCode } from '../protocol/ClassificationRouter';
 import {
@@ -51,7 +52,7 @@ const PROTOCOL_MAP: Record<string, Protocol> = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type TeachView = 'loading' | 'error' | 'protocol';
+type TeachView = 'loading' | 'error' | 'protocol' | 'complete';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -107,7 +108,7 @@ export default function TeachSession() {
           .single();
 
         if (studentError || !student) {
-          setErrorMsg('Student profile not found. Please contact your teacher.');
+          setErrorMsg('Something is off on our end. Let your teacher know — they can fix it in 2 minutes.');
           setView('error');
           return;
         }
@@ -120,7 +121,7 @@ export default function TeachSession() {
           .single();
 
         if (standardError || !standard) {
-          setErrorMsg('Standard not found.');
+          setErrorMsg('We could not load your lesson. Try refreshing — if it keeps happening, let your teacher know.');
           setView('error');
           return;
         }
@@ -190,7 +191,7 @@ export default function TeachSession() {
           .single();
 
         if (sessionError || !session) {
-          setErrorMsg('Failed to start your session. Please try again.');
+          setErrorMsg('We had trouble saving your progress. Try refreshing the page.');
           setView('error');
           return;
         }
@@ -200,7 +201,7 @@ export default function TeachSession() {
         setView('protocol');
       } catch (err) {
         console.error('[TeachSession] Init error:', err);
-        setErrorMsg('Something went wrong. Please refresh and try again.');
+        setErrorMsg('Something went wrong on our end. Try refreshing — your progress is saved.');
         setView('error');
       }
     }
@@ -229,8 +230,15 @@ export default function TeachSession() {
         console.error('[TeachSession] Failed to close teach session:', err);
       }
     }
-    router.push(`/student-practice/${standardId}`);
+    setView('complete');
   }
+
+  // Auto-route to practice after 3 seconds on the completion screen
+  useEffect(() => {
+    if (view !== 'complete') return;
+    const t = setTimeout(() => router.push(`/student-practice/${standardId}`), 3_000);
+    return () => clearTimeout(t);
+  }, [view, router, standardId]);
 
   // ─── Views ────────────────────────────────────────────────────────────────
 
@@ -261,6 +269,47 @@ export default function TeachSession() {
             className="btn-primary w-full"
           >
             Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Lesson complete transition ───────────────────────────────────────────
+
+  if (view === 'complete') {
+    return (
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col items-center justify-center px-4">
+        <div className="max-w-sm w-full space-y-6">
+          {/* Checkmark */}
+          <div className="flex justify-center">
+            <div className="w-14 h-14 rounded-full bg-[#1D9E75]/20 border border-[#1D9E75]/40 flex items-center justify-center">
+              <span className="text-[#1D9E75] text-2xl font-bold">✓</span>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-white text-center font-bold" style={{ fontSize: '22px' }}>
+            Lesson complete.
+          </h1>
+
+          {/* Gogi message */}
+          <div className="flex items-start gap-3">
+            <GogiAvatar />
+            <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+              <p className="text-[#94A3B8] text-sm leading-relaxed">
+                You just learned something real. Time to try it out.
+              </p>
+            </div>
+          </div>
+
+          {/* Continue button for impatient students */}
+          <button
+            onClick={() => router.push(`/student-practice/${standardId}`)}
+            className="btn-primary w-full py-3.5"
+          >
+            Continue
+            <span>→</span>
           </button>
         </div>
       </div>

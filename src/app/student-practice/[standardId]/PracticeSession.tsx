@@ -22,7 +22,7 @@ import DragAndDropStep from '@/components/protocol/steps/DragAndDropStep';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PracticeView = 'loading' | 'error' | 'generating' | 'question' | 'evaluating' | 'feedback' | 'complete';
+type PracticeView = 'loading' | 'error' | 'generating' | 'question' | 'evaluating' | 'feedback' | 'complete' | 'transitioning';
 type QNum = 1 | 2 | 3;
 type ScaffoldLevel = 'full' | 'reduced' | 'none';
 type InteractionType =
@@ -148,7 +148,7 @@ export default function PracticeSession() {
           .single();
 
         if (studentError || !student) {
-          setErrorMsg('Student profile not found. Please contact your teacher.');
+          setErrorMsg('Something is off on our end. Let your teacher know — they can fix it in 2 minutes.');
           setView('error');
           return;
         }
@@ -161,7 +161,7 @@ export default function PracticeSession() {
           .single();
 
         if (standardError || !standard) {
-          setErrorMsg('Standard not found.');
+          setErrorMsg('We could not load your lesson. Try refreshing — if it keeps happening, let your teacher know.');
           setView('error');
           return;
         }
@@ -228,7 +228,7 @@ export default function PracticeSession() {
           .single();
 
         if (sessionError || !session) {
-          setErrorMsg('Failed to start your practice session. Please try again.');
+          setErrorMsg('We had trouble saving your progress. Try refreshing the page.');
           setView('error');
           return;
         }
@@ -246,7 +246,7 @@ export default function PracticeSession() {
 
         const parsed = parseJsonSafe<{ q1: GeneratedQuestion; q2: GeneratedQuestion; q3: GeneratedQuestion }>(raw);
         if (!parsed || !parsed.q1 || !parsed.q2 || !parsed.q3) {
-          setErrorMsg('Could not generate practice questions. Please try again.');
+          setErrorMsg('We had trouble building your questions. Try refreshing the page.');
           setView('error');
           return;
         }
@@ -255,7 +255,7 @@ export default function PracticeSession() {
         setView('question');
       } catch (err) {
         console.error('[PracticeSession] Init error:', err);
-        setErrorMsg('Something went wrong. Please refresh and try again.');
+        setErrorMsg('Something went wrong on our end. Try refreshing — your progress is saved.');
         setView('error');
       }
     }
@@ -367,8 +367,15 @@ export default function PracticeSession() {
       }
     }
 
-    setView('complete');
+    setView('transitioning');
   }, [qNum, practiceSessionId]);
+
+  // Auto-route to reassess after 3 seconds on the transition screen
+  useEffect(() => {
+    if (view !== 'transitioning') return;
+    const t = setTimeout(() => router.push(`/student-reassess/${standardId}`), 3_000);
+    return () => clearTimeout(t);
+  }, [view, router, standardId]);
 
   // ─── Derived ──────────────────────────────────────────────────────────────
 
@@ -412,28 +419,41 @@ export default function PracticeSession() {
     );
   }
 
-  // ─── Complete ─────────────────────────────────────────────────────────────
+  // ─── Transitioning ────────────────────────────────────────────────────────
+  // Shown for 3 seconds after Q3 before auto-routing to reassess.
 
-  if (view === 'complete') {
+  if (view === 'transitioning' || view === 'complete') {
     return (
-      <div className="min-h-screen bg-[#0d0f12] flex flex-col items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full text-center space-y-6">
-          <h1 className="text-white text-3xl font-extrabold">Practice complete.</h1>
-          <div className="flex items-start gap-3 text-left">
+      <div className="min-h-screen bg-[#0d0f12] flex flex-col items-center justify-center px-4">
+        <div className="max-w-sm w-full space-y-6">
+          {/* Checkmark */}
+          <div className="flex justify-center">
+            <div className="w-14 h-14 rounded-full bg-[#1D9E75]/20 border border-[#1D9E75]/40 flex items-center justify-center">
+              <span className="text-[#1D9E75] text-2xl font-bold">✓</span>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-white text-center font-bold" style={{ fontSize: '22px' }}>
+            Practice complete.
+          </h1>
+
+          {/* Gogi message */}
+          <div className="flex items-start gap-3">
             <GogiAvatar />
             <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
               <p className="text-[#94A3B8] text-sm leading-relaxed">
-                {q3Passed
-                  ? "You took that skill all the way to independent. Now let's make it official — your check is next."
-                  : "You worked through all three questions. That's the reps. Your check is next — everything you practiced is already in there."}
+                You just put in real work. Your check-in is next.
               </p>
             </div>
           </div>
+
+          {/* Continue button — also available for impatient students */}
           <button
             onClick={() => router.push(`/student-reassess/${standardId}`)}
-            className="btn-primary w-full py-4 text-base"
+            className="btn-primary w-full py-3.5"
           >
-            Continue to Reassessment
+            Continue
             <span>→</span>
           </button>
         </div>

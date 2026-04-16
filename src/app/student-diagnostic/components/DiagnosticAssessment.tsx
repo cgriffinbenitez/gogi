@@ -213,7 +213,7 @@ export default function DiagnosticAssessment() {
           .single();
 
         if (studentError || !student) {
-          setErrorMsg('Student profile not found. Please contact your teacher.');
+          setErrorMsg('Something is off on our end. Let your teacher know — they can fix it in 2 minutes.');
           setPhase('error');
           return;
         }
@@ -226,7 +226,7 @@ export default function DiagnosticAssessment() {
           .order('code');
 
         if (standardsError || !standards || standards.length === 0) {
-          setErrorMsg('Standards not found. Please contact your administrator.');
+          setErrorMsg('We could not load your assessment. Try refreshing — if it keeps happening, let your teacher know.');
           setPhase('error');
           return;
         }
@@ -248,7 +248,7 @@ export default function DiagnosticAssessment() {
           .order('difficulty_level');
 
         if (questionsError || !dbQuestions || dbQuestions.length === 0) {
-          setErrorMsg('No questions available. Please contact your administrator.');
+          setErrorMsg('We could not load your questions. Try refreshing — if it keeps happening, let your teacher know.');
           setPhase('error');
           return;
         }
@@ -289,7 +289,7 @@ export default function DiagnosticAssessment() {
         for (let i = 0; i < standards.length; i++) {
           const { data: sess, error: sessError } = sessionInserts[i];
           if (sessError || !sess) {
-            setErrorMsg('Failed to start your session. Please try again.');
+            setErrorMsg('We had trouble saving your progress. Try refreshing the page.');
             setPhase('error');
             return;
           }
@@ -299,7 +299,7 @@ export default function DiagnosticAssessment() {
         setPhase('intro');
       } catch (err) {
         console.error('[DiagnosticAssessment] Init error:', err);
-        setErrorMsg('Something went wrong. Please refresh the page and try again.');
+        setErrorMsg('Something went wrong on our end. Try refreshing — your progress is saved.');
         setPhase('error');
       }
     }
@@ -502,7 +502,7 @@ export default function DiagnosticAssessment() {
             </div>
 
             <p className="text-[#94A3B8] text-sm leading-relaxed mb-6">
-              This assessment will help GOGI understand your current reading skills so we can build a personalized learning plan just for you.
+              We are going to figure out exactly where to start. It takes about 15 minutes — just read and pick what makes sense to you. There are no wrong answers here, only information that helps us help you.
             </p>
 
             <div className="grid grid-cols-3 gap-3 mb-6">
@@ -528,12 +528,12 @@ export default function DiagnosticAssessment() {
             </div>
 
             <div className="bg-white/[0.06] border border-white/[0.08] rounded-xl p-4 mb-8">
-              <h3 className="text-white font-semibold text-sm mb-2">Before you begin:</h3>
+              <h3 className="text-white font-semibold text-sm mb-2">Quick heads up:</h3>
               <ul className="text-[#94A3B8] text-sm space-y-1.5">
-                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Read each passage carefully before answering</li>
-                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Each question has one best answer</li>
-                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> You cannot go back to previous questions</li>
-                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Your results will personalize your learning path</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> Read the passage, then pick the answer that makes the most sense to you</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> One answer fits better than the others — trust your gut</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> You move forward after each question, no going back</li>
+                <li className="flex items-start gap-2"><span className="text-[#1D9E75] mt-0.5">•</span> What you pick shapes what Gogi teaches you next</li>
               </ul>
             </div>
 

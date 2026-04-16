@@ -96,7 +96,7 @@ export default function ReassessSession() {
           .single();
 
         if (studentError || !student) {
-          setErrorMsg('Student profile not found. Please contact your teacher.');
+          setErrorMsg('Something is off on our end. Let your teacher know — they can fix it in 2 minutes.');
           setView('error');
           return;
         }
@@ -109,7 +109,7 @@ export default function ReassessSession() {
           .single();
 
         if (standardError || !standard) {
-          setErrorMsg('Standard not found.');
+          setErrorMsg('We could not load your reassessment. Try refreshing — if it keeps happening, let your teacher know.');
           setView('error');
           return;
         }
@@ -128,7 +128,7 @@ export default function ReassessSession() {
           .single();
 
         if (sessionError || !session) {
-          setErrorMsg('Failed to start your reassessment. Please try again.');
+          setErrorMsg('We had trouble saving your progress. Try refreshing the page.');
           setView('error');
           return;
         }
@@ -199,7 +199,7 @@ export default function ReassessSession() {
           }
         } catch (err) {
           console.error('[ReassessSession] Generate error:', err);
-          setErrorMsg('Failed to generate your reassessment. Please try again.');
+          setErrorMsg('We had trouble building your reading. Try refreshing the page.');
           setView('error');
           return;
         } finally {
@@ -214,7 +214,7 @@ export default function ReassessSession() {
         setView('intro');
       } catch (err) {
         console.error('[ReassessSession] Init error:', err);
-        setErrorMsg('Something went wrong. Please refresh and try again.');
+        setErrorMsg('Something went wrong on our end. Try refreshing — your progress is saved.');
         setView('error');
       }
     }
