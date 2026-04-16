@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
 import { useStreamingClaude } from '@/lib/useStreamingClaude';
 import GogiAvatar from '@/components/GogiAvatar';
+import { cleanPassageText } from '@/lib/passageUtils';
 import MultipleChoiceStep from '@/app/student-teach/[standardId]/interactions/MultipleChoiceStep';
 import FillInStep from '@/app/student-teach/[standardId]/interactions/FillInStep';
 import ShortResponseStep from '@/app/student-teach/[standardId]/interactions/ShortResponseStep';
@@ -498,12 +499,10 @@ export default function PracticeSession() {
 
           {passage && (
             <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5">
-              <p className="text-[11px] font-bold text-[#4B5563] uppercase tracking-widest mb-3">
-                Literary Selection
-              </p>
-              <hr className="border-white/[0.08] mb-4" />
+              <p className="text-white font-bold" style={{ fontSize: '16px' }}>Literary Selection</p>
+              <hr className="border-white/[0.08] my-3" />
               <p className="text-[#94A3B8] text-sm whitespace-pre-line leading-7">
-                {passage}
+                {cleanPassageText(passage)}
               </p>
             </div>
           )}

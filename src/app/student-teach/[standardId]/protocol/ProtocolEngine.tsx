@@ -32,6 +32,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
 import { useStreamingClaude } from '@/lib/useStreamingClaude';
+import { cleanPassageText } from '@/lib/passageUtils';
 import GogiAvatar from '@/components/GogiAvatar';
 import { Protocol, ProtocolStep } from './types';
 import MultipleChoiceStep from '../interactions/MultipleChoiceStep';
@@ -402,7 +403,7 @@ export default function ProtocolEngine({
         claudeGenerates: step!.claudeGenerates.join('\n\n'),
         interactionType: step!.interactionType,
         scaffoldsActive: String(step!.scaffoldsActive),
-        passage,
+        passage: cleanPassageText(passage),
         advancementCondition: step!.advancementCondition,
         diagnosticClassification: protocol.triggerClassifications[0] ?? '',
       };
@@ -937,12 +938,10 @@ export default function ProtocolEngine({
 
             {passage && (
               <div className="mt-2 bg-white/[0.04] border border-white/[0.08] rounded-2xl p-6">
-                <p className="text-[11px] font-bold text-[#4B5563] uppercase tracking-widest mb-3">
-                  Literary Selection
-                </p>
-                <hr className="border-white/[0.08] mb-4" />
+                <p className="text-white font-bold" style={{ fontSize: '16px' }}>Literary Selection</p>
+                <hr className="border-white/[0.08] my-3" />
                 <p className="text-[#94A3B8] text-sm whitespace-pre-line" style={{ lineHeight: '1.8' }}>
-                  {passage}
+                  {cleanPassageText(passage)}
                 </p>
               </div>
             )}

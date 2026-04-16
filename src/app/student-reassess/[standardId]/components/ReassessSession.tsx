@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
 import { renderMarkdown } from '@/lib/renderMarkdown';
 import GogiAvatar from '@/components/GogiAvatar';
+import { cleanPassageText } from '@/lib/passageUtils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -477,11 +478,10 @@ export default function ReassessSession() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Passage Panel */}
               <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5 lg:sticky lg:top-6 lg:max-h-[calc(100vh-160px)] lg:overflow-y-auto scrollbar-thin">
-                <div className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mb-3">
-                  Passage
-                </div>
+                <p className="text-white font-bold" style={{ fontSize: '16px' }}>Literary Selection</p>
+                <hr className="border-white/[0.08] my-3" />
                 <p className="text-[#94A3B8] text-sm leading-relaxed whitespace-pre-line">
-                  {passage}
+                  {cleanPassageText(passage)}
                 </p>
               </div>
 
