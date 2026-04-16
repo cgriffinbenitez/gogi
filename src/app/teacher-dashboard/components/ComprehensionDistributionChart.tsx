@@ -9,9 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  defs,
-  linearGradient,
-  stop,
   ReferenceLine,
 } from 'recharts';
 
