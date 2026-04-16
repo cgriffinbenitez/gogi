@@ -847,9 +847,12 @@ export default function ProtocolEngine({
   // ── Read-only step (Orientation, MicroModel, ReassessTrigger) ─────────────────
   if (view === 'read_only' && step) {
     const isReassess = step.name === 'ReassessTrigger';
-    // During streaming: show live content; after streaming: show synced stepContent
     const isStreamingStep = streaming.isStreaming && streamPurposeRef.current === 'step';
-    const displayContent = isStreamingStep ? streaming.content : stepContent;
+    // Use stepContent once it is synced (after the await resolves).
+    // Fall back to streaming.content while it is streaming OR during the brief
+    // gap between isStreaming→false and setStepContent running — streaming.content
+    // persists until the next startStreaming call so nothing goes blank.
+    const displayContent = stepContent || streaming.content;
 
     return (
       <div className="min-h-screen bg-[#0d0f12] flex flex-col">

@@ -215,9 +215,9 @@ export const ChunkingFailure: Protocol = {
       interactionType: 'drag_and_drop',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Below the --- delimiter: three pre-labeled category cards (e.g., "Main Point", "Supporting Idea 1", "Supporting Idea 2") and 7–9 item cards containing key ideas, details, and examples extracted from the passage.',
-        'Above the delimiter: Gogi instruction — "Sort these ideas from the passage into the right folder. Each idea belongs to exactly one group."',
-        'Items are pre-extracted and pre-worded — student does maximum classification work, zero retrieval or paraphrasing.',
+        'A single Gogi instruction line above the --- delimiter: "Sort these ideas from the passage into the right folder. Each idea belongs to exactly one group."',
+        'Below the --- delimiter, output EXACTLY this two-line format — nothing else:\nITEMS: [7–9 passage-specific ideas, details, and examples from the passage, each a short phrase of 3–8 words, separated by | pipes]\nCATEGORIES: Main Point | Supporting Idea 1 | Supporting Idea 2',
+        'Items must be short, passage-specific phrases (not full sentences). Use exactly the three category labels shown — do not alter them.',
       ],
       stepPurpose:
         'First active hierarchical grouping with pre-extracted items and pre-labeled categories. Student focuses entirely on identifying relationships between ideas.',
@@ -231,9 +231,9 @@ export const ChunkingFailure: Protocol = {
       interactionType: 'drag_and_drop',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Below the --- delimiter: unlabeled category zones (labeled only "Group 1", "Group 2", "Group 3") and 7–9 item cards from the passage.',
-        'Above the delimiter: Gogi instruction — "Group these ideas the way the author grouped them. Then name each group yourself. What is each group really about? Drag the items, then write a label for each group in your explanation."',
-        'Student must determine both the grouping and the label. Scaffold reduced from named categories to numbered zones.',
+        'A single Gogi instruction line above the --- delimiter: "Group these ideas the way the author grouped them. Then name each group yourself — what is each group really about? Drag the items, then write a label for each group in your explanation."',
+        'Below the --- delimiter, output EXACTLY this two-line format — nothing else:\nITEMS: [7–9 passage-specific ideas and details from the passage, each a short phrase of 3–8 words, separated by | pipes]\nCATEGORIES: Group 1 | Group 2 | Group 3',
+        'Items must be short, passage-specific phrases (not full sentences). Use exactly the three generic labels Group 1, Group 2, Group 3 — the student generates the real category names as part of their explanation.',
       ],
       stepPurpose:
         'Scaffold fade — student must generate category labels rather than fitting items into named folders. Tests whether the student has internalized the logic of grouping.',

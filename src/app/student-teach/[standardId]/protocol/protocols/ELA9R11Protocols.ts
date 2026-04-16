@@ -364,9 +364,9 @@ export const SituationModelFailure: Protocol = {
       interactionType: 'drag_and_drop',
       scaffoldsActive: true,
       claudeGenerates: [
-        'Below the --- delimiter: pre-labeled categories WHO | WHAT CHANGED | WHY, and a set of passage-specific item cards (6–9 total) containing key ideas, details, and turning points from the passage.',
-        'Above the delimiter: Gogi instruction — "Sort these ideas into the three parts of your mental movie. Drag each one into the category where it belongs."',
-        'Items are pre-extracted from the passage — student does not generate them, only categorizes. Maximum scaffold: classification only, no retrieval required.',
+        'A single Gogi instruction line above the --- delimiter: "Sort these ideas into the three parts of your mental movie. Drag each one into the category where it belongs."',
+        'Below the --- delimiter, output EXACTLY this two-line format — nothing else:\nITEMS: [6–9 passage-specific ideas, details, and turning points from the passage, each a short phrase of 3–8 words, separated by | pipes]\nCATEGORIES: WHO | WHAT CHANGED | WHY',
+        'Items must be concrete, passage-specific phrases drawn from the current passage. The three category labels are always exactly WHO, WHAT CHANGED, and WHY — do not alter them.',
       ],
       stepPurpose:
         'First active use of the situation model tracker with pre-extracted items. Student practices categorization without the cognitive load of evidence retrieval.',
