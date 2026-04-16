@@ -84,6 +84,7 @@ export default function StudentPerformanceTable() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     async function fetchStudents() {
@@ -180,6 +181,178 @@ export default function StudentPerformanceTable() {
     setSelectedIds([]);
   };
 
+  const handleExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        toast.error('Could not authenticate. Please refresh and try again.');
+        setExporting(false);
+        return;
+      }
+
+      // Fetch all teacher's students
+      const { data: studentRows } = await supabase
+        .from('students')
+        .select('id, full_name, grade_level, fast_pm1_score, fast_pm2_score')
+        .eq('teacher_id', user.id)
+        .order('full_name', { ascending: true });
+
+      const allStudents = studentRows ?? [];
+
+      if (allStudents.length === 0) {
+        toast.info('No students to export yet.');
+        setExporting(false);
+        return;
+      }
+
+      const studentIds = allStudents.map((s) => s.id as string);
+
+      // Fetch pilot standards, all sessions, all responses in parallel
+      const [standardsRes, sessionsRes, responsesRes] = await Promise.all([
+        supabase
+          .from('standards')
+          .select('id, code, title')
+          .in('code', ['ELA.9.R.1.1', 'ELA.9.R.1.2', 'ELA.9.R.2.1'])
+          .order('code', { ascending: true }),
+        supabase
+          .from('sessions')
+          .select('id, student_id, standard_id, phase, mastery_achieved, completed_at, time_spent_seconds')
+          .in('student_id', studentIds),
+        supabase
+          .from('responses')
+          .select('student_id, standard_id, diagnostic_classification, intervention_type, teacher_override')
+          .in('student_id', studentIds),
+      ]);
+
+      const standards = standardsRes.data ?? [];
+      const sessions = sessionsRes.data ?? [];
+      const responses = responsesRes.data ?? [];
+
+      // ── Build CSV ────────────────────────────────────────────────────────
+      // Escape a single cell value: wrap in quotes if it contains comma, quote, or newline
+      const esc = (val: string | number | null | undefined): string => {
+        if (val === null || val === undefined) return '';
+        const str = String(val);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+      };
+
+      const HEADERS = [
+        'student_name',
+        'student_grade',
+        'standard_code',
+        'standard_name',
+        'diagnostic_classification',
+        'protocol_assigned',
+        'diagnostic_complete',
+        'teach_complete',
+        'practice_complete',
+        'reassess_complete',
+        'mastery_achieved',
+        'teacher_override',
+        'fast_pm1_score',
+        'fast_pm2_score',
+        'total_time_minutes',
+      ];
+
+      const rows: string[] = [HEADERS.join(',')];
+
+      for (const student of allStudents) {
+        for (const standard of standards) {
+          const sid = student.id as string;
+          const stid = standard.id as string;
+
+          const studentSessions = sessions.filter(
+            (s) => s.student_id === sid && s.standard_id === stid,
+          );
+          const studentResponses = responses.filter(
+            (r) => r.student_id === sid && r.standard_id === stid,
+          );
+
+          const phaseComplete = (phase: string) =>
+            studentSessions.some((s) => s.phase === phase && s.completed_at)
+              ? 'yes'
+              : 'no';
+
+          const diagnosticClassification =
+            studentResponses.find(
+              (r) => r.diagnostic_classification && (r.diagnostic_classification as string).length > 0,
+            )?.diagnostic_classification ?? '';
+
+          const protocolAssigned =
+            studentResponses.find(
+              (r) => r.intervention_type && (r.intervention_type as string).length > 0,
+            )?.intervention_type ?? '';
+
+          const hasTeacherOverride = studentResponses.some(
+            (r) => r.teacher_override === true,
+          );
+
+          const reassessSession = studentSessions
+            .filter((s) => s.phase === 'reassess' && s.completed_at)
+            .slice(-1)[0];
+
+          const masteryAchieved =
+            hasTeacherOverride
+              ? 'yes (override)'
+              : reassessSession?.mastery_achieved === true
+              ? 'yes'
+              : reassessSession?.mastery_achieved === false
+              ? 'no'
+              : '';
+
+          const totalSeconds = studentSessions.reduce(
+            (sum, s) => sum + ((s.time_spent_seconds as number | null) ?? 0),
+            0,
+          );
+          const totalMinutes = totalSeconds > 0
+            ? (Math.round(totalSeconds / 60 * 10) / 10).toFixed(1)
+            : '';
+
+          const row = [
+            esc(student.full_name as string),
+            esc(student.grade_level as string | null),
+            esc(standard.code as string),
+            esc(standard.title as string),
+            esc(diagnosticClassification as string),
+            esc(protocolAssigned as string),
+            phaseComplete('diagnostic'),
+            phaseComplete('teach'),
+            phaseComplete('practice'),
+            phaseComplete('reassess'),
+            esc(masteryAchieved),
+            hasTeacherOverride ? 'yes' : 'no',
+            esc(student.fast_pm1_score as number | null),
+            esc(student.fast_pm2_score as number | null),
+            esc(totalMinutes),
+          ].join(',');
+
+          rows.push(row);
+        }
+      }
+
+      const csvContent = rows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const today = new Date().toISOString().slice(0, 10);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gogi-student-data-${today}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('[Export] Failed:', err);
+      toast.error('Export failed. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const SortIcon = ({ col }: { col: SortKey }) => {
     if (sortKey !== col) return <ChevronsUpDown size={13} className="text-[#4B5563]" />;
     if (sortDir === 'asc') return <ChevronUp size={13} className="text-[#1D9E75]" />;
@@ -198,11 +371,16 @@ export default function StudentPerformanceTable() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => toast.success('Export started — CSV will download shortly')}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8] hover:text-white bg-white/[0.06] hover:bg-white/[0.09] px-3 py-2 rounded-xl transition-colors border border-white/[0.08]"
+              onClick={handleExport}
+              disabled={exporting}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#94A3B8] hover:text-white bg-white/[0.06] hover:bg-white/[0.09] px-3 py-2 rounded-xl transition-colors border border-white/[0.08] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download size={14} />
-              Export
+              {exporting ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Download size={14} />
+              )}
+              {exporting ? 'Exporting…' : 'Export'}
             </button>
           </div>
         </div>
