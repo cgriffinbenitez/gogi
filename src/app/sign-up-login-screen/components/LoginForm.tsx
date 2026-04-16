@@ -17,6 +17,21 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Forgot password state
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSending, setForgotSending] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+
+  const handleForgotPassword = async () => {
+    const email = forgotEmail.trim();
+    if (!email) return;
+    setForgotSending(true);
+    await supabase.auth.resetPasswordForEmail(email);
+    setForgotSending(false);
+    setForgotSent(true);
+  };
+
   const {
     register,
     handleSubmit,
@@ -113,6 +128,48 @@ export default function LoginForm() {
           </div>
           {errors.password && (
             <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.password.message}</p>
+          )}
+
+          {/* Forgot password */}
+          {!showForgot ? (
+            <button
+              type="button"
+              onClick={() => setShowForgot(true)}
+              className="text-[#94A3B8] text-xs mt-1.5 hover:text-white transition-colors"
+            >
+              Forgot your password?
+            </button>
+          ) : forgotSent ? (
+            <p className="text-[#1D9E75] text-xs mt-2">
+              Check your email for a reset link.
+            </p>
+          ) : (
+            <div className="mt-2 flex flex-col gap-2">
+              <input
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="input-field text-sm"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={forgotSending}
+                  className="text-[#1D9E75] text-xs font-semibold hover:underline disabled:opacity-50"
+                >
+                  {forgotSending ? 'Sending…' : 'Send reset link'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowForgot(false); setForgotEmail(''); }}
+                  className="text-[#4B5563] text-xs hover:text-[#94A3B8] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           )}
         </div>
 

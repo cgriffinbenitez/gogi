@@ -50,7 +50,7 @@ interface PracticeEval {
 
 const SCAFFOLD_LABELS: Record<QNum, string> = {
   1: 'Guided',
-  2: 'Some support',
+  2: 'Almost there',
   3: 'On your own',
 };
 
