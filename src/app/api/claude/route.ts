@@ -7,7 +7,7 @@ import { createServerClient } from '@supabase/ssr';
 
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const RATE_LIMIT_MAX_CALLS = 30;
+const RATE_LIMIT_MAX_CALLS = 100;
 
 // ─── System Prompts ───────────────────────────────────────────────────────────
 
@@ -762,14 +762,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // ── Rate limiting (30 calls / user / hour, sliding window) ──────────────
+    // ── Rate limiting (100 calls / user / hour, sliding window) ─────────────
     const now = Date.now();
     const windowStart = now - RATE_LIMIT_WINDOW_MS;
     const timestamps = (rateLimitMap.get(user.id) ?? []).filter(t => t > windowStart);
 
     if (timestamps.length >= RATE_LIMIT_MAX_CALLS) {
       return NextResponse.json(
-        { error: 'Too many requests. Please wait a moment before continuing.' },
+        { error: "You've been working hard. Take a short break and come back in a few minutes." },
         { status: 429 },
       );
     }

@@ -563,9 +563,9 @@ export default function DiagnosticAssessment() {
             <p className="text-[#94A3B8] text-sm">3 Standards · {finalScore.total} Questions · {finalScore.pct}% Overall</p>
           </div>
 
-          {/* Per-Standard Results */}
+          {/* Per-Standard Learning Path */}
           <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5 mb-6">
-            <h2 className="text-white font-bold text-sm mb-4">Results by Standard</h2>
+            <h2 className="text-white font-bold text-sm mb-4">Your Learning Path</h2>
             <div className="space-y-3">
               {standardResults.map(s => {
                 const passed = s.pct >= MASTERY_THRESHOLD * 100;
@@ -575,15 +575,17 @@ export default function DiagnosticAssessment() {
                     className={`flex items-center justify-between gap-4 p-4 rounded-xl border ${
                       passed
                         ? 'bg-[#1D9E75]/10 border-[#1D9E75]/20'
-                        : 'bg-red-500/10 border-red-500/20'
+                        : 'bg-amber-500/10 border-amber-500/20'
                     }`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-[#1D9E75] font-mono text-xs">{s.code}</span>
-                        <span className={`text-xs font-bold ${passed ? 'text-[#1D9E75]' : 'text-red-400'}`}>
-                          {s.pct}%
-                        </span>
+                        {!passed && (
+                          <span className="text-xs font-semibold text-amber-400">
+                            Ready to learn
+                          </span>
+                        )}
                       </div>
                       <p className="text-[#94A3B8] text-sm">{s.title}</p>
                     </div>
@@ -594,8 +596,8 @@ export default function DiagnosticAssessment() {
                         </div>
                       ) : (
                         <>
-                          <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                            <span className="text-red-400 font-bold text-sm">✗</span>
+                          <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                            <span className="text-amber-400 font-bold text-base">→</span>
                           </div>
                           <button
                             onClick={() => router.push(`/student-teach/${s.id}`)}

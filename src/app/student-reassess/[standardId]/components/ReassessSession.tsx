@@ -19,6 +19,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
 import { renderMarkdown } from '@/lib/renderMarkdown';
+import GogiAvatar from '@/components/GogiAvatar';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -64,7 +65,13 @@ export default function ReassessSession() {
   const [masteredArr, setMasteredArr] = useState<boolean[]>([]);
   const [allFeedback, setAllFeedback] = useState<string[]>([]);
 
+  // Rotating loading messages for the generation wait screen
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
   const reassessStartRef = useRef<number>(0);
+  const loadingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -128,6 +135,27 @@ export default function ReassessSession() {
         setReassessSessionId(session.id);
 
         setContentLoading(true);
+        setLoadingMsgIndex(0);
+        setLoadingProgress(0);
+
+        // Rotate messages every 4 seconds while Claude generates
+        const LOADING_MESSAGES = [
+          'Getting your reading ready...',
+          'Building your questions...',
+          'Almost there...',
+          'One more second...',
+        ];
+        loadingIntervalRef.current = setInterval(() => {
+          setLoadingMsgIndex(prev => Math.min(prev + 1, LOADING_MESSAGES.length - 1));
+        }, 4_000);
+
+        // Fill progress bar over 25 seconds (Claude typically takes 15–25s)
+        const PROGRESS_TICK_MS = 250;
+        const PROGRESS_TOTAL_MS = 25_000;
+        progressIntervalRef.current = setInterval(() => {
+          setLoadingProgress(prev => Math.min(prev + (PROGRESS_TICK_MS / PROGRESS_TOTAL_MS) * 100, 95));
+        }, PROGRESS_TICK_MS);
+
         try {
           // ── Check pool first ────────────────────────────────────────────────
           // Every student gets one stable passage+questions per standard so
@@ -175,6 +203,10 @@ export default function ReassessSession() {
           setView('error');
           return;
         } finally {
+          // Clear both intervals and snap progress to 100% when done
+          if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current);
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          setLoadingProgress(100);
           setContentLoading(false);
         }
 
@@ -293,14 +325,43 @@ export default function ReassessSession() {
 
   // ─── LOADING ──────────────────────────────────────────────────────────────
 
+  const LOADING_MESSAGES = [
+    'Getting your reading ready...',
+    'Building your questions...',
+    'Almost there...',
+    'One more second...',
+  ];
+
   if (view === 'loading' || contentLoading) {
     return (
-      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-[#1D9E75] border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-[#94A3B8] text-sm">
-            {contentLoading ? 'Generating your reassessment…' : 'Setting up your reassessment…'}
-          </p>
+      <div className="min-h-screen bg-[#0d0f12] flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          {/* Gogi avatar + message */}
+          <div className="flex items-start gap-3 mb-8">
+            <GogiAvatar />
+            <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
+              <p className="text-white text-sm font-medium leading-snug transition-all duration-500">
+                {contentLoading
+                  ? LOADING_MESSAGES[loadingMsgIndex]
+                  : 'Setting up your reassessment…'}
+              </p>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {contentLoading && (
+            <div className="space-y-2">
+              <div className="h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#1D9E75] rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+              <p className="text-[#4B5563] text-xs text-center">
+                This usually takes about 20 seconds
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
