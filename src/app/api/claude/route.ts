@@ -517,7 +517,14 @@ Return ONLY the JSON array. No markdown. No preamble. No explanation.`;
       // All other read_only → default brief format
       const readOnlyFormatSpec =
         stepName === 'MicroModel'
-          ? 'Use numbered steps, labeled examples, and structured demonstrations. Lists and structure are required here — the structure IS the instruction. Show the student exactly how to do the skill step by step using the passage. Never compress a multi-step demonstration into a prose paragraph.'
+          ? `Structure your response as numbered demonstration points. Each point must follow this exact format:
+POINT [N] | HIGHLIGHT: "[exact quote from passage — copy verbatim]" | [Gogi instruction text for this point]
+
+Example:
+POINT 1 | HIGHLIGHT: "Buck lived at a big house in the sun-kissed Santa Clara Valley" | See how London stacks comfort words right here — sun-kissed, big house, Santa Clara Valley. He is building up how good Buck has it before taking it all away. That is the setup.
+POINT 2 | HIGHLIGHT: "trouble was brewing, not alone for himself" | Now look at this line — trouble is brewing. London puts this in the very first sentence. He wants you to feel the contrast immediately. Comfort on one side, danger on the other.
+
+Generate between 2 and 4 points depending on how many moves the skill demonstration requires. Never more than 4. Each HIGHLIGHT quote must appear verbatim in the passage text provided. Never fabricate quotes.`
           : stepName === 'ReassessTrigger'
             ? 'Speak directly to the student in 2-3 sentences. No lists. No headers. Emotional closure only.'
             : 'Speak directly to the student in 3-5 sentences. No lists. No headers. Just Gogi talking.';

@@ -43,6 +43,7 @@ import StructuredResponseStep from '../interactions/StructuredResponseStep';
 import PassageAnnotatorStep from '@/components/protocol/steps/PassageAnnotatorStep';
 import DragAndDropStep from '@/components/protocol/steps/DragAndDropStep';
 import MultipleSelectStep from '@/components/protocol/steps/MultipleSelectStep';
+import MicroModelStep from '@/components/protocol/steps/MicroModelStep';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -865,6 +866,24 @@ export default function ProtocolEngine({
     // gap between isStreaming→false and setStepContent running — streaming.content
     // persists until the next startStreaming call so nothing goes blank.
     const displayContent = stepContent || streaming.content;
+
+    // MicroModel: once streaming completes, hand off to the guided reading component.
+    // While streaming, fall through to the standard read_only view which shows
+    // the content streaming into a Gogi bubble (graceful loading state).
+    if (step.name === 'MicroModel' && !isStreamingStep && displayContent) {
+      return (
+        <div className="h-screen bg-[#0d0f12] flex flex-col overflow-hidden">
+          <EngineHeader />
+          <ProgressBar />
+          <MicroModelStep
+            content={displayContent}
+            passage={cleanPassageText(passage)}
+            scaffoldsActive={step.scaffoldsActive}
+            onSubmit={() => handleContinue()}
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-[#0d0f12] flex flex-col">
