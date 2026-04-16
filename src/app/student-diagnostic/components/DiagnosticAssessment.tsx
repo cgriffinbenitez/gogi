@@ -192,6 +192,8 @@ export default function DiagnosticAssessment() {
   const timerStartRef = useRef<number | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const standardsMetaRef = useRef<Record<string, { id: string; title: string }>>({});
+  // Tracks when the current question became visible — reset on each question advance
+  const questionStartRef = useRef<number>(0);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -319,6 +321,13 @@ export default function DiagnosticAssessment() {
     };
   }, [phase]);
 
+  // Reset question timer each time a new question is shown
+  useEffect(() => {
+    if (phase === 'assessment') {
+      questionStartRef.current = Date.now();
+    }
+  }, [currentIndex, phase]);
+
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const handleSelectOption = (index: number) => {
@@ -332,6 +341,9 @@ export default function DiagnosticAssessment() {
     const q = questions[currentIndex];
     const isCorrect = selectedOption === q.correctIndex;
     const selectedLetter = ['A', 'B', 'C', 'D'][selectedOption];
+    const timeOnQuestionSeconds = questionStartRef.current
+      ? Math.round((Date.now() - questionStartRef.current) / 1000)
+      : 0;
 
     setSaving(true);
 
@@ -345,6 +357,8 @@ export default function DiagnosticAssessment() {
         diagnostic_classification: isCorrect ? null : (q.diagnosticClassifications[selectedLetter] ?? null),
         student_response: selectedLetter,
         mastery_achieved: isCorrect,
+        attempt_number: 1,
+        time_on_question_seconds: timeOnQuestionSeconds,
       });
       if (error) console.error('[DiagnosticAssessment] Response save error:', error);
     } catch (err) {

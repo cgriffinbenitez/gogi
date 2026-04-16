@@ -18,6 +18,15 @@
 // in the next build step).
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─── SQL — run in Supabase if these columns don't exist yet ──────────────────
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS started_at        timestamptz;
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS completed_at      timestamptz;
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS time_on_step_seconds    integer;
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS time_on_question_seconds integer;
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS scaffolds_used    boolean;
+// ALTER TABLE responses ADD COLUMN IF NOT EXISTS hint_viewed       boolean;
+// ─────────────────────────────────────────────────────────────────────────────
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -304,6 +313,14 @@ export default function ProtocolEngine({
   // Guard against double-submit
   const submittingRef = useRef(false);
 
+  // ── Instrumentation refs ─────────────────────────────────────────────────────
+  // stepStartRef: timestamp (ms) when the current step first became visible to
+  // the student. Reset every time the step view switches to read_only or interactive.
+  const stepStartRef = useRef<number>(0);
+  // hintViewedRef: true if the hint was shown during the current step attempt.
+  // Reset to false when advancing to the next step.
+  const hintViewedRef = useRef<boolean>(false);
+
   // Streaming hook — shared for both step content and feedback.
   // streamPurposeRef tells render which surface `streaming.content` belongs to.
   const streaming = useStreamingClaude();
@@ -386,6 +403,7 @@ export default function ProtocolEngine({
       if (isReadOnly) {
         // Switch to read_only immediately — content streams into the Gogi bubble.
         // Continue button stays disabled while streaming.isStreaming.
+        stepStartRef.current = Date.now();
         setView('read_only');
         const content = await streaming.startStreaming('generate_protocol_step_content', payload);
         if (cancelled) return;
@@ -397,6 +415,7 @@ export default function ProtocolEngine({
           const content = await streaming.startStreaming('generate_protocol_step_content', payload);
           if (cancelled) return;
           setStepContent(content);
+          stepStartRef.current = Date.now();
           setView('interactive');
         } catch (err) {
           if (cancelled) return;
@@ -426,6 +445,7 @@ export default function ProtocolEngine({
       onComplete();
       return;
     }
+    hintViewedRef.current = false;
     setCurrentStepIndex((prev) => prev + 1);
     setLastEval(null);
     setEvalFeedback('');
@@ -442,11 +462,21 @@ export default function ProtocolEngine({
       masteryAchievedForStep,
       aiFeedback,
       attemptNumber,
+      startedAt,
+      completedAt,
+      timeOnStepSeconds,
+      scaffoldsUsed,
+      hintViewed,
     }: {
       studentResponse: string;
       masteryAchievedForStep: boolean;
       aiFeedback?: string;
       attemptNumber: number;
+      startedAt: string;
+      completedAt: string;
+      timeOnStepSeconds: number;
+      scaffoldsUsed: boolean;
+      hintViewed: boolean;
     }) => {
       try {
         await supabase.from('responses').insert({
@@ -460,6 +490,11 @@ export default function ProtocolEngine({
           mastery_achieved: masteryAchievedForStep,
           student_response: studentResponse,
           ai_feedback: aiFeedback ?? null,
+          started_at: startedAt,
+          completed_at: completedAt,
+          time_on_step_seconds: timeOnStepSeconds,
+          scaffolds_used: scaffoldsUsed,
+          hint_viewed: hintViewed,
         });
       } catch (err) {
         // Non-fatal — log but don't block the student
@@ -489,6 +524,17 @@ export default function ProtocolEngine({
     submittingRef.current = true;
     const currentAttempt = attemptCount + 1;
 
+    // ── Instrumentation: capture step timing at submit moment ────────────────
+    const completedAt = new Date().toISOString();
+    const startedAt = stepStartRef.current
+      ? new Date(stepStartRef.current).toISOString()
+      : completedAt;
+    const timeOnStepSeconds = stepStartRef.current
+      ? Math.round((Date.now() - stepStartRef.current) / 1000)
+      : 0;
+    const currentScaffoldsUsed = step.scaffoldsActive;
+    const currentHintViewed = hintViewedRef.current;
+
     // Record the response
     setStepResponses((prev) => {
       const updated = [...prev];
@@ -501,6 +547,11 @@ export default function ProtocolEngine({
         studentResponse: text,
         masteryAchievedForStep: false,
         attemptNumber: currentAttempt,
+        startedAt,
+        completedAt,
+        timeOnStepSeconds,
+        scaffoldsUsed: currentScaffoldsUsed,
+        hintViewed: currentHintViewed,
       });
       // Stream a brief acknowledgment before advancing
       setAttemptCount(-99); // sentinel value — feedback view will advance not retry
@@ -561,6 +612,11 @@ export default function ProtocolEngine({
         masteryAchievedForStep: passed,
         aiFeedback: feedback || undefined,
         attemptNumber: currentAttempt,
+        startedAt,
+        completedAt,
+        timeOnStepSeconds,
+        scaffoldsUsed: currentScaffoldsUsed,
+        hintViewed: currentHintViewed,
       });
 
       if (passed) {
@@ -595,6 +651,7 @@ export default function ProtocolEngine({
       // Unlock hint on the designated attempt before reclassification fires
       if (currentAttempt === protocol.reclassificationTrigger.hintUnlockAttempt) {
         setShowHint(true);
+        hintViewedRef.current = true;
       }
 
       // Stream failure feedback, allow retry

@@ -124,6 +124,8 @@ export default function PracticeSession() {
 
   const sessionStartRef = useRef<number>(0);
   const submittingRef = useRef(false);
+  // Tracks when the current question became visible — reset on each 'question' view
+  const questionStartRef = useRef<number>(0);
   const feedbackStreaming = useStreamingClaude();
 
   // ─── Init ────────────────────────────────────────────────────────────────
@@ -261,6 +263,13 @@ export default function PracticeSession() {
     init();
   }, [standardId, router]);
 
+  // Reset question timer each time a new question becomes visible
+  useEffect(() => {
+    if (view === 'question') {
+      questionStartRef.current = Date.now();
+    }
+  }, [view]);
+
   // ─── Handle question submit ───────────────────────────────────────────────
 
   const handleQuestionSubmit = useCallback(async (response: string) => {
@@ -273,6 +282,9 @@ export default function PracticeSession() {
 
     const q = questions[qNum - 1];
     const scaffoldLevel = SCAFFOLD_LEVELS[qNum];
+    const timeOnQuestionSeconds = questionStartRef.current
+      ? Math.round((Date.now() - questionStartRef.current) / 1000)
+      : 0;
 
     try {
       const rawEval = await callClaude('evaluate_practice_response', {
@@ -300,6 +312,7 @@ export default function PracticeSession() {
           mastery_achieved: mastery,
           student_response: text,
           ai_feedback: eval_?.feedback ?? null,
+          time_on_question_seconds: timeOnQuestionSeconds,
         });
       } catch (saveErr) {
         console.error('[PracticeSession] Response save error:', saveErr);
