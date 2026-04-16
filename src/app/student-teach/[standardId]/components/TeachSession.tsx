@@ -220,6 +220,7 @@ export default function TeachSession() {
           .from('sessions')
           .update({
             status: 'completed',
+            mastery_achieved: true,
             completed_at: new Date().toISOString(),
             time_spent_seconds: timeSpent,
           })

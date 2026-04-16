@@ -14,7 +14,7 @@
 // );
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { callClaude } from '@/lib/callClaude';
@@ -63,6 +63,8 @@ export default function ReassessSession() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [masteredArr, setMasteredArr] = useState<boolean[]>([]);
   const [allFeedback, setAllFeedback] = useState<string[]>([]);
+
+  const reassessStartRef = useRef<number>(0);
 
   // ─── Init ──────────────────────────────────────────────────────────────────
 
@@ -176,6 +178,7 @@ export default function ReassessSession() {
           setContentLoading(false);
         }
 
+        reassessStartRef.current = Date.now();
         setView('intro');
       } catch (err) {
         console.error('[ReassessSession] Init error:', err);
@@ -265,12 +268,16 @@ export default function ReassessSession() {
     const passed = pct >= 80;
 
     try {
+      const timeSpent = reassessStartRef.current
+        ? Math.floor((Date.now() - reassessStartRef.current) / 1000)
+        : 0;
       await supabase
         .from('sessions')
         .update({
           mastery_achieved: passed,
           status: 'completed',
           completed_at: new Date().toISOString(),
+          time_spent_seconds: timeSpent,
         })
         .eq('id', reassessSessionId);
     } catch (err) {

@@ -277,7 +277,7 @@ export default function DiagnosticAssessment() {
               .insert({
                 student_id: student.id,
                 standard_id: s.id,
-                phase: 'diagnose',
+                phase: 'diagnostic',
                 status: 'in_progress',
               })
               .select('id')

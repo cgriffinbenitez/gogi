@@ -7,7 +7,10 @@
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(npx playwright:*)",
+      "Bash(python3 -c \"import sys,json; data=sys.stdin.read\\(\\); print\\(data[:3000]\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if k in ['scripts','dependencies','devDependencies']}, indent=2\\)\\)\")"
     ]
   }
 }

@@ -331,7 +331,18 @@ export default function ProtocolEngine({
   // ── Derived ─────────────────────────────────────────────────────────────────
   const step: ProtocolStep | undefined = protocol.steps[currentStepIndex];
   const totalSteps = protocol.steps.length;
-  const stepNames = protocol.steps.map((s) => s.name);
+  // Map clinical step names to student-friendly labels for the breadcrumb
+  const STEP_DISPLAY_NAMES: Record<string, string> = {
+    Orientation:      'Intro',
+    MicroModel:       'See It',
+    GuidedPractice:   'Try Together',
+    SemiGuided:       'Your Turn',
+    IndependentTask:  'On Your Own',
+    MasteryCheck:     'Check',
+    TransferTask:     'Apply It',
+    ReassessTrigger:  'Done',
+  };
+  const stepNames = protocol.steps.map((s) => STEP_DISPLAY_NAMES[s.name] ?? s.name);
   const isLastStep = currentStepIndex === totalSteps - 1;
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -735,7 +746,7 @@ export default function ProtocolEngine({
         <div className="flex items-center gap-3">
           <span className="text-xs text-[#1D9E75] font-mono">{standardCode}</span>
           <span className="bg-[#1D9E75]/20 text-[#1D9E75] text-xs font-bold px-3 py-1 rounded-full border border-[#1D9E75]/30">
-            {protocol.label}
+            Lesson
           </span>
         </div>
       </header>
@@ -864,7 +875,7 @@ export default function ProtocolEngine({
             {/* Step label */}
             <div className="mb-6">
               <div className="text-xs font-bold text-[#1D9E75] uppercase tracking-widest mb-1">
-                Step {step.stepNumber} of {totalSteps} — {step.name}
+                Step {step.stepNumber} of {totalSteps} — {STEP_DISPLAY_NAMES[step.name] ?? step.name}
               </div>
               <h1 className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
                 {step.name === 'Orientation' && 'Where you are going and why'}
@@ -918,7 +929,7 @@ export default function ProtocolEngine({
           {/* ── Left panel: Passage + step context ───────────────── */}
           <div className="md:w-2/5 w-full flex-shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/[0.08] p-4 md:p-6 max-h-48 md:max-h-none">
             <div className="text-xs font-bold text-[#1D9E75] uppercase tracking-widest mb-2">
-              Step {step.stepNumber} of {totalSteps} — {step.name}
+              Step {step.stepNumber} of {totalSteps} — {STEP_DISPLAY_NAMES[step.name] ?? step.name}
             </div>
             <h2 className="text-white font-extrabold text-lg mb-4 leading-tight">
               {step.scaffoldsActive ? 'With support' : 'On your own'}

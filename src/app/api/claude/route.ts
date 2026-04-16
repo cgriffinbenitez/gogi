@@ -573,16 +573,26 @@ Student response:
 
 Note: responses formatted as Theme:/Evidence:/Reasoning: are structured student answers — evaluate each labeled section against its corresponding mastery condition independently.
 
-A blank response, single word, or off-topic response always fails.
+FIRST — Check for these 8 fake-out patterns that look like answers but are NOT mastery. Any one of these = passed: false:
+1. COPY-PASTE: Response is copied verbatim or near-verbatim from the passage without interpretation.
+2. NON-RESPONSE: Single word, phrase, or off-topic response with no attempt at the skill (e.g. "idk", "I don't know", "nothing").
+3. RESTATEMENT WITHOUT REASONING: Student restates what happened but never explains what it means or implies.
+4. DISCONNECTED: Student makes a claim but the evidence or annotation has no logical connection to the claim.
+5. INCOHERENT: Response does not form a coherent thought about the text.
+6. SOPHISTICATED RESTATEMENT: Response sounds analytical but on close reading only retells the passage in different words.
+7. EVIDENCE DROPPING: Student identifies evidence but never uses it to build the inference or theme — the connection is missing.
+8. UNIVERSAL THEME FAKER: Theme statement sounds universal but actually names something specific to this character or story only (e.g. "Marcus wanted to fit in" instead of "People change themselves to belong").
+
+If ANY of the above apply, all four evaluation fields must reflect the failure — do not pass individual fields while the overall response is a fake-out.
 
 Return ONLY valid JSON:
 {
-  "theme_universal": <true if Theme section states a universal claim about human nature — not a topic>,
-  "evidence_relevant": <true if Evidence section cites specific text supporting the theme>,
-  "reasoning_explicit": <true if Reasoning section explains HOW evidence proves theme>,
-  "scaffolds_used": <true if response contains sentence stems or fill-in patterns>,
-  "passed": <true ONLY if all three conditions above are true AND scaffolds_used is false>,
-  "feedback": "<2 sentences Gogi voice — name what broke down using student words, point forward>"
+  "theme_universal": <true ONLY if Theme section states a universal claim about human nature — not a topic, not character-specific>,
+  "evidence_relevant": <true ONLY if Evidence section cites specific text that genuinely supports the stated theme>,
+  "reasoning_explicit": <true ONLY if Reasoning section explains HOW the evidence proves the theme — not just restates it>,
+  "scaffolds_used": <true if response contains sentence stems, fill-in-the-blank patterns, or copied scaffold language>,
+  "passed": <true ONLY if all three conditions above are true AND scaffolds_used is false AND none of the 8 fake-out patterns apply>,
+  "feedback": "<2 sentences Gogi voice — if passed: name exactly what cognitive move the student's brain just made using their actual words, no generic praise; if not passed: name the specific fake-out or gap using their actual words, point forward without giving the answer>"
 }`;
     }
 
