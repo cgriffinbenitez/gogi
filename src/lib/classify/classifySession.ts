@@ -12,14 +12,28 @@ import { createClient } from '@/lib/supabase/client';
 
 // ─── Classification layer registry ────────────────────────────────────────────
 
-const LAYER_1 = new Set(['schema_deficit', 'no_metacognitive_strategy']);
-const LAYER_2 = new Set(['vocabulary_gap', 'morphology_gap', 'syntax_barrier']);
+const LAYER_1 = new Set([
+  'schema_deficit',
+  'no_metacognitive_strategy',
+  'no_theme_schema',
+  'no_struct_schema',
+]);
+const LAYER_2 = new Set([
+  'vocabulary_gap',
+  'morphology_gap',
+  'syntax_barrier',
+  'signal_word_blind',
+]);
 const LAYER_3 = new Set([
   'inferencing_deficit',
   'evidence_retrieval_failure',
   'comprehension_integration_failure',
   'literal_misreading',
   'theme_confusion',
+  'abstract_reasoning_deficit',
+  'concrete_thinking',
+  'theme_evidence_disconnection',
+  'purpose_failure',
 ]);
 
 function getLayer(cls: string): number {

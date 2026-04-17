@@ -97,12 +97,21 @@ export default function TeachInferencingPage() {
 
   const [showPassage, setShowPassage] = useState(false);
 
+  // 5-second hard timeout — prevents infinite loading under all conditions
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLoadTimeout(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   // Single source of truth — trigger question
   const { data: triggerQ, loading: passageLoading } = useTriggerQuestion(
     studentId || null,
     standardCode,
     'inferencing_deficit'
   );
+
+  const shouldShow = !passageLoading || loadTimeout;
 
   const [step1, setStep1] = useState('');
   const [step2, setStep2] = useState('');
@@ -167,6 +176,13 @@ export default function TeachInferencingPage() {
     router.push(`/standard/${standardId}/practice`);
   }
 
+  // ── Diagnostic trace ───────────────────────────────────────────────────────
+  console.log('[Inferencing] authLoading:', authLoading);
+  console.log('[Inferencing] user:', user?.id);
+  console.log('[Inferencing] resolvedStudentId:', studentId || '(empty — students lookup pending)');
+  console.log('[Inferencing] triggerQ:', triggerQ);
+  console.log('[Inferencing] passageLoading:', passageLoading, '| loadTimeout:', loadTimeout);
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.white, fontFamily: FONTS.ui }}>
       <TeachNav standardCode={standardCode} />
@@ -220,7 +236,7 @@ export default function TeachInferencingPage() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#1F4E79', marginBottom: 2 }}>{triggerQ?.passageTitle}</div>
                 <div style={{ fontSize: 10, color: '#888780', marginBottom: 8 }}>{triggerQ?.passageAuthor}</div>
                 <div style={{ fontSize: 11, fontFamily: 'Georgia, serif', lineHeight: 1.6, color: '#2C2C2A' }}>
-                  {passageLoading
+                  {!shouldShow
                     ? 'Loading…'
                     : (triggerQ?.passageText || 'Passage will appear here once the diagnostic is complete.')}
                 </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { C, FONTS, POWER_STATEMENTS, type StandardStatus } from '@/lib/constants/design';
 import type { SkillGap } from '@/lib/data/getStudentStandardStatus';
 
@@ -22,6 +23,9 @@ export interface StandardTileProps {
   isOpen:                      boolean;
   onToggle:                    () => void;
   onCTAClick:                  () => void;
+  // Vocab readiness (Sprint L)
+  vocabCheckComplete?:         boolean;
+  vocabCoverageScore?:         number | null;
 }
 
 // ─── Accent colors per status ─────────────────────────────────────────────────
@@ -187,7 +191,18 @@ function SessionDots({
 
 // ─── Status-specific dropdown sections ───────────────────────────────────────
 
-function NotStartedDropdown({ onCTAClick }: { onCTAClick: () => void }) {
+function NotStartedDropdown({
+  standardId,
+  vocabCheckComplete = false,
+  vocabCoverageScore = null,
+  onCTAClick,
+}: {
+  standardId:         string;
+  vocabCheckComplete?: boolean;
+  vocabCoverageScore?: number | null;
+  onCTAClick:         () => void;
+}) {
+  const router  = useRouter();
   const bullets = [
     '10-question diagnostic — about 15 minutes',
     'Your specific skill gaps identified instantly',
@@ -196,6 +211,37 @@ function NotStartedDropdown({ onCTAClick }: { onCTAClick: () => void }) {
   ];
   return (
     <div>
+      {/* Vocabulary Readiness indicator */}
+      <div style={{ fontSize: 9, fontWeight: 700, color: C.gray, textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 6, marginTop: 14 }}>
+        Vocabulary Readiness
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        {vocabCheckComplete ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.green, flexShrink: 0 }} />
+            <span style={{ fontSize: 11, color: C.green }}>
+              Vocabulary check complete{vocabCoverageScore !== null ? ` (${Math.round(vocabCoverageScore)}%)` : ''}
+            </span>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.amber, flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: C.amber }}>Vocabulary check recommended before diagnostic</span>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/standard/${standardId}/vocab-check`);
+              }}
+              style={{ background: 'none', border: 'none', fontSize: 10, color: C.blue, cursor: 'pointer', textDecoration: 'underline', fontFamily: FONTS.ui, padding: 0, flexShrink: 0, marginLeft: 8 }}
+            >
+              Check vocabulary →
+            </button>
+          </>
+        )}
+      </div>
+
       <SectionLabel>What to expect</SectionLabel>
       {bullets.map((b) => (
         <div
@@ -433,6 +479,8 @@ export function StandardTile({
   isOpen,
   onToggle,
   onCTAClick,
+  vocabCheckComplete = false,
+  vocabCoverageScore = null,
 }: StandardTileProps) {
   const accent  = ACCENT[status];
   const badgeBg = STATUS_BADGE_BG[status];
@@ -542,7 +590,12 @@ export function StandardTile({
           }}
         >
           {status === 'notStarted' && (
-            <NotStartedDropdown onCTAClick={onCTAClick} />
+            <NotStartedDropdown
+              standardId={standardId}
+              vocabCheckComplete={vocabCheckComplete}
+              vocabCoverageScore={vocabCoverageScore}
+              onCTAClick={onCTAClick}
+            />
           )}
           {status === 'inDiagnostic' && (
             <InDiagnosticDropdown

@@ -122,7 +122,9 @@ type ClaudeAction =
   | 'generate_practice_questions'
   | 'evaluate_practice_response'
   // ─── Sprint 5 practice loop feedback ──────────────────────────────────────
-  | 'practice_feedback';
+  | 'practice_feedback'
+  // ─── Sprint K reading profile ─────────────────────────────────────────────
+  | 'score_syntax_response';
 
 function buildPrompt(action: ClaudeAction, params: Record<string, string>): string {
   const { standardCode = '', standardTitle = '' } = params;
@@ -803,6 +805,19 @@ ${instruction}
 Output only your Gogi response. No labels. No headers. Never use more than one exclamation point total.`;
     }
 
+    case 'score_syntax_response': {
+      const { studentResponse = '', originalSentence = '' } = params;
+      return `Original sentence: "${originalSentence}"
+Student response: "${studentResponse}"
+
+Score 0, 1, or 2:
+0 = blank, irrelevant, or completely off topic
+1 = partially captures the main idea — gets the gist but misses key elements
+2 = accurately captures the main idea
+
+Respond with ONLY a single digit: 0, 1, or 2. Nothing else.`;
+    }
+
     default:
       return '';
   }
@@ -868,6 +883,8 @@ export async function POST(req: NextRequest) {
     const isGenerateDiagnostic = action === 'generate_diagnostic_questions';
     const isProtocolJson = action === 'evaluate_mastery_structured';
     const isProtocolAction = action === 'evaluate_mastery_structured';
+    const isShortScoreAction = action === 'score_syntax_response';
+
     const isJsonAction =
       isExtractPassages ||
       isGenerateDiagnostic ||
@@ -942,7 +959,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: isJsonAction ? 8192 : 1024,
+        max_tokens: isJsonAction ? 8192 : isShortScoreAction ? 10 : 1024,
         system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       }),

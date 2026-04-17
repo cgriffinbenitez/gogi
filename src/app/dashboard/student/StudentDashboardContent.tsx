@@ -12,6 +12,7 @@ import { calculateStreak } from '@/lib/data/calculateStreak';
 import { getActiveStandard } from '@/lib/data/getActiveStandard';
 import { getWelcomeMessage } from '@/lib/gogi/welcomeMessages';
 import { C, FONTS, type StandardStatus } from '@/lib/constants/design';
+import { createClient } from '@/lib/supabase/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,9 +51,10 @@ const INTERVENTION_ROUTES: Record<string, string> = {
 
 export default function StudentDashboardContent({ studentId, studentName, standards }: Props) {
   const router = useRouter();
-  const [data,       setData]       = useState<DashboardData | null>(null);
-  const [loading,    setLoading]    = useState(true);
-  const [activeCard, setActiveCard] = useState<string | null>(null);
+  const [data,            setData]            = useState<DashboardData | null>(null);
+  const [loading,         setLoading]         = useState(true);
+  const [activeCard,      setActiveCard]      = useState<string | null>(null);
+  const [profileComplete, setProfileComplete] = useState<boolean>(false);
 
   // First name + last initial
   const nameParts   = studentName.trim().split(' ');
@@ -98,8 +100,23 @@ export default function StudentDashboardContent({ studentId, studentName, standa
             currentIntervention:         null,
             timeSpentMinutes:            0,
             skillGaps:                   [],
+            vocabCheckComplete:          false,
+            vocabCoverageScore:          null,
           };
         });
+
+        // Reading profile completion — defensive: column may not exist yet
+        try {
+          const supabase = createClient();
+          const { data: pData } = await supabase
+            .from('students')
+            .select('reading_profile_complete')
+            .eq('id', studentId)
+            .maybeSingle();
+          setProfileComplete(pData?.reading_profile_complete ?? false);
+        } catch {
+          // Column not yet migrated — default false so card shows
+        }
 
         setData({ streak, richData, activeCode, activePhase: activeStandard?.phase ?? 'diagnostic' });
         // Auto-open most active standard
@@ -124,6 +141,8 @@ export default function StudentDashboardContent({ studentId, studentName, standa
             currentIntervention:         null,
             timeSpentMinutes:            0,
             skillGaps:                   [],
+            vocabCheckComplete:          false,
+            vocabCoverageScore:          null,
           };
         });
         setData({ streak: 0, richData, activeCode: 'ELA.9.R.1.1', activePhase: 'diagnostic' });
@@ -199,6 +218,68 @@ export default function StudentDashboardContent({ studentId, studentName, standa
           <StreakCounter streak={streak} />
         </div>
 
+        {/* Section A2: Reading Profile card — hidden once complete */}
+        {!profileComplete && (
+          <div style={{
+            background:      C.redLight,
+            border:          `1px solid ${C.red}`,
+            borderRadius:    10,
+            padding:         '12px 16px',
+            display:         'flex',
+            alignItems:      'center',
+            justifyContent:  'space-between',
+            marginBottom:    14,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {/* Icon circle */}
+              <div style={{
+                width:          44,
+                height:         44,
+                borderRadius:   '50%',
+                background:     C.red,
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                fontSize:       16,
+                fontWeight:     800,
+                color:          C.white,
+                flexShrink:     0,
+              }}>
+                R
+              </div>
+              {/* Text block */}
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#791F1F' }}>
+                  Complete your Reading Profile first
+                </div>
+                <div style={{ fontSize: 11, color: C.red, marginTop: 2 }}>
+                  Takes 12 minutes · Do this before your first diagnostic · Helps GOGI support you correctly
+                </div>
+              </div>
+            </div>
+            {/* CTA */}
+            <button
+              onClick={() => router.push('/profile/reading')}
+              style={{
+                background:   C.red,
+                color:        C.white,
+                border:       'none',
+                borderRadius: 8,
+                padding:      '8px 16px',
+                fontSize:     12,
+                fontWeight:   700,
+                cursor:       'pointer',
+                fontFamily:   FONTS.ui,
+                flexShrink:   0,
+                marginLeft:   12,
+                whiteSpace:   'nowrap',
+              }}
+            >
+              Start Reading Profile →
+            </button>
+          </div>
+        )}
+
         {/* Section B: Standards */}
         <div>
           <div
@@ -243,6 +324,8 @@ export default function StudentDashboardContent({ studentId, studentName, standa
                   skillGaps={result?.skillGaps                        ?? []}
                   lastSessionAt={result?.lastSessionAt                ?? null}
                   currentStatus={result?.currentStatus                ?? 'not_started'}
+                  vocabCheckComplete={result?.vocabCheckComplete      ?? false}
+                  vocabCoverageScore={result?.vocabCoverageScore      ?? null}
                   isOpen={activeCard === s.code}
                   onToggle={() =>
                     setActiveCard((prev) => (prev === s.code ? null : s.code))

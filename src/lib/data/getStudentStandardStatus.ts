@@ -34,6 +34,10 @@ export interface StandardStatusResult {
 
   // Clinical intelligence
   skillGaps: SkillGap[];
+
+  // Vocab readiness (Sprint L)
+  vocabCheckComplete:  boolean;
+  vocabCoverageScore:  number | null;
 }
 
 // ─── Internal row types ───────────────────────────────────────────────────────
@@ -157,11 +161,13 @@ export async function getStudentStandardStatus(
       currentIntervention:         null,
       timeSpentMinutes:            0,
       skillGaps:                   [],
+      vocabCheckComplete:          false,
+      vocabCoverageScore:          null,
     };
   });
 
   // ── Parallel fetch ──────────────────────────────────────────────────────────
-  const [progressResult, sessionsResult, responsesResult] = await Promise.all([
+  const [progressResult, sessionsResult, responsesResult, vocabResult] = await Promise.all([
     supabase
       .from('standard_progress')
       .select('standard_id, current_status, sessions_passed, sessions_attempted, last_session_at')
@@ -180,7 +186,23 @@ export async function getStudentStandardStatus(
       .select('standard_id, session_id, diagnostic_classification, mastery_achieved')
       .eq('student_id', studentId)
       .in('standard_id', standardIds),
+
+    // Vocab readiness — defensive: table may not exist yet
+    Promise.resolve(
+      supabase
+        .from('vocab_readiness')
+        .select('standard_id, coverage_score')
+        .eq('student_id', studentId)
+        .in('standard_id', standardIds)
+    ).catch(() => ({ data: null, error: null })),
   ]);
+
+  // ── Process vocab_readiness ─────────────────────────────────────────────────
+  type VocabRow = { standard_id: string; coverage_score: number | null };
+  const vocabByStd: Record<string, number | null> = {};
+  ((vocabResult?.data ?? []) as unknown as VocabRow[]).forEach((row) => {
+    vocabByStd[row.standard_id] = row.coverage_score ?? null;
+  });
 
   // ── Process standard_progress ───────────────────────────────────────────────
   const progressByStd: Record<string, ProgressRow> = {};
@@ -239,14 +261,16 @@ export async function getStudentStandardStatus(
 
   // ── Merge into results ──────────────────────────────────────────────────────
   standardIds.forEach((id) => {
-    const progress  = progressByStd[id];
-    const session   = latestSessionPerStd[id];
-    const diagResps = diagRespsByStd[id] ?? [];
-    const timeMins  = Math.round((timeSumSecsByStd[id] ?? 0) / 60 * 10) / 10;
-    const diagClass = latestDiagClassByStd[id] ?? null;
-    const intervention = diagClass ? (CLASSIFICATION_TO_INTERVENTION[diagClass] ?? null) : null;
-    const skillGaps = buildSkillGaps(diagResps);
+    const progress       = progressByStd[id];
+    const session        = latestSessionPerStd[id];
+    const diagResps      = diagRespsByStd[id] ?? [];
+    const timeMins       = Math.round((timeSumSecsByStd[id] ?? 0) / 60 * 10) / 10;
+    const diagClass      = latestDiagClassByStd[id] ?? null;
+    const intervention   = diagClass ? (CLASSIFICATION_TO_INTERVENTION[diagClass] ?? null) : null;
+    const skillGaps      = buildSkillGaps(diagResps);
     const diagQsAnswered = diagResps.length;
+    const vocabScore     = vocabByStd[id] ?? null;
+    const vocabComplete  = vocabScore !== null;
 
     // Status from standard_progress (post-diagnostic)
     if (progress) {
@@ -266,6 +290,8 @@ export async function getStudentStandardStatus(
           currentIntervention:         intervention,
           timeSpentMinutes:            timeMins,
           skillGaps,
+          vocabCheckComplete:          vocabComplete,
+          vocabCoverageScore:          vocabScore,
         };
         return;
       }
@@ -296,6 +322,8 @@ export async function getStudentStandardStatus(
         currentIntervention:         intervention,
         timeSpentMinutes:            timeMins,
         skillGaps,
+        vocabCheckComplete:          vocabComplete,
+        vocabCoverageScore:          vocabScore,
       };
     }
   });

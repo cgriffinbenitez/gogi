@@ -110,6 +110,13 @@ export default function TeachMorphologyPage() {
   // Passage reference panel
   const [showPassage, setShowPassage] = useState(false);
 
+  // 5-second hard timeout — prevents infinite loading under all conditions
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setLoadTimeout(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   // Word definition state
   const [wordDef,    setWordDef]    = useState('');
   const [defLoading, setDefLoading] = useState(true);
@@ -141,6 +148,8 @@ export default function TeachMorphologyPage() {
     standardCode,
     'morphology_gap'
   );
+
+  const shouldShow = !(passageLoading || defLoading) || loadTimeout;
 
   // Derive from triggerQ
   const targetWord   = triggerQ?.blockingWord ?? '';
@@ -214,6 +223,13 @@ export default function TeachMorphologyPage() {
     router.push(`/standard/${standardId}/practice`);
   }
 
+  // ── Diagnostic trace ───────────────────────────────────────────────────────
+  console.log('[Morphology] authLoading:', authLoading);
+  console.log('[Morphology] user:', user?.id);
+  console.log('[Morphology] resolvedStudentId:', studentId || '(empty — students lookup pending)');
+  console.log('[Morphology] triggerQ:', triggerQ);
+  console.log('[Morphology] passageLoading:', passageLoading, '| defLoading:', defLoading, '| loadTimeout:', loadTimeout);
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.white, fontFamily: FONTS.ui }}>
       <TeachNav standardCode={standardCode} />
@@ -267,7 +283,7 @@ export default function TeachMorphologyPage() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#1F4E79', marginBottom: 2 }}>{triggerQ?.passageTitle}</div>
                 <div style={{ fontSize: 10, color: '#888780', marginBottom: 8 }}>{triggerQ?.passageAuthor}</div>
                 <div style={{ fontSize: 11, fontFamily: 'Georgia, serif', lineHeight: 1.6, color: '#2C2C2A' }}>
-                  {passageLoading
+                  {!shouldShow
                     ? 'Loading…'
                     : (triggerQ?.passageText || 'Passage will appear here once the diagnostic is complete.')}
                 </div>
