@@ -81,6 +81,9 @@ Rules that never break:
 - Maximum 150 words per response.
 - Connect every skill to real power in the student's actual life.`;
 
+// Sprint 5 — practice loop answer feedback
+const PRACTICE_FEEDBACK_SYSTEM_PROMPT = `You are Gogi, a supportive peer tutor for 9th grade students. You are 15-16 years old in tone — not a teacher, not a bot. Keep responses to 2-3 sentences maximum. If the answer is correct: name the EXACT cognitive move the student used. Start with "That's the move." or "Exactly." Never just "Correct!" If the answer is wrong: name the error type, point to a specific detail in the passage, end with "Try again." Never say "incorrect" or "wrong." Never reveal the correct answer directly. Never use exclamation points more than once per response.`;
+
 const SYSTEM_PROMPT = `You are GOGI, an AI literacy tutor for 9th grade students in Title 1 schools.
 
 Voice: sharp, warm, direct. Speak like a peer who believes in this student completely. No academic language. No walls of text. Every word earns its place.
@@ -117,7 +120,9 @@ type ClaudeAction =
   | 'evaluate_mastery_structured'
   // ─── Practice Phase (PracticeSession.tsx) ─────────────────────────────────
   | 'generate_practice_questions'
-  | 'evaluate_practice_response';
+  | 'evaluate_practice_response'
+  // ─── Sprint 5 practice loop feedback ──────────────────────────────────────
+  | 'practice_feedback';
 
 function buildPrompt(action: ClaudeAction, params: Record<string, string>): string {
   const { standardCode = '', standardTitle = '' } = params;
@@ -760,6 +765,44 @@ Return ONLY valid JSON:
 }`;
     }
 
+    // ─── Sprint 5 practice loop feedback ────────────────────────────────────
+
+    case 'practice_feedback': {
+      const {
+        passageText = '',
+        questionStem = '',
+        selectedOption = '',
+        selectedOptionText = '',
+        correctOption = '',
+        isCorrect = 'false',
+        attemptNumber = '1',
+      } = params;
+
+      const correct = isCorrect === 'true';
+      const attempt = parseInt(attemptNumber, 10);
+
+      const instruction = correct
+        ? `The student got it right. Start your response with "That's the move." or "Exactly." — never just "Correct!". Name the EXACT cognitive move the student used to arrive at the right answer. 2-3 sentences max.`
+        : attempt >= 3
+          ? `The student has missed this three times. NOW model the answer explicitly in 2 sentences. Name what the passage detail actually shows and state the correct inference directly. Point to an exact phrase or line from the passage.`
+          : `The student chose wrong. Name the specific error type (never use the words "incorrect" or "wrong"). Point to one specific detail in the passage they should look at differently. End your response with "Try again." 2-3 sentences max.`;
+
+      return `Standard: ${standardCode}
+
+Passage:
+"${passageText.slice(0, 600)}"
+
+Question: ${questionStem}
+Student selected: Option ${selectedOption} — "${selectedOptionText}"
+Correct answer: Option ${correctOption}
+Result: ${correct ? 'CORRECT' : 'WRONG'}
+Attempt: ${attemptNumber}
+
+${instruction}
+
+Output only your Gogi response. No labels. No headers. Never use more than one exclamation point total.`;
+    }
+
     default:
       return '';
   }
@@ -845,9 +888,11 @@ export async function POST(req: NextRequest) {
           ? PROTOCOL_CONTENT_SYSTEM_PROMPT
           : action === 'generate_protocol_feedback'
             ? PROTOCOL_FEEDBACK_SYSTEM_PROMPT
-            : isProtocolAction
-              ? PROTOCOL_SYSTEM_PROMPT
-              : SYSTEM_PROMPT;
+            : action === 'practice_feedback'
+              ? PRACTICE_FEEDBACK_SYSTEM_PROMPT
+              : isProtocolAction
+                ? PROTOCOL_SYSTEM_PROMPT
+                : SYSTEM_PROMPT;
 
     // ── Streaming path ───────────────────────────────────────────────────────
     // For generate_protocol_step_content and generate_protocol_feedback, pipe

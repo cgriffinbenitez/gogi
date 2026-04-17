@@ -2,6 +2,10 @@ import React from 'react';
 import type { Metadata, Viewport } from 'next';
 import '../styles/tailwind.css';
 import { Toaster } from 'sonner';
+import { AuthProvider } from '@/context/AuthContext';
+import { validateEnv } from '@/lib/config/validateEnv';
+
+validateEnv();
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -30,7 +34,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{
@@ -44,6 +50,7 @@ export default function RootLayout({
           }}
         />
       </body>
+
     </html>
   );
 }
