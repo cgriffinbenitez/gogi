@@ -273,7 +273,7 @@ export default function ReadingProfilePage() {
     };
   }, []);
 
-  // ── WM handlers ────────────────────────────────────────────────────────────
+// ── WM handlers ────────────────────────────────────────────────────────────
 
   function startWmTimer(roundIdx: number) {
     const duration = WM_DURATIONS[roundIdx];
@@ -293,13 +293,9 @@ export default function ReadingProfilePage() {
     }, 1000);
   }
 
-  const parseRecalledWords = (input: string): string[] => {
-    return input
-      .replace(/,/g, ' ')
-      .split(/\s+/)
-      .map(w => w.trim().toLowerCase())
-      .filter(w => w.length > 0);
-  };
+  function parseRecalledWords(input: string): string[] {
+    return input.trim().split(/\s+/).filter(w => w.length > 0).map(w => w.toLowerCase());
+  }
 
   function submitWmRecall() {
     const words  = ROUNDS[wmRound];
@@ -804,8 +800,6 @@ export default function ReadingProfilePage() {
   }
 
   if (phase === 'wm_recall') {
-    // All WM rounds have 6 words — use count only, never reference the word values
-    const chipCount = 6;
     return (
       <Page>
         <div style={{ ...CARD }}>
@@ -817,42 +811,45 @@ export default function ReadingProfilePage() {
             The words are gone. What do you remember?
           </div>
           <div style={{ fontSize: 12, color: C.gray, lineHeight: 1.6, marginBottom: 16 }}>
-            Type as many as you can. Separate with commas. Spelling doesn't have to be perfect.
+            Type the words you remember, separated by spaces. Spelling doesn&apos;t have to be perfect.
           </div>
 
-          {/* Blank placeholder chips — empty boxes only, no word content */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16, justifyContent: 'center' }}>
-            {Array.from({ length: chipCount }, (_, i) => (
+          {/* 6 decorative placeholder boxes */}
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+            {[0,1,2,3,4,5].map(i => (
               <div key={i} style={{
-                width: 80, height: 36, borderRadius: 8,
-                border: '1.5px dashed #CCCCCC', background: '#F2F2F2',
+                width:        68,
+                height:       44,
+                border:       '2px dashed #CCCCCC',
+                borderRadius: 8,
+                background:   C.light,
               }} />
             ))}
           </div>
 
           <input
             type="text"
+            autoFocus
             value={wmInput}
             onChange={e => setWmInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') submitWmRecall(); }}
-            placeholder="dog, chair, blue…"
-            autoFocus
+            placeholder="Type the words you remember, separated by spaces"
             style={{
               width:        '100%',
-              background:   '#F2F2F2',
-              border:       '1.5px solid #B5D4F4',
+              border:       '1.5px solid #CCCCCC',
               borderRadius: 8,
               padding:      '12px 14px',
               fontSize:     14,
               fontFamily:   FONTS.ui,
-              boxSizing:    'border-box',
-              marginBottom: 12,
+              boxSizing:    'border-box' as const,
               outline:      'none',
               color:        '#2C2C2A',
+              background:   C.white,
+              marginBottom: 12,
             }}
           />
 
-          <button style={BTN_NAVY} onClick={submitWmRecall}>
+          <button style={{ ...BTN_NAVY }} onClick={submitWmRecall}>
             Submit →
           </button>
         </div>
@@ -1334,9 +1331,10 @@ export default function ReadingProfilePage() {
           </div>
 
           <textarea
+            dir="ltr"
             value={syntaxInput}
-            onChange={e => setSyntaxInput(e.target.value)}
-            autoFocus
+            onChange={(e) => setSyntaxInput(e.target.value)}
+            placeholder="What was the main point of that sentence?"
             style={{
               direction:    'ltr',
               unicodeBidi:  'normal' as React.CSSProperties['unicodeBidi'],
