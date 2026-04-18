@@ -21,13 +21,18 @@ type ProfilePhase =
 
 // ─── Module 1 — Working Memory ────────────────────────────────────────────────
 
-const WM_WORD_SETS: readonly string[][] = [
-  ['dog',        'chair',    'blue',        'run',      'happy',  'street'],
-  ['theory',     'conflict', 'evidence',    'analyze',  'pattern','claim'],
-  ['inevitable', 'contrast', 'perseverance','sequence', 'infer',  'abstract'],
+// 3 completely separate word sets — index 0/1/2 maps to wmRound 0/1/2
+const ROUNDS: readonly string[][] = [
+  // Round 1 — Common everyday words (easiest)
+  ['dog',        'chair',    'blue',        'run',        'happy',  'street'],
+  // Round 2 — Academic words (medium)
+  ['theory',     'conflict', 'evidence',    'analyze',    'pattern','claim'],
+  // Round 3 — Complex literary/abstract words (hardest)
+  ['inevitable', 'contrast', 'perseverance','sequence',   'infer',  'abstract'],
 ];
-const WM_ROUND_LABELS  = ['Common Words', 'Academic Words', 'Complex Words'];
-const WM_TIMER_SECS    = 8;
+const WM_ROUND_LABELS = ['Common Words', 'Academic Words', 'Complex Words'];
+// Word Length Effect: longer, less familiar words need more encoding time
+const WM_DURATIONS    = [6, 8, 10]; // Round 1 / 2 / 3 seconds
 
 // ─── Module 2 — Inferencing Scenarios ────────────────────────────────────────
 
@@ -131,17 +136,18 @@ const VOCAB_WORDS: VocabWord[] = [
 // ─── Module 4 — Syntax Complexity ────────────────────────────────────────────
 
 interface SyntaxSentence {
+  id:         number;
   text:       string;
-  timer:      number;
+  duration:   number;
   complexity: string;
 }
 
 const SYNTAX_SENTENCES: SyntaxSentence[] = [
-  { text: 'The boy ran away because he was scared.',                                                                                                                                                                                   timer: 8,  complexity: 'Simple'    },
-  { text: 'She studied hard, but she still failed the test.',                                                                                                                                                                          timer: 9,  complexity: 'Compound'  },
-  { text: 'Despite his best efforts to remain calm, the plan that Marcus had carefully prepared over three weeks began to fall apart the moment he entered the room.',                                                                 timer: 11, complexity: 'Complex'   },
-  { text: 'The evidence presented by the author, while compelling, fails to account for the possibility that other factors may have contributed to the outcome.',                                                                     timer: 13, complexity: 'Academic'  },
-  { text: 'It was not the darkness itself that frightened her, but rather the silence that the darkness carried with it, heavy and absolute, pressing against her like something alive.',                                             timer: 15, complexity: 'Literary'  },
+  { id: 1, text: 'The boy ran away because he was scared.',                                                                                                                                                                           duration: 8,  complexity: 'Simple'   },
+  { id: 2, text: 'She studied hard, but she still failed the test.',                                                                                                                                                                  duration: 9,  complexity: 'Compound' },
+  { id: 3, text: 'Despite his best efforts to remain calm, the plan that Marcus had carefully prepared began to fall apart the moment he entered the room.',                                                                          duration: 11, complexity: 'Complex'  },
+  { id: 4, text: 'The evidence presented by the author, while compelling, fails to account for the possibility that other factors may have contributed to the outcome.',                                                              duration: 13, complexity: 'Academic' },
+  { id: 5, text: 'It was not the darkness itself that frightened her, but rather the silence that the darkness carried with it, heavy and absolute, pressing against her like something alive.',                                      duration: 15, complexity: 'Literary' },
 ];
 
 // ─── Shared style helpers ─────────────────────────────────────────────────────
@@ -198,9 +204,10 @@ export default function ReadingProfilePage() {
   // ── WM state ───────────────────────────────────────────────────────────────
   const [wmRound,     setWmRound]     = useState(0);
   const [wmInput,     setWmInput]     = useState('');
-  const [wmTimerSec,  setWmTimerSec]  = useState(WM_TIMER_SECS);
+  const [wmTimerSec,  setWmTimerSec]  = useState(WM_DURATIONS[0]);
   const [wmLastScore, setWmLastScore] = useState(0); // for wm_between display
   const wmRoundScoresRef = useRef<number[]>([]);
+  const wmTimerRef       = useRef<NodeJS.Timeout | null>(null);
 
   // ── Infer state ────────────────────────────────────────────────────────────
   const [inferIdx,      setInferIdx]      = useState(0);
@@ -216,9 +223,13 @@ export default function ReadingProfilePage() {
   const vocabResultsRef = useRef<VocabResult[]>([]);
 
   // ── Syntax state ───────────────────────────────────────────────────────────
-  const [syntaxIdx,      setSyntaxIdx]      = useState(0);
-  const [syntaxInput,    setSyntaxInput]    = useState('');
-  const [syntaxTimerSec, setSyntaxTimerSec] = useState(SYNTAX_SENTENCES[0].timer);
+  const [syntaxIdx,         setSyntaxIdx]         = useState(0);
+  const [syntaxInput,       setSyntaxInput]       = useState('');
+  const [syntaxPhase,       setSyntaxPhase]       = useState<'show' | 'answer'>('show');
+  const [syntaxResponses,   setSyntaxResponses]   = useState<string[]>([]);
+  const [syntaxTimeLeft,    setSyntaxTimeLeft]    = useState(SYNTAX_SENTENCES[0].duration);
+  const [syntaxTimerActive, setSyntaxTimerActive] = useState(false);
+  const syntaxTimerRef        = useRef<NodeJS.Timeout | null>(null);
   const syntaxScoringPromises = useRef<Promise<number>[]>([]);
 
   // ── Complete state ─────────────────────────────────────────────────────────
@@ -254,42 +265,45 @@ export default function ReadingProfilePage() {
     init();
   }, [user, authLoading, role, router]);
 
-  // ── WM timer (show phase) ──────────────────────────────────────────────────
+  // ── Timer cleanup (both WM and Syntax) ────────────────────────────────────
   useEffect(() => {
-    if (phase !== 'wm_show') return;
-    setWmTimerSec(WM_TIMER_SECS);
-    const id = setInterval(() => setWmTimerSec(s => Math.max(0, s - 1)), 1000);
-    return () => clearInterval(id);
-  }, [phase, wmRound]);
-
-  useEffect(() => {
-    if (phase === 'wm_show' && wmTimerSec === 0) {
-      setPhase('wm_recall');
-      setWmInput('');
-    }
-  }, [phase, wmTimerSec]);
-
-  // ── Syntax timer (show phase) ──────────────────────────────────────────────
-  useEffect(() => {
-    if (phase !== 'syntax_show') return;
-    const duration = SYNTAX_SENTENCES[syntaxIdx].timer;
-    setSyntaxTimerSec(duration);
-    const id = setInterval(() => setSyntaxTimerSec(s => Math.max(0, s - 1)), 1000);
-    return () => clearInterval(id);
-  }, [phase, syntaxIdx]);
-
-  useEffect(() => {
-    if (phase === 'syntax_show' && syntaxTimerSec === 0) {
-      setPhase('syntax_answer');
-      setSyntaxInput('');
-    }
-  }, [phase, syntaxTimerSec]);
+    return () => {
+      if (wmTimerRef.current)     clearInterval(wmTimerRef.current);
+      if (syntaxTimerRef.current) clearInterval(syntaxTimerRef.current);
+    };
+  }, []);
 
   // ── WM handlers ────────────────────────────────────────────────────────────
 
+  function startWmTimer(roundIdx: number) {
+    const duration = WM_DURATIONS[roundIdx];
+    setWmTimerSec(duration);
+    if (wmTimerRef.current) clearInterval(wmTimerRef.current);
+    wmTimerRef.current = setInterval(() => {
+      setWmTimerSec(prev => {
+        if (prev <= 1) {
+          clearInterval(wmTimerRef.current!);
+          wmTimerRef.current = null;
+          setPhase('wm_recall');
+          setWmInput('');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  const parseRecalledWords = (input: string): string[] => {
+    return input
+      .replace(/,/g, ' ')
+      .split(/\s+/)
+      .map(w => w.trim().toLowerCase())
+      .filter(w => w.length > 0);
+  };
+
   function submitWmRecall() {
-    const words  = WM_WORD_SETS[wmRound];
-    const tokens = wmInput.toLowerCase().split(/[\s,]+/).filter(Boolean);
+    const words  = ROUNDS[wmRound];
+    const tokens = parseRecalledWords(wmInput);
     let count = 0;
     for (const token of tokens) {
       const t = token.slice(0, 4);
@@ -299,18 +313,7 @@ export default function ReadingProfilePage() {
     wmRoundScoresRef.current = [...wmRoundScoresRef.current, recalled];
     setWmLastScore(recalled);
     setWmInput('');
-
-    if (wmRound < 2) {
-      setPhase('wm_between');
-    } else {
-      setPhase('infer_intro');
-    }
-  }
-
-  function startNextWmRound() {
-    const next = wmRound + 1;
-    setWmRound(next);
-    setPhase('wm_show');
+    setPhase('wm_between');
   }
 
   // ── Infer handlers ─────────────────────────────────────────────────────────
@@ -364,6 +367,25 @@ export default function ReadingProfilePage() {
 
   // ── Syntax handlers ────────────────────────────────────────────────────────
 
+  function startSyntaxTimer(duration: number) {
+    setSyntaxTimeLeft(duration);
+    setSyntaxTimerActive(true);
+    if (syntaxTimerRef.current) clearInterval(syntaxTimerRef.current);
+    syntaxTimerRef.current = setInterval(() => {
+      setSyntaxTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(syntaxTimerRef.current!);
+          syntaxTimerRef.current = null;
+          setSyntaxTimerActive(false);
+          setSyntaxPhase('answer');
+          setPhase('syntax_answer');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
   async function scoreSentence(response: string, sentence: string): Promise<number> {
     try {
       const res = await fetch('/api/claude', {
@@ -387,20 +409,22 @@ export default function ReadingProfilePage() {
     const response = syntaxInput.trim();
     const sentence = SYNTAX_SENTENCES[syntaxIdx];
 
-    // Fire scoring (non-blocking for sentences 0-3)
     const promise = scoreSentence(response, sentence.text);
     syntaxScoringPromises.current.push(promise);
 
+    setSyntaxResponses(prev => [...prev, response]);
     setSyntaxInput('');
 
     if (syntaxIdx < 4) {
-      setSyntaxIdx(i => i + 1);
+      const nextIdx = syntaxIdx + 1;
+      setSyntaxIdx(nextIdx);
+      setSyntaxPhase('show');
+      startSyntaxTimer(SYNTAX_SENTENCES[nextIdx].duration);
       setPhase('syntax_show');
     } else {
-      // Last sentence — await all scoring then save
       setPhase('saving');
-      const scores  = await Promise.all(syntaxScoringPromises.current);
-      const total   = scores.reduce((a, b) => a + b, 0);
+      const scores = await Promise.all(syntaxScoringPromises.current);
+      const total  = scores.reduce((a, b) => a + b, 0);
       await saveAndComplete(total);
     }
   }
@@ -414,6 +438,13 @@ export default function ReadingProfilePage() {
     const vocabConfirmed = vocabResultsRef.current.filter(r => r === 'confirmed_know').length;
     const vocabScore  = Math.round((vocabConfirmed / 20) * 100);
     const syntaxScore = Math.round((syntaxTotal   / 10) * 100);
+
+    // Vocabulary contamination signal — measures drop from Round 1 → Round 2
+    // A drop > 30% suggests the student inflated Round 1 vocab self-assessment
+    const round1Rate = (wmRoundScoresRef.current[0] ?? 0) / 6;
+    const round2Rate = (wmRoundScoresRef.current[1] ?? 0) / 6;
+    const dropRate   = round1Rate - round2Rate;
+    const vocabContaminationSignal = dropRate > 0.3;
 
     const avg  = (wmScore + inferScore + vocabScore + syntaxScore) / 4;
     const risk: 'low' | 'moderate' | 'high' =
@@ -434,12 +465,14 @@ export default function ReadingProfilePage() {
           inferencing_score:   inferScore,
           vocab_breadth_score: vocabScore,
           syntax_score:        syntaxScore,
-          overall_risk:        risk,
-          raw_responses:       {
+          overall_risk:               risk,
+          vocab_contamination_signal: vocabContaminationSignal,
+          raw_responses:              {
             wm_rounds:      wmRoundScoresRef.current,
             infer_correct:  inferCorrectRef.current,
             vocab_results:  vocabResultsRef.current,
             syntax_total:   syntaxTotal,
+            drop_rate:      dropRate,
           },
         }),
         supabase
@@ -472,6 +505,10 @@ export default function ReadingProfilePage() {
     : (nameParts[0] ?? '');
 
   function Nav() {
+    const timerPhase = phase === 'wm_show' || phase === 'syntax_show';
+    function handleHomeClick() {
+      router.push(role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
+    }
     return (
       <div style={{
         background:   C.navy,
@@ -483,7 +520,13 @@ export default function ReadingProfilePage() {
         fontFamily:   FONTS.ui,
         flexShrink:   0,
       }}>
-        <div>
+        <button
+          onClick={handleHomeClick}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s', textAlign: 'left' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+          title="Back to dashboard"
+        >
           {moduleInfo && (
             <div style={{ fontSize: 9, fontWeight: 700, color: C.blueMid, letterSpacing: 2, textTransform: 'uppercase', lineHeight: 1.2 }}>
               READING PROFILE  |  MODULE {moduleInfo.num} OF 4
@@ -492,9 +535,21 @@ export default function ReadingProfilePage() {
           <div style={{ fontSize: 13, fontWeight: 700, color: C.white, lineHeight: 1.3 }}>
             {moduleInfo ? moduleInfo.name : 'Reading Profile'}
           </div>
-        </div>
-        <div style={{ fontSize: 12, color: C.blueMid, fontWeight: 600 }}>
-          {displayName}
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {!timerPhase && (
+            <button
+              onClick={handleHomeClick}
+              style={{ fontSize: 11, color: 'rgba(181,212,244,0.5)', cursor: 'pointer', background: 'none', border: 'none', fontFamily: FONTS.ui, transition: 'color 0.2s', padding: 0 }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#B5D4F4'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(181,212,244,0.5)'; }}
+            >
+              ← Dashboard
+            </button>
+          )}
+          <div style={{ fontSize: 12, color: C.blueMid, fontWeight: 600 }}>
+            {displayName}
+          </div>
         </div>
       </div>
     );
@@ -505,6 +560,10 @@ export default function ReadingProfilePage() {
   function Page({ children }: { children: React.ReactNode }) {
     return (
       <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONTS.ui, display: 'flex', flexDirection: 'column' }}>
+        <style>{`
+          input::placeholder, textarea::placeholder { color: #888780 !important; }
+          textarea { direction: ltr !important; unicode-bidi: normal !important; text-align: left !important; writing-mode: horizontal-tb !important; }
+        `}</style>
         <Nav />
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '24px 20px' }}>
           <div style={{ width: '100%', maxWidth: 600 }}>
@@ -656,7 +715,7 @@ export default function ReadingProfilePage() {
           <div style={{ textAlign: 'left', marginBottom: 16 }}>
             {[
               'A set of words will appear. Study them carefully.',
-              'After 8 seconds, the words disappear automatically. You cannot stop the timer.',
+              'Each round has a different time limit. The words disappear automatically when time runs out.',
               'Type as many words as you can remember. Spelling doesn\'t need to be perfect.',
               'You will do 3 rounds. Each round gets harder.',
             ].map((step, i) => (
@@ -677,7 +736,11 @@ export default function ReadingProfilePage() {
             Do not write words down or take a photo. This only works if you rely on your memory.
           </Warning>
 
-          <button style={{ ...BTN_NAVY, marginTop: 16 }} onClick={() => { setWmRound(0); setPhase('wm_show'); }}>
+          <button style={{ ...BTN_NAVY, marginTop: 16 }} onClick={() => {
+            setWmRound(0);
+            startWmTimer(0);
+            setPhase('wm_show');
+          }}>
             I understand — start Round 1 →
           </button>
         </div>
@@ -686,8 +749,9 @@ export default function ReadingProfilePage() {
   }
 
   if (phase === 'wm_show') {
-    const words  = WM_WORD_SETS[wmRound];
-    const pct    = (wmTimerSec / WM_TIMER_SECS) * 100;
+    const words = ROUNDS[wmRound];
+    console.log('[WM] Phase:', phase, 'Round:', wmRound, 'Words:', ROUNDS[wmRound]);
+    const pct   = (wmTimerSec / WM_DURATIONS[wmRound]) * 100;
     const barColor = wmTimerSec <= 3 ? C.red : wmTimerSec <= 5 ? C.amber : C.blue;
 
     return (
@@ -740,7 +804,8 @@ export default function ReadingProfilePage() {
   }
 
   if (phase === 'wm_recall') {
-    const words = WM_WORD_SETS[wmRound];
+    // All WM rounds have 6 words — use count only, never reference the word values
+    const chipCount = 6;
     return (
       <Page>
         <div style={{ ...CARD }}>
@@ -755,12 +820,12 @@ export default function ReadingProfilePage() {
             Type as many as you can. Separate with commas. Spelling doesn't have to be perfect.
           </div>
 
-          {/* Blank placeholder chips */}
+          {/* Blank placeholder chips — empty boxes only, no word content */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16, justifyContent: 'center' }}>
-            {words.map((_, i) => (
+            {Array.from({ length: chipCount }, (_, i) => (
               <div key={i} style={{
-                width: 80, height: 38, borderRadius: 8,
-                border: `1.5px dashed ${C.border}`, background: 'transparent',
+                width: 80, height: 36, borderRadius: 8,
+                border: '1.5px dashed #CCCCCC', background: '#F2F2F2',
               }} />
             ))}
           </div>
@@ -774,8 +839,8 @@ export default function ReadingProfilePage() {
             autoFocus
             style={{
               width:        '100%',
-              background:   C.light,
-              border:       `1px solid ${C.blueMid}`,
+              background:   '#F2F2F2',
+              border:       '1.5px solid #B5D4F4',
               borderRadius: 8,
               padding:      '12px 14px',
               fontSize:     14,
@@ -783,6 +848,7 @@ export default function ReadingProfilePage() {
               boxSizing:    'border-box',
               marginBottom: 12,
               outline:      'none',
+              color:        '#2C2C2A',
             }}
           />
 
@@ -795,23 +861,39 @@ export default function ReadingProfilePage() {
   }
 
   if (phase === 'wm_between') {
-    const nextRound = wmRound + 1;
-    const nextLabel = WM_ROUND_LABELS[nextRound];
+    const isLastRound  = wmRound === 2;
+    const nextRoundIdx = wmRound + 1;
+    const nextLabel    = !isLastRound ? WM_ROUND_LABELS[nextRoundIdx] : '';
+    const nextDuration = !isLastRound ? WM_DURATIONS[nextRoundIdx] : 0;
+    const BTN_GREEN: React.CSSProperties = { ...BTN_NAVY, background: C.green };
+
     return (
       <Page>
         <div style={{ ...CARD, textAlign: 'center' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.green, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>
-            Round {wmRound + 1} Complete
+            {isLastRound ? 'Round 3 Complete' : `Round ${wmRound + 1} Complete`}
           </div>
           <div style={{ fontSize: 24, fontWeight: 700, color: C.dark, marginBottom: 4 }}>
             {wmLastScore} / 6 words recalled
           </div>
           <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.6, marginBottom: 20 }}>
-            Round {nextRound + 1} uses {nextLabel.toLowerCase()}. Ready?
+            {isLastRound
+              ? 'Working Memory module done. Moving to Module 2.'
+              : `Round ${nextRoundIdx + 1} — ${nextDuration} seconds. ${nextLabel}. Ready?`}
           </div>
-          <button style={BTN_NAVY} onClick={startNextWmRound}>
-            Start Round {nextRound + 1} →
-          </button>
+          {isLastRound ? (
+            <button style={BTN_GREEN} onClick={() => setPhase('infer_intro')}>
+              Continue to Module 2 →
+            </button>
+          ) : (
+            <button style={BTN_NAVY} onClick={() => {
+              setWmRound(nextRoundIdx);
+              startWmTimer(nextRoundIdx);
+              setPhase('wm_show');
+            }}>
+              Start Round {nextRoundIdx + 1} →
+            </button>
+          )}
         </div>
       </Page>
     );
@@ -1151,12 +1233,17 @@ export default function ReadingProfilePage() {
                   flex: `0 0 ${20 + i * 16}px`,
                   maxWidth: 100,
                 }} />
-                <div style={{ fontSize: 11, color: C.gray }}>{s.complexity} — {s.timer}s</div>
+                <div style={{ fontSize: 11, color: C.gray }}>{s.complexity} — {s.duration}s</div>
               </div>
             ))}
           </div>
 
-          <button style={BTN_NAVY} onClick={() => { setSyntaxIdx(0); setPhase('syntax_show'); }}>
+          <button style={BTN_NAVY} onClick={() => {
+            setSyntaxIdx(0);
+            setSyntaxPhase('show');
+            startSyntaxTimer(SYNTAX_SENTENCES[0].duration);
+            setPhase('syntax_show');
+          }}>
             Start →
           </button>
         </div>
@@ -1166,14 +1253,14 @@ export default function ReadingProfilePage() {
 
   if (phase === 'syntax_show') {
     const sentence = SYNTAX_SENTENCES[syntaxIdx];
-    const ratio    = syntaxTimerSec / sentence.timer;
+    const ratio    = syntaxTimeLeft / sentence.duration;
     const barColor = ratio <= 0.3 ? C.red : ratio <= 0.6 ? C.amber : C.blue;
 
     return (
       <Page>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, textAlign: 'center' }}>
-            Sentence {syntaxIdx + 1} of 5
+            Sentence {syntaxIdx + 1} of 5 — {sentence.complexity}
           </div>
 
           {/* Complexity ladder */}
@@ -1196,7 +1283,7 @@ export default function ReadingProfilePage() {
                 The sentence disappears when timer reaches zero. Focus on the main idea.
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: barColor, minWidth: 22, textAlign: 'right' }}>
-                {syntaxTimerSec}
+                {syntaxTimeLeft}
               </div>
             </div>
             <div style={{ height: 6, background: C.light, borderRadius: 3, overflow: 'hidden' }}>
@@ -1227,7 +1314,6 @@ export default function ReadingProfilePage() {
   }
 
   if (phase === 'syntax_answer') {
-    const sentence = SYNTAX_SENTENCES[syntaxIdx];
     return (
       <Page>
         <div style={{ ...CARD }}>
@@ -1235,54 +1321,48 @@ export default function ReadingProfilePage() {
             Sentence {syntaxIdx + 1} of 5
           </div>
 
-          {/* Hidden sentence card */}
+          {/* Empty gray card — no text, no placeholder, nothing */}
           <div style={{
             background:   C.light,
             borderRadius: 10,
-            padding:      '16px 18px',
-            fontSize:     13,
-            color:        C.gray,
-            lineHeight:   1.8,
-            textAlign:    'center',
             minHeight:    80,
-            display:      'flex',
-            alignItems:   'center',
-            justifyContent: 'center',
             marginBottom: 16,
-            fontStyle:    'italic',
-          }}>
-            [{sentence.complexity} sentence — hidden]
-          </div>
+          }} />
 
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.dark, marginBottom: 4 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#2C2C2A', marginBottom: 8 }}>
             What was the main point of that sentence?
-          </div>
-          <div style={{ fontSize: 10, fontStyle: 'italic', color: C.gray, marginBottom: 10, lineHeight: 1.5 }}>
-            Don&apos;t try to remember it word for word. Write what it was basically saying.
           </div>
 
           <textarea
             value={syntaxInput}
             onChange={e => setSyntaxInput(e.target.value)}
-            placeholder="The sentence was basically saying…"
             autoFocus
             style={{
+              direction:    'ltr',
+              unicodeBidi:  'normal' as React.CSSProperties['unicodeBidi'],
+              textAlign:    'left',
+              writingMode:  'horizontal-tb' as React.CSSProperties['writingMode'],
               width:        '100%',
               minHeight:    64,
-              background:   C.light,
-              border:       `1px solid ${C.blueMid}`,
+              background:   '#F2F2F2',
+              border:       '1.5px solid #B5D4F4',
               borderRadius: 8,
-              padding:      '10px 12px',
+              padding:      '12px 14px',
               fontSize:     13,
               fontFamily:   FONTS.ui,
-              boxSizing:    'border-box',
-              resize:       'vertical',
+              boxSizing:    'border-box' as const,
+              resize:       'none',
               outline:      'none',
-              marginBottom: 12,
+              marginBottom: 8,
+              color:        '#2C2C2A',
             }}
           />
 
-          <button style={BTN_NAVY} onClick={submitSyntaxAnswer}>
+          <div style={{ fontSize: 10, fontStyle: 'italic', color: C.gray, marginBottom: 12, lineHeight: 1.5 }}>
+            Don&apos;t try to remember word for word. Write what it was basically saying.
+          </div>
+
+          <button style={{ ...BTN_NAVY, width: '100%' }} onClick={submitSyntaxAnswer}>
             {syntaxIdx < 4 ? 'Submit → Next sentence' : 'Submit → Finish'}
           </button>
         </div>

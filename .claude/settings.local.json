@@ -36,7 +36,14 @@
       "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/mastery)",
       "Bash(npx tsx:*)",
       "WebFetch(domain:www.gutenberg.org)",
-      "Bash(curl -s \"https://www.gutenberg.org/cache/epub/20203/pg20203.txt\")"
+      "Bash(curl -s \"https://www.gutenberg.org/cache/epub/20203/pg20203.txt\")",
+      "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/figurative)",
+      "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/mood)",
+      "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/tone)",
+      "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/theme-builder)",
+      "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/structure-purpose)",
+      "Bash(curl -s \"https://www.gutenberg.org/cache/epub/2776/pg2776.txt\")",
+      "Bash(grep -n \"^[A-Z][A-Z ]*$\\\\|^[IVX]\\\\.\\\\|CHAPTER\\\\|STORY\\\\|THE [A-Z]\")"
     ]
   }
 }

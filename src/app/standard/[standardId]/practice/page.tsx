@@ -636,6 +636,7 @@ export default function PracticePage() {
       <GogiNav
         subtitle={`${standardCode} | Practice Phase | New passage`}
         showLogout
+        showDashboardLink
       />
 
       {/* Green progress bar */}

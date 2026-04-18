@@ -22,6 +22,11 @@ function getSessionMsg(n: number): string {
 
 function TeachNav({ standardCode }: { standardCode: string }) {
   const standard = STANDARDS[standardCode as keyof typeof STANDARDS];
+  const router = useRouter();
+  const { role } = useAuth();
+  function handleHomeClick() {
+    router.push(role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
+  }
   return (
     <nav style={{ background: C.navy, height: 52, width: '100%', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -30,7 +35,12 @@ function TeachNav({ standardCode }: { standardCode: string }) {
         </div>
         {standard && <div style={{ fontSize: 13, fontWeight: 700, color: C.white }}>{standard.title}</div>}
       </div>
-      <div style={{ fontSize: 12, fontWeight: 700, color: C.white, fontFamily: FONTS.passage, letterSpacing: '-0.5px' }}>GOGI</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button onClick={handleHomeClick} style={{ fontSize: 11, color: 'rgba(181,212,244,0.5)', cursor: 'pointer', background: 'none', border: 'none', fontFamily: FONTS.ui, transition: 'color 0.2s', padding: 0 }} onMouseEnter={e => { e.currentTarget.style.color = '#B5D4F4'; }} onMouseLeave={e => { e.currentTarget.style.color = 'rgba(181,212,244,0.5)'; }}>← Dashboard</button>
+        <button onClick={handleHomeClick} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} title="Back to dashboard">
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.white, fontFamily: FONTS.passage, letterSpacing: '-0.5px' }}>GOGI</div>
+        </button>
+      </div>
     </nav>
   );
 }

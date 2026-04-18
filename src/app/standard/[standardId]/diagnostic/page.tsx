@@ -482,7 +482,7 @@ export default function DiagnosticPage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.white, fontFamily: FONTS.ui }}>
-      <GogiNav subtitle={`${standardCode} | Diagnostic | Question ${currentQ + 1} of ${questions.length}`} showLogout />
+      <GogiNav subtitle={`${standardCode} | Diagnostic | Question ${currentQ + 1} of ${questions.length}`} showLogout showDashboardLink />
 
       {/* Blue progress bar */}
       <div style={{ height: 3, background: C.blueLight, flexShrink: 0 }}>

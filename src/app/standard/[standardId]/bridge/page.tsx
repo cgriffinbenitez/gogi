@@ -10,31 +10,29 @@ import { getTeachRoute } from '@/lib/classify/getTeachRoute';
 
 // ─── Classification badge text ────────────────────────────────────────────────
 
+// Sprint O — 13 canonical codes mapped to badge text shown after diagnostic
 const BADGE_TEXT: Record<string, string> = {
   // Layer 1 — Pre-reading
-  schema_deficit:                      'Layer 1 classification  |  Schema support needed',
-  no_metacognitive_strategy:           'Layer 1 classification  |  Strategy support needed',
-  no_theme_schema:                     'Layer 1 classification  |  Schema support needed',
-  no_struct_schema:                    'Layer 1 classification  |  Schema support needed',
+  no_metacognitive_strategy:           'Layer 1  |  Reading strategy needed',
   // Layer 2 — During reading
-  vocabulary_gap:                      'Layer 2 classification  |  Vocabulary support needed',
-  morphology_gap:                      'Layer 2 classification  |  Word structure support needed',
-  syntax_barrier:                      'Layer 2 classification  |  Word structure support needed',
-  signal_word_blind:                   'Layer 2 classification  |  Word structure support needed',
+  vocabulary_gap:                      'Layer 2  |  Vocabulary support needed',
+  morphology_gap:                      'Layer 2  |  Word structure support needed',
+  syntax_barrier:                      'Layer 2  |  Sentence structure support needed',
+  figurative_language_failure:         'Layer 2  |  Figurative language support needed',
   // Layer 3 — After reading
-  inferencing_deficit:                 'Layer 3 classification  |  Inferencing support needed',
-  abstract_reasoning_deficit:          'Layer 3 classification  |  Inferencing support needed',
-  theme_confusion:                     'Layer 3 classification  |  Inferencing support needed',
-  literal_misreading:                  'Layer 3 classification  |  Inferencing support needed',
-  concrete_thinking:                   'Layer 3 classification  |  Inferencing support needed',
-  evidence_retrieval_failure:          'Layer 3 classification  |  Evidence support needed',
-  theme_evidence_disconnection:        'Layer 3 classification  |  Evidence support needed',
-  comprehension_integration_failure:   'Layer 3 classification  |  Analysis support needed',
-  purpose_failure:                     'Layer 3 classification  |  Analysis support needed',
+  mood_misreading:                     'Layer 3  |  Mood identification needed',
+  tone_misreading:                     'Layer 3  |  Tone identification needed',
+  inferencing_literal:                 'Layer 3  |  Inferencing support needed',
+  inferencing_schema:                  'Layer 3  |  Inferencing support needed',
+  inferencing_wm:                      'Layer 3  |  Inferencing support needed',
+  topic_vs_theme_confusion:            'Layer 3  |  Theme building support needed',
+  evidence_retrieval_failure:          'Layer 3  |  Evidence support needed',
+  structure_purpose_disconnect:        'Layer 3  |  Structure analysis support needed',
+  comprehension_integration_failure:   'Layer 3  |  Analysis support needed',
 };
 
 function badgeText(classification: string): string {
-  return BADGE_TEXT[classification] ?? 'Layer 2 classification  |  Vocabulary support needed';
+  return BADGE_TEXT[classification] ?? 'Layer 2  |  Vocabulary support needed';
 }
 
 function teachRoute(standardId: string, classification: string): string {

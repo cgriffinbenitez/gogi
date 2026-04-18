@@ -11,29 +11,27 @@
 import { createClient } from '@/lib/supabase/client';
 
 // ─── Classification layer registry ────────────────────────────────────────────
+// Sprint O — 13 canonical codes aligned to CPALMS ELA.9.R standards
 
 const LAYER_1 = new Set([
-  'schema_deficit',
-  'no_metacognitive_strategy',
-  'no_theme_schema',
-  'no_struct_schema',
+  'no_metacognitive_strategy',                // Pre-reading: no strategy schema
 ]);
 const LAYER_2 = new Set([
-  'vocabulary_gap',
-  'morphology_gap',
-  'syntax_barrier',
-  'signal_word_blind',
+  'vocabulary_gap',                           // During-reading: unknown word blocks comprehension
+  'morphology_gap',                           // During-reading: word structure failure
+  'syntax_barrier',                           // During-reading: sentence structure failure
+  'figurative_language_failure',              // During-reading: literal reading of figurative language
 ]);
 const LAYER_3 = new Set([
-  'inferencing_deficit',
-  'evidence_retrieval_failure',
-  'comprehension_integration_failure',
-  'literal_misreading',
-  'theme_confusion',
-  'abstract_reasoning_deficit',
-  'concrete_thinking',
-  'theme_evidence_disconnection',
-  'purpose_failure',
+  'mood_misreading',                          // After-reading: confuses character emotion with mood
+  'tone_misreading',                          // After-reading: confuses content with author attitude
+  'inferencing_literal',                      // After-reading: reads literally, misses implied meaning
+  'inferencing_schema',                       // After-reading: activates wrong background schema
+  'inferencing_wm',                           // After-reading: working memory failure breaks inference chain
+  'topic_vs_theme_confusion',                 // After-reading: names topic instead of theme statement
+  'evidence_retrieval_failure',               // After-reading: cannot locate supporting textual evidence
+  'structure_purpose_disconnect',             // After-reading: identifies structure but misses author purpose
+  'comprehension_integration_failure',        // After-reading: cannot synthesize across the whole text
 ]);
 
 function getLayer(cls: string): number {
@@ -110,7 +108,7 @@ export async function classifySession(sessionId: string): Promise<ClassifySessio
   }
 
   // 4. Determine dominant with tie-break (lower layer wins)
-  let dominant = 'schema_deficit'; // safe default
+  let dominant = 'no_metacognitive_strategy'; // safe default — Layer 1
   let dominantCount = 0;
   let dominantLayer = 4;
 

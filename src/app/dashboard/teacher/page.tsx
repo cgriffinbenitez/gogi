@@ -186,6 +186,11 @@ function TeacherNav({
   teacherName: string; school: string; activeTab: Tab; onTabChange: (t: Tab) => void;
 }) {
   const router = useRouter();
+  const supabase = createClient();
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push('/login');
+  }
   const tabs: { key: Tab; label: string }[] = [
     { key: 'roster',    label: 'Roster'    },
     { key: 'analytics', label: 'Analytics' },
@@ -199,9 +204,15 @@ function TeacherNav({
       padding: '0 20px', boxSizing: 'border-box' as const,
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: C.white, marginRight: 24, letterSpacing: '-0.5px', fontFamily: FONTS.ui }}>
-          GOGI
-        </span>
+        <button
+          onClick={() => router.push('/dashboard/teacher')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s', marginRight: 16 }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+          title="Back to dashboard"
+        >
+          <span style={{ fontSize: 14, fontWeight: 800, color: C.white, letterSpacing: '-0.5px', fontFamily: FONTS.ui }}>GOGI</span>
+        </button>
         {tabs.map((tab) => {
           const active = activeTab === tab.key;
           return (
@@ -226,8 +237,29 @@ function TeacherNav({
           );
         })}
       </div>
-      <div style={{ fontSize: 11, color: C.blueMid, whiteSpace: 'nowrap' as const, fontFamily: FONTS.ui }}>
-        {teacherName}&nbsp;|&nbsp;{school}&nbsp;|&nbsp;Pilot Cohort&nbsp;·&nbsp;Period 3
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ fontSize: 11, color: C.blueMid, whiteSpace: 'nowrap' as const, fontFamily: FONTS.ui }}>
+          {teacherName}&nbsp;|&nbsp;{school}&nbsp;|&nbsp;Pilot Cohort&nbsp;·&nbsp;Period 3
+        </span>
+        <button
+          onClick={handleSignOut}
+          style={{
+            background: 'none', border: '1px solid rgba(181,212,244,0.3)',
+            borderRadius: 6, padding: '4px 10px',
+            fontSize: 11, color: C.blueMid, cursor: 'pointer',
+            fontFamily: FONTS.ui, transition: 'background 0.2s, border-color 0.2s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+            e.currentTarget.style.borderColor = 'rgba(181,212,244,0.6)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'none';
+            e.currentTarget.style.borderColor = 'rgba(181,212,244,0.3)';
+          }}
+        >
+          Sign out
+        </button>
       </div>
     </nav>
   );

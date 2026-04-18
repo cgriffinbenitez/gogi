@@ -54,6 +54,11 @@ function getDotStyle(results: WordResult[], index: number, current: number): { b
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 
 function VocabCheckNav({ standardCode, studentName }: { standardCode: string; studentName: string }) {
+  const router = useRouter();
+  const { role } = useAuth();
+  function handleHomeClick() {
+    router.push(role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
+  }
   return (
     <nav style={{
       background: C.navy, height: 52, width: '100%', padding: '0 20px',
@@ -66,7 +71,14 @@ function VocabCheckNav({ standardCode, studentName }: { standardCode: string; st
         </div>
         <div style={{ fontSize: 13, fontWeight: 700, color: C.white }}>Quick check before your diagnostic</div>
       </div>
-      {studentName && <div style={{ fontSize: 12, color: C.white, opacity: 0.75 }}>{studentName}</div>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button onClick={handleHomeClick} style={{ fontSize: 11, color: 'rgba(181,212,244,0.5)', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'system-ui, sans-serif', transition: 'color 0.2s', padding: 0 }} onMouseEnter={e => { e.currentTarget.style.color = '#B5D4F4'; }} onMouseLeave={e => { e.currentTarget.style.color = 'rgba(181,212,244,0.5)'; }}>← Dashboard</button>
+        {studentName && (
+          <button onClick={handleHomeClick} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }} onMouseLeave={e => { e.currentTarget.style.background = 'none'; }} title="Back to dashboard">
+            <span style={{ fontSize: 12, color: C.white, opacity: 0.75 }}>{studentName}</span>
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

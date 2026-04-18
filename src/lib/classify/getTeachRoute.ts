@@ -3,32 +3,33 @@
  * teach route segment. Single source of truth used by bridge, practice,
  * reclassify, and dashboard.
  *
+ * Sprint O — 13 canonical codes, 12 teach screens.
  * Default fallback: 'vocabulary' (safe catch-all — never produces a 404)
  */
 export function getTeachRoute(classification: string): string {
   const routes: Record<string, string> = {
-    // Layer 1 — Pre-reading
-    schema_deficit:                      'schema',
+    // ── Layer 1 — Pre-reading ──────────────────────────────────────────────
     no_metacognitive_strategy:           'strategy',
-    no_theme_schema:                     'schema',
-    no_struct_schema:                    'schema',
-    // Layer 2 — During reading
+
+    // ── Layer 2 — During reading ───────────────────────────────────────────
     vocabulary_gap:                      'vocabulary',
     morphology_gap:                      'morphology',
     syntax_barrier:                      'morphology',
-    signal_word_blind:                   'morphology',
-    // Layer 3 — After reading
-    inferencing_deficit:                 'inferencing',
-    abstract_reasoning_deficit:          'inferencing',
-    theme_confusion:                     'inferencing',
-    literal_misreading:                  'inferencing',
-    concrete_thinking:                   'inferencing',
+    figurative_language_failure:         'figurative',
+
+    // ── Layer 3 — After reading ────────────────────────────────────────────
+    mood_misreading:                     'mood',
+    tone_misreading:                     'tone',
+    inferencing_literal:                 'inferencing',
+    inferencing_schema:                  'inferencing',
+    inferencing_wm:                      'inferencing',
+    topic_vs_theme_confusion:            'theme-builder',
     evidence_retrieval_failure:          'evidence',
-    theme_evidence_disconnection:        'evidence',
+    structure_purpose_disconnect:        'structure-purpose',
     comprehension_integration_failure:   'synthesis',
-    purpose_failure:                     'synthesis',
-    // Edge cases — should never reach routing but handled defensively
-    CORRECT:                             'vocabulary',
+
+    // ── Special — mastery shortcut ─────────────────────────────────────────
+    CORRECT:                             'practice',
   };
   return routes[classification] ?? 'vocabulary';
 }
