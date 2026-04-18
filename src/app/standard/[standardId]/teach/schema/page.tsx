@@ -38,7 +38,7 @@ function TeachNav({ standardCode }: { standardCode: string }) {
     <nav style={{ background: C.navy, height: 52, width: '100%', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-          TEACH PHASE  |  LAYER 1  |  SCHEMA BUILDING
+          TEACH PHASE  |  SCHEMA BUILDING
         </div>
         {standard && <div style={{ fontSize: 13, fontWeight: 700, color: C.white }}>{standard.title}</div>}
       </div>
@@ -246,19 +246,6 @@ export default function TeachSchemaPage() {
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 14 }}>
             <GogiAvatar size={36} state="engaged" />
             <GogiBubble state="engaged">{getSessionMsg(sessionNum)}</GogiBubble>
-          </div>
-
-          {/* Why this fires — amber context panel */}
-          <div style={{ background: C.amberLight, borderLeft: `3px solid ${C.amber}`, borderRadius: '0 6px 6px 0', padding: '10px 12px', margin: '14px 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.amber, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-              WHY THIS FIRES
-            </div>
-            <div style={{ fontSize: 13, color: C.amber, marginBottom: 3 }}>
-              Classification: schema_deficit → Layer 1
-            </div>
-            <div style={{ fontSize: 12, color: C.dark, lineHeight: 1.5 }}>
-              Root cause: no background knowledge to anchor the text. The passage felt random because your brain had nothing to connect it to.
-            </div>
           </div>
 
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>

@@ -30,7 +30,7 @@ function TeachNav({ standardCode }: { standardCode: string }) {
     <nav style={{ background: C.navy, height: 52, width: '100%', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: C.blueMid, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-          TEACH PHASE  |  LAYER 2  |  VOCABULARY
+          TEACH PHASE  |  VOCABULARY
         </div>
         {standard && <div style={{ fontSize: 13, fontWeight: 700, color: C.white }}>{standard.title}</div>}
       </div>
@@ -292,37 +292,6 @@ export default function TeachVocabularyPage() {
                   </>
                 : 'Let\u2019s unlock a key vocabulary word from this passage permanently.'}
             </GogiBubble>
-          </div>
-
-          {/* Diagnostic context panel */}
-          <div
-            style={{
-              background: C.blueLight,
-              borderLeft: `3px solid ${C.blue}`,
-              borderRadius: '0 6px 6px 0',
-              padding: '10px 12px',
-              margin: '14px 0',
-            }}
-          >
-            <div
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: C.blue,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                marginBottom: 6,
-              }}
-            >
-              DIAGNOSTIC CONTEXT
-            </div>
-            <div style={{ fontSize: 13, color: C.dark, marginBottom: 3 }}>
-              Student selected: Option{' '}
-              {lastSelectedOption ? lastSelectedOption : '—'}
-            </div>
-            <div style={{ fontSize: 13, color: C.amber }}>
-              Classification: {classification} → Layer 2
-            </div>
           </div>
 
           {/* Bottom Gogi row */}

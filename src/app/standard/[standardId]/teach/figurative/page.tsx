@@ -183,7 +183,7 @@ export default function TeachFigurativePage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.white, fontFamily: FONTS.ui }}>
-      <TeachNav standardCode={standardCode} navLabel="TEACH PHASE  |  LAYER 2  |  FIGURATIVE LANGUAGE" layerColor={C.blueMid} />
+      <TeachNav standardCode={standardCode} navLabel="TEACH PHASE  |  FIGURATIVE LANGUAGE" layerColor={C.blueMid} />
 
       <div className="teach-3col">
 
@@ -212,18 +212,6 @@ export default function TeachFigurativePage() {
               The author didn&rsquo;t mean that literally. Figurative language says one thing
               but means something deeper. Let&rsquo;s unlock what this figure actually means.
             </GogiBubble>
-          </div>
-
-          <div style={{ background: C.blueLight, borderLeft: `3px solid ${C.blue}`, borderRadius: '0 6px 6px 0', padding: '10px 12px', margin: '14px 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.blue, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-              DIAGNOSTIC CONTEXT
-            </div>
-            <div style={{ fontSize: 12, color: C.dark }}>
-              Classification: figurative_language_failure → Layer 2
-            </div>
-            <div style={{ fontSize: 11, color: C.gray, marginTop: 3 }}>
-              Root cause: reading figurative language literally instead of inferring its meaning.
-            </div>
           </div>
 
           {step2Done && (

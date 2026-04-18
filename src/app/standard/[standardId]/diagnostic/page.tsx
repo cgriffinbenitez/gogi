@@ -554,16 +554,16 @@ export default function DiagnosticPage() {
                     display: 'flex', alignItems: 'flex-start', gap: 10,
                     width: '100%', padding: 12, marginBottom: 8,
                     borderRadius: 10,
-                    border: isSelected ? `2px solid ${C.blueMid}` : `1.5px solid ${C.border}`,
-                    background: isSelected ? C.blueLight : C.white,
+                    border: isSelected ? `2px solid ${C.gray}` : `1.5px solid ${C.border}`,
+                    background: C.white,
                     cursor: locked ? 'default' : 'pointer',
                     textAlign: 'left', fontFamily: FONTS.ui,
                     transition: 'border-color 0.15s, background 0.15s',
                   }}
-                  onMouseEnter={(e) => { if (!locked && !isSelected) { e.currentTarget.style.background = '#FAFAFA'; e.currentTarget.style.borderColor = C.blueMid; } }}
+                  onMouseEnter={(e) => { if (!locked && !isSelected) { e.currentTarget.style.background = '#FAFAFA'; e.currentTarget.style.borderColor = C.gray; } }}
                   onMouseLeave={(e) => { if (!locked && !isSelected) { e.currentTarget.style.background = C.white; e.currentTarget.style.borderColor = C.border; } }}
                 >
-                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: isSelected ? C.blue : C.navy, color: C.white, fontSize: 12, fontWeight: 700, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 26, height: 26, borderRadius: '50%', background: isSelected ? C.gray : C.navy, color: C.white, fontSize: 12, fontWeight: 700, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {letter}
                   </div>
                   <span style={{ fontSize: 13, color: C.dark, lineHeight: 1.5, paddingTop: 4 }}>{text}</span>

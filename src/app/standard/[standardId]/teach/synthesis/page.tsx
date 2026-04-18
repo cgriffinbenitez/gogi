@@ -31,7 +31,7 @@ function TeachNav({ standardCode }: { standardCode: string }) {
     <nav style={{ background: C.navy, height: 52, width: '100%', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <div style={{ fontSize: 9, fontWeight: 700, color: C.greenBorder, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-          TEACH PHASE  |  LAYER 3  |  SYNTHESIS
+          TEACH PHASE  |  SYNTHESIS
         </div>
         {standard && <div style={{ fontSize: 13, fontWeight: 700, color: C.white }}>{standard.title}</div>}
       </div>
@@ -269,18 +269,6 @@ export default function TeachSynthesisPage() {
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 14 }}>
             <GogiAvatar size={36} state="celebrate" />
             <GogiBubble state="celebrate">{getSessionMsg(sessionNum)}</GogiBubble>
-          </div>
-
-          <div style={{ background: C.greenLight, borderLeft: `3px solid ${C.green}`, borderRadius: '0 6px 6px 0', padding: '10px 12px', margin: '14px 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-              LAYER 3 — AFTER READING
-            </div>
-            <div style={{ fontSize: 13, color: C.green, marginBottom: 2 }}>
-              Classification: comprehension_integration_failure → Layer 3
-            </div>
-            <div style={{ fontSize: 12, color: C.dark }}>
-              Root cause: cannot synthesize literary elements into a unified analytical claim.
-            </div>
           </div>
 
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>

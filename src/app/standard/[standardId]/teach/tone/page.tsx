@@ -158,7 +158,7 @@ export default function TeachTonePage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: C.white, fontFamily: FONTS.ui }}>
-      <TeachNav standardCode={standardCode} navLabel="TEACH PHASE  |  LAYER 3  |  TONE" layerColor={C.greenBorder} />
+      <TeachNav standardCode={standardCode} navLabel="TEACH PHASE  |  TONE" layerColor={C.greenBorder} />
 
       <div className="teach-3col">
 
@@ -183,16 +183,6 @@ export default function TeachTonePage() {
               not the reader&rsquo;s feeling. Ask: what does the <em>AUTHOR</em> think about what
               they&rsquo;re describing?
             </GogiBubble>
-          </div>
-
-          <div style={{ background: C.greenLight, borderLeft: `3px solid ${C.green}`, borderRadius: '0 6px 6px 0', padding: '10px 12px', margin: '14px 0' }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.green, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
-              LAYER 3 — AFTER READING
-            </div>
-            <div style={{ fontSize: 12, color: C.dark }}>Classification: tone_misreading → Layer 3</div>
-            <div style={{ fontSize: 11, color: C.gray, marginTop: 3 }}>
-              Root cause: confusing what the content describes with how the author regards it.
-            </div>
           </div>
 
           {step2Done && (
