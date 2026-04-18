@@ -413,6 +413,22 @@ export default function DiagnosticPage() {
           try {
             const result = await classifySession(sessionId);
             console.log('[DiagnosticPage] classification result:', result);
+
+            // Persist all identified gaps before routing
+            if (!result.skipTeach && studentId && standardUuid && result.allGaps.length > 0) {
+              try {
+                const supabaseGaps = createClient();
+                await supabaseGaps.from('standard_progress').upsert({
+                  student_id:      studentId,
+                  standard_id:     standardUuid,
+                  gaps_identified: result.allGaps,
+                  current_gap:     result.dominant,
+                }, { onConflict: 'student_id,standard_id' });
+              } catch (gapErr) {
+                console.error('[DiagnosticPage] gaps upsert failed:', gapErr);
+              }
+            }
+
             router.push(`/standard/${standardId}/${result.skipTeach ? 'practice' : 'bridge'}`);
           } catch (err) {
             console.error('[DiagnosticPage] classifySession error:', err);

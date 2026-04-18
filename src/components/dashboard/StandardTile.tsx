@@ -4,11 +4,19 @@ import { useRouter } from 'next/navigation';
 import { C, FONTS, POWER_STATEMENTS, type StandardStatus } from '@/lib/constants/design';
 import type { SkillGap } from '@/lib/data/getStudentStandardStatus';
 
+// ─── Pilot display name overrides ─────────────────────────────────────────────
+// Keyed by standard UUID — replaces the DB title when present.
+
+const STANDARD_DISPLAY_NAMES: Record<string, string> = {
+  '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e': 'Literary Elements & Layers of Meaning',
+};
+
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface StandardTileProps {
   standardId:                  string;   // URL-safe, e.g. 'ELA.9.R.1.1'
   standardCode:                string;   // display, e.g. 'ELA.9.R.1.1'
+  standardUuid?:               string;   // DB UUID — used for display name override
   title:                       string;
   status:                      StandardStatus;
   sessionsPassed:              number;
@@ -466,6 +474,7 @@ function MasteredDropdown({
 export function StandardTile({
   standardId,
   standardCode,
+  standardUuid = '',
   title,
   status,
   sessionsPassed,
@@ -482,9 +491,10 @@ export function StandardTile({
   vocabCheckComplete = false,
   vocabCoverageScore = null,
 }: StandardTileProps) {
-  const accent  = ACCENT[status];
-  const badgeBg = STATUS_BADGE_BG[status];
-  const label   = STATUS_LABEL[status];
+  const accent      = ACCENT[status];
+  const badgeBg     = STATUS_BADGE_BG[status];
+  const label       = STATUS_LABEL[status];
+  const displayName = STANDARD_DISPLAY_NAMES[standardUuid] ?? title;
 
   return (
     <div
@@ -537,7 +547,7 @@ export function StandardTile({
               lineHeight: 1.3,
             }}
           >
-            {title}
+            {displayName}
           </div>
         </div>
 

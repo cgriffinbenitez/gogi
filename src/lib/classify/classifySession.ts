@@ -44,9 +44,11 @@ function getLayer(cls: string): number {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ClassifySessionResult {
-  classification: string;
-  skipTeach: boolean;
-  confidence: number; // 0–100 — fraction of errors pointing to dominant class
+  dominant:   string;                    // highest-frequency gap (used for teach routing)
+  allGaps:    string[];                  // all gaps with 2+ wrong answers, sorted by frequency
+  gapCounts:  Record<string, number>;    // raw counts for every non-correct classification
+  skipTeach:  boolean;
+  confidence: number;                    // 0–100 — fraction of errors pointing to dominant class
 }
 
 // ─── Main function ────────────────────────────────────────────────────────────
@@ -85,6 +87,7 @@ export async function classifySession(sessionId: string): Promise<ClassifySessio
       .from('sessions')
       .update({
         dominant_classification:     'CORRECT',
+        gap_classifications:         [],
         classification_confidence:   confidence,
         mastery_achieved:            true,
         status:                      'complete',
@@ -95,7 +98,7 @@ export async function classifySession(sessionId: string): Promise<ClassifySessio
     console.log(
       `[classifySession] SKIP TEACH — ${correctCount}/${total} correct (${confidence}% confidence)`,
     );
-    return { classification: 'CORRECT', skipTeach: true, confidence };
+    return { dominant: 'CORRECT', allGaps: [], gapCounts: {}, skipTeach: true, confidence };
   }
 
   // 3. Count non-correct classifications
@@ -126,16 +129,28 @@ export async function classifySession(sessionId: string): Promise<ClassifySessio
 
   const confidence = Math.round((dominantCount / Math.max(total, 1)) * 100);
 
+  // 4b. Build allGaps — every classification with 2+ wrong answers, sorted by frequency desc
+  //     (then tie-break by layer asc so root-cause gaps surface first)
+  const GAP_THRESHOLD = 2;
+  const allGaps = Object.entries(counts)
+    .filter(([, cnt]) => cnt >= GAP_THRESHOLD)
+    .sort(([aKey, aCnt], [bKey, bCnt]) => {
+      if (bCnt !== aCnt) return bCnt - aCnt;              // more frequent first
+      return getLayer(aKey) - getLayer(bKey);             // lower layer first on tie
+    })
+    .map(([cls]) => cls);
+
   console.log(
     `[classifySession] dominant=${dominant} count=${dominantCount}/${total} (${confidence}% confidence) layer=${dominantLayer}`,
   );
-  console.log('[classifySession] full distribution:', counts);
+  console.log('[classifySession] allGaps:', allGaps, '| full distribution:', counts);
 
   // 5. Write results to session
   const { error: updateErr } = await supabase
     .from('sessions')
     .update({
       dominant_classification:   dominant,
+      gap_classifications:       allGaps,
       classification_confidence: confidence,
       mastery_achieved:          false,
       status:                    'complete',
@@ -147,5 +162,5 @@ export async function classifySession(sessionId: string): Promise<ClassifySessio
     console.error('[classifySession] session update failed:', updateErr.message);
   }
 
-  return { classification: dominant, skipTeach: false, confidence };
+  return { dominant, allGaps, gapCounts: counts, skipTeach: false, confidence };
 }

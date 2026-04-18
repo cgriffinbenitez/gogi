@@ -35,6 +35,13 @@ interface DashboardData {
   activePhase: string;
 }
 
+// ─── Pilot mode ───────────────────────────────────────────────────────────────
+// Set PILOT_MODE = true to show only the R.1.1 card during the pilot launch.
+// Flip to false to restore the full 3-standard view.
+
+const PILOT_MODE         = true;
+const PILOT_STANDARD_ID  = '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e';
+
 // ─── Intervention route map ───────────────────────────────────────────────────
 
 const INTERVENTION_ROUTES: Record<string, string> = {
@@ -175,8 +182,12 @@ export default function StudentDashboardContent({ studentId, studentName, standa
   }
 
   const { streak, richData, activeCode, activePhase } = data;
-  const statuses      = Object.fromEntries(standards.map((s) => [s.code, richData[s.code]?.status ?? 'notStarted']));
-  const masteredCount = Object.values(statuses).filter((s) => s === 'mastered').length;
+  const statuses         = Object.fromEntries(standards.map((s) => [s.code, richData[s.code]?.status ?? 'notStarted']));
+  // Pilot mode: show only R.1.1; production: show all 3 standards
+  const visibleStandards = PILOT_MODE
+    ? standards.filter((s) => s.id === PILOT_STANDARD_ID)
+    : standards;
+  const masteredCount    = visibleStandards.filter((s) => statuses[s.code] === 'mastered').length;
 
   // ── CTA route logic ────────────────────────────────────────────────────────
 
@@ -296,44 +307,48 @@ export default function StudentDashboardContent({ studentId, studentName, standa
           </div>
 
           <div
-            style={{
-              display:             'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              alignItems:          'start',   // cards grow independently
-              gap:                 10,
-            }}
+            style={
+              PILOT_MODE
+                ? { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }
+                : { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'start', gap: 10 }
+            }
             className="standards-grid"
           >
-            {standards.map((s) => {
+            {visibleStandards.map((s) => {
               const result = richData[s.code];
               const status = result?.status ?? 'notStarted';
 
               return (
-                <StandardTile
+                <div
                   key={s.id}
-                  standardId={s.code}
-                  standardCode={s.code}
-                  title={s.title}
-                  status={status}
-                  sessionsPassed={result?.sessionsPassed              ?? 0}
-                  sessionsAttempted={result?.sessionsAttempted        ?? 0}
-                  currentIntervention={result?.currentIntervention    ?? null}
-                  diagnosticQuestionsAnswered={result?.diagnosticQuestionsAnswered ?? 0}
-                  diagnosticQuestionsTotal={result?.diagnosticQuestionsTotal    ?? 10}
-                  timeSpentMinutes={result?.timeSpentMinutes          ?? 0}
-                  skillGaps={result?.skillGaps                        ?? []}
-                  lastSessionAt={result?.lastSessionAt                ?? null}
-                  currentStatus={result?.currentStatus                ?? 'not_started'}
-                  vocabCheckComplete={result?.vocabCheckComplete      ?? false}
-                  vocabCoverageScore={result?.vocabCoverageScore      ?? null}
-                  isOpen={activeCard === s.code}
-                  onToggle={() =>
-                    setActiveCard((prev) => (prev === s.code ? null : s.code))
-                  }
-                  onCTAClick={() =>
-                    router.push(buildCTARoute(s.code, status, result?.currentIntervention ?? null))
-                  }
-                />
+                  style={PILOT_MODE ? { width: '100%', maxWidth: 560 } : undefined}
+                >
+                  <StandardTile
+                    standardId={s.code}
+                    standardCode={s.code}
+                    standardUuid={s.id}
+                    title={s.title}
+                    status={status}
+                    sessionsPassed={result?.sessionsPassed              ?? 0}
+                    sessionsAttempted={result?.sessionsAttempted        ?? 0}
+                    currentIntervention={result?.currentIntervention    ?? null}
+                    diagnosticQuestionsAnswered={result?.diagnosticQuestionsAnswered ?? 0}
+                    diagnosticQuestionsTotal={result?.diagnosticQuestionsTotal    ?? 10}
+                    timeSpentMinutes={result?.timeSpentMinutes          ?? 0}
+                    skillGaps={result?.skillGaps                        ?? []}
+                    lastSessionAt={result?.lastSessionAt                ?? null}
+                    currentStatus={result?.currentStatus                ?? 'not_started'}
+                    vocabCheckComplete={result?.vocabCheckComplete      ?? false}
+                    vocabCoverageScore={result?.vocabCoverageScore      ?? null}
+                    isOpen={activeCard === s.code}
+                    onToggle={() =>
+                      setActiveCard((prev) => (prev === s.code ? null : s.code))
+                    }
+                    onCTAClick={() =>
+                      router.push(buildCTARoute(s.code, status, result?.currentIntervention ?? null))
+                    }
+                  />
+                </div>
               );
             })}
           </div>
@@ -342,11 +357,12 @@ export default function StudentDashboardContent({ studentId, studentName, standa
         {/* Section C: Mastery summary */}
         <div style={{ marginTop: 12, marginBottom: 4 }}>
           <div style={{ fontSize: 13, color: C.gray, marginBottom: 6 }}>
-            Standards Mastered: {masteredCount} of 3
-            {masteredCount === 0 && ' (pilot launch)'}
+            {PILOT_MODE
+              ? `Standards Mastered: ${masteredCount} of 1 (pilot launch)`
+              : `Standards Mastered: ${masteredCount} of 3`}
           </div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            {standards.map((s) => {
+            {visibleStandards.map((s) => {
               const isMastered = statuses[s.code] === 'mastered';
               return (
                 <div

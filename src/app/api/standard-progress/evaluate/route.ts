@@ -55,56 +55,72 @@ export async function POST(req: NextRequest) {
       `correct=${correct_count}/${total_questions} threshold=${passThreshold} passed=${passed}`,
     );
 
-    // Fetch current progress (sessions_passed, sessions_attempted, failed_turns, reclassification_count)
+    // Fetch current progress (including gap tracking columns)
     const { data: progressRaw } = await supabase
       .from('standard_progress')
-      .select('sessions_passed, sessions_attempted, current_status, failed_turns, reclassification_count')
+      .select('sessions_passed, sessions_attempted, current_status, failed_turns, reclassification_count, gaps_identified, gaps_addressed, current_gap')
       .eq('student_id', student_id)
       .eq('standard_id', standard_id)
       .maybeSingle();
 
     const progress = progressRaw as {
-      sessions_passed?:      number;
-      sessions_attempted?:   number;
-      current_status?:       string;
-      failed_turns?:         number;
+      sessions_passed?:        number;
+      sessions_attempted?:     number;
+      current_status?:         string;
+      failed_turns?:           number;
       reclassification_count?: number;
+      gaps_identified?:        string[];
+      gaps_addressed?:         string[];
+      current_gap?:            string | null;
     } | null;
 
     const currentPassed        = progress?.sessions_passed       ?? 0;
     const currentAttempted     = progress?.sessions_attempted    ?? 0;
     const currentFailedTurns   = progress?.failed_turns          ?? 0;
     const currentReclassCount  = progress?.reclassification_count ?? 0;
+    const gapsIdentified       = progress?.gaps_identified       ?? [];
+    const gapsAddressed        = progress?.gaps_addressed        ?? [];
+    const currentGap           = progress?.current_gap           ?? current_classification ?? null;
 
     // ── PASS branch ──────────────────────────────────────────────────────────
     if (passed) {
-      const newSessionsPassed = currentPassed + 1;
+      // Mark this gap as addressed
+      const newGapsAddressed = currentGap && !gapsAddressed.includes(currentGap)
+        ? [...gapsAddressed, currentGap]
+        : gapsAddressed;
 
-      let result:    'mastered' | 'reinforcing' | 'practicing';
+      // Remaining gaps = gaps identified but not yet addressed
+      const remainingGaps = gapsIdentified.filter((g) => !newGapsAddressed.includes(g));
+
+      let result:    'mastered' | 'gap_complete' | 'practicing';
       let newStatus: string;
+      let nextGap:   string | null = null;
 
-      if (newSessionsPassed >= 3) {
+      if (remainingGaps.length === 0) {
+        // All gaps addressed — mastery achieved
         result    = 'mastered';
         newStatus = 'mastered';
-      } else if (newSessionsPassed === 2) {
-        result    = 'reinforcing';
-        newStatus = 'reinforcing';
       } else {
-        result    = 'practicing';
-        newStatus = 'practicing';
+        // More gaps remain — advance to next gap
+        nextGap   = remainingGaps[0];
+        result    = 'gap_complete';
+        newStatus = 'intervening';
       }
 
       const progressUpdate: Record<string, unknown> = {
         student_id,
         standard_id,
-        sessions_passed:    newSessionsPassed,
+        sessions_passed:    result === 'mastered' ? currentPassed + 1 : 0, // reset per-gap counter
         sessions_attempted: currentAttempted + 1,
         current_status:     newStatus,
         last_session_at:    new Date().toISOString(),
-        failed_turns:       0, // reset on pass
+        failed_turns:       0,
+        gaps_addressed:     newGapsAddressed,
+        current_gap:        nextGap,
       };
       if (newStatus === 'mastered') {
-        progressUpdate.mastered_at = new Date().toISOString();
+        progressUpdate.mastered_at   = new Date().toISOString();
+        progressUpdate.sessions_passed = currentPassed + 1;
       }
 
       const { error: upsertErr } = await supabase
@@ -122,8 +138,18 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', session_id);
 
-      console.log(`[evaluate] PASS — result=${result} sessions_passed=${newSessionsPassed}`);
-      return NextResponse.json({ result, sessions_passed: newSessionsPassed });
+      console.log(
+        `[evaluate] PASS — result=${result} gapAddressed=${currentGap}`,
+        `addressed=${newGapsAddressed.length}/${gapsIdentified.length} remaining=${remainingGaps.length}`,
+        nextGap ? `nextGap=${nextGap}` : 'ALL GAPS DONE',
+      );
+      return NextResponse.json({
+        result,
+        gaps_addressed:   newGapsAddressed,
+        gaps_remaining:   remainingGaps,
+        next_gap:         nextGap,
+        sessions_passed:  currentPassed + 1,
+      });
     }
 
     // ── FAIL branch ──────────────────────────────────────────────────────────
