@@ -8,10 +8,19 @@ import { GogiNav } from '@/components/nav/GogiNav';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { validateResponse } from '@/lib/validation/validateResponse';
-import { getTeachRoute } from '@/lib/classify/getTeachRoute';
+import { getTeachRoute, CLASSIFICATION_TO_SKILL } from '@/lib/classify/getTeachRoute';
 import { C, FONTS, STANDARDS } from '@/lib/constants/design';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type QRow = {
+  id: string;
+  content: string;
+  cognitive_skill_targeted: string;
+  title: string | null;
+  author: string | null;
+  pub_year: string | null;
+};
 
 interface ParsedQuestion {
   id: string;
@@ -108,6 +117,113 @@ async function fetchPracticeFeedback(
   }
 }
 
+// ─── Classification-aware question fetching ───────────────────────────────────
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
+ * getPracticeQuestions — 4-tier fallback chain.
+ *
+ * Tier 1: classification-matched skill + unseen passage
+ * Tier 2: classification-matched skill, any passage
+ * Tier 3: any approved questions from an unseen passage
+ * Tier 4: any approved questions
+ *
+ * Title exclusion is done in JS (avoids complex PostgREST quoting for text arrays).
+ * Returns both the selected questions and the student's current seen-title list
+ * so finalizePractice can append the new title without a second DB read.
+ */
+async function getPracticeQuestions(
+  supabase: ReturnType<typeof createClient>,
+  standardId: string,
+  studentId: string,
+  classification: string,
+  excludeIds: string[],
+): Promise<{ questions: QRow[]; seenTitles: string[] }> {
+  const skill =
+    CLASSIFICATION_TO_SKILL[classification] ??
+    'characterization → layers of meaning';
+
+  // Fetch seen passage titles for this student + standard
+  const { data: progress } = await supabase
+    .from('standard_progress')
+    .select('seen_passage_titles')
+    .eq('student_id', studentId)
+    .eq('standard_id', standardId)
+    .maybeSingle();
+
+  const seenTitles: string[] =
+    (progress as { seen_passage_titles?: string[] } | null)
+      ?.seen_passage_titles ?? [];
+
+  // Base query builder — always excludes already-seen diagnostic questions
+  const baseQuery = () => {
+    let q = supabase
+      .from('questions')
+      .select('id, content, cognitive_skill_targeted, title, author, pub_year')
+      .eq('standard_id', standardId)
+      .eq('approved', true);
+    if (excludeIds.length > 0) {
+      q = q.not('id', 'in', `(${excludeIds.join(',')})`);
+    }
+    return q;
+  };
+
+  const pick = (rows: QRow[], excludeTitles: string[]): QRow[] => {
+    const filtered = excludeTitles.length > 0
+      ? rows.filter((r) => !excludeTitles.includes(r.title ?? ''))
+      : rows;
+    return shuffleArray(filtered).slice(0, 5);
+  };
+
+  // ── Tier 1: skill match + unseen passage ───────────────────────────────────
+  if (seenTitles.length > 0) {
+    const { data: t1 } = await baseQuery()
+      .eq('cognitive_skill_targeted', skill)
+      .limit(30);
+    const t1picked = pick(t1 ?? [], seenTitles);
+    if (t1picked.length >= 5) {
+      console.log(`[Practice] Tier 1 — skill="${skill}" unseen passage`);
+      return { questions: t1picked, seenTitles };
+    }
+  }
+
+  // ── Tier 2: skill match, any passage ──────────────────────────────────────
+  {
+    const { data: t2 } = await baseQuery()
+      .eq('cognitive_skill_targeted', skill)
+      .limit(30);
+    const t2picked = shuffleArray(t2 ?? []).slice(0, 5);
+    if (t2picked.length >= 5) {
+      console.log(`[Practice] Tier 2 — skill="${skill}" any passage`);
+      return { questions: t2picked, seenTitles };
+    }
+  }
+
+  // ── Tier 3: any approved from unseen passage ───────────────────────────────
+  if (seenTitles.length > 0) {
+    const { data: t3 } = await baseQuery().limit(50);
+    const t3picked = pick(t3 ?? [], seenTitles);
+    if (t3picked.length >= 5) {
+      console.log(`[Practice] Tier 3 — any skill, unseen passage`);
+      return { questions: t3picked, seenTitles };
+    }
+  }
+
+  // ── Tier 4: any approved questions ────────────────────────────────────────
+  const { data: t4 } = await baseQuery().limit(50);
+  const t4picked = shuffleArray(t4 ?? []).slice(0, 5);
+  console.log(`[Practice] Tier 4 fallback — any approved (${t4picked.length} questions)`);
+  return { questions: t4picked, seenTitles };
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function PracticePage() {
@@ -128,6 +244,8 @@ export default function PracticePage() {
 
   // ── Content ─────────────────────────────────────────────────────────────────
   const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
+  // Seen passage titles — fetched during init, used to track rotation
+  const [seenTitles, setSeenTitles] = useState<string[]>([]);
 
   // ── Navigation ───────────────────────────────────────────────────────────────
   const [view, setView] = useState<PracticeView>('loading');
@@ -262,40 +380,20 @@ export default function PracticePage() {
           console.log('[Practice] diagnostic question IDs to exclude:', diagnosticQIds.length);
         }
 
-        // Fetch practice questions — exclude all diagnostic questions
-        let qRows: Array<{
-          id: string;
-          content: string;
-          cognitive_skill_targeted: string;
-          title: string | null;
-          author: string | null;
-          pub_year: string | null;
-        }> | null = null;
+        // ── Fetch practice questions — classification-aware, passage-rotating ──
+        // Uses 4-tier fallback: skill+unseen → skill+any → unseen+any → any
+        const { questions: qRows, seenTitles: fetchedSeenTitles } =
+          await getPracticeQuestions(
+            supabase,
+            std.id,
+            resolvedStudentId,
+            currentClassification,   // set above from most recent session
+            diagnosticQIds,
+          );
 
-        if (diagnosticQIds.length > 0) {
-          const { data } = await supabase
-            .from('questions')
-            .select('id, content, cognitive_skill_targeted, title, author, pub_year')
-            .eq('standard_id', std.id)
-            .not('id', 'in', `(${diagnosticQIds.join(',')})`)
-            .limit(5);
-          qRows = data;
-        }
+        setSeenTitles(fetchedSeenTitles);
 
-        // Fallback: not enough non-diagnostic questions (pilot bank is small)
-        if (!qRows?.length) {
-          if (diagnosticQIds.length > 0) {
-            console.warn('[Practice] Not enough non-diagnostic questions — overlap acceptable for now');
-          }
-          const { data } = await supabase
-            .from('questions')
-            .select('id, content, cognitive_skill_targeted, title, author, pub_year')
-            .eq('standard_id', std.id)
-            .limit(5);
-          qRows = data;
-        }
-
-        if (!qRows?.length) {
+        if (!qRows.length) {
           clearTimeout(timeoutId);
           setErrorMsg('No questions found for this standard.');
           setView('error');
@@ -427,6 +525,33 @@ export default function PracticePage() {
   async function finalizePractice(results: boolean[]) {
     const correctCount = results.filter(Boolean).length;
     console.log(`[Practice] session complete — correct: ${correctCount}/${results.length}`);
+
+    // ── Record seen passage for rotation ─────────────────────────────────────
+    // Runs regardless of pass/fail so the next session uses a fresh passage.
+    const passageTitle = questions[0]?.title ?? null;
+    if (passageTitle && studentId && standardUuid) {
+      try {
+        const supabaseForTracking = createClient();
+        const updatedTitles = Array.from(new Set([...seenTitles, passageTitle]));
+        const { error: trackErr } = await supabaseForTracking
+          .from('standard_progress')
+          .upsert(
+            {
+              student_id:           studentId,
+              standard_id:          standardUuid,
+              seen_passage_titles:  updatedTitles,
+            },
+            { onConflict: 'student_id,standard_id' },
+          );
+        if (trackErr) {
+          console.warn('[Practice] seen passage update failed:', trackErr.message);
+        } else {
+          console.log(`[Practice] recorded seen passage: "${passageTitle}" (total: ${updatedTitles.length})`);
+        }
+      } catch (err) {
+        console.warn('[Practice] seen passage tracking error:', err);
+      }
+    }
 
     if (sessionId && studentId && standardUuid) {
       try {
