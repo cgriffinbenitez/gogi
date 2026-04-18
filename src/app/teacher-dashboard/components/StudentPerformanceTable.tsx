@@ -28,6 +28,13 @@ interface DbStudent {
   fast_pm1_score: number | null;
   fast_pm2_score: number | null;
   created_at: string;
+  // IRB pilot columns
+  consent_on_file:     boolean;
+  consent_signed_date: string | null;
+  consent_signed_by:   string | null;
+  assent_on_file:      boolean;
+  assent_signed_date:  string | null;
+  cohort_group:        'A' | 'B' | null;
 }
 
 type Status = 'exceeding' | 'on-track' | 'at-risk' | 'needs-support' | 'no-data';
@@ -107,7 +114,7 @@ export default function StudentPerformanceTable() {
       if (queryError) {
         setError(queryError.message);
       } else {
-        setStudents(data ?? []);
+        setStudents((data ?? []) as unknown as DbStudent[]);
       }
       setLoading(false);
     }

@@ -28,6 +28,13 @@ interface DbStudent {
   fast_pm1_score: number | null;
   fast_pm2_score: number | null;
   teacher_id: string;
+  // IRB pilot columns
+  consent_on_file:     boolean;
+  consent_signed_date: string | null;
+  consent_signed_by:   string | null;
+  assent_on_file:      boolean;
+  assent_signed_date:  string | null;
+  cohort_group:        'A' | 'B' | null;
 }
 
 interface DbStandard {
@@ -60,6 +67,15 @@ interface DbResponse {
   ai_feedback: string | null;
   teacher_override: boolean | null;
   created_at: string;
+}
+
+interface DbCognitiveProfile {
+  working_memory_score: number;
+  inferencing_score:    number;
+  vocab_breadth_score:  number;
+  syntax_score:         number;
+  overall_risk:         string;
+  administered_at:      string;
 }
 
 type StandardStatus = 'not_started' | 'in_progress' | 'mastered' | 'needs_support';
@@ -145,6 +161,22 @@ function formatMinutes(seconds: number | null): string {
 function truncate(text: string | null, len = 150): string {
   if (!text) return '—';
   return text.length > len ? text.slice(0, len) + '…' : text;
+}
+
+// Cascade-tiebroken predicted gap — cascade order defines tie priority
+function derivePredictedGap(p: DbCognitiveProfile): string {
+  const dims = [
+    { label: 'Vocab Breadth',       score: p.vocab_breadth_score  },
+    { label: 'Syntactic Awareness', score: p.syntax_score         },
+    { label: 'Inferencing',         score: p.inferencing_score    },
+    { label: 'Working Memory',      score: p.working_memory_score },
+  ];
+  const lowest = dims.reduce((min, d) => d.score < min.score ? d : min, dims[0]);
+  return `Predicted gap: ${lowest.label}`;
+}
+
+function formatAdministeredAt(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -505,6 +537,7 @@ export default function StudentDetailPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [student, setStudent] = useState<DbStudent | null>(null);
   const [standardsData, setStandardsData] = useState<StandardData[]>([]);
+  const [cognitiveProfile, setCognitiveProfile] = useState<DbCognitiveProfile | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
 
   const load = useCallback(async () => {
@@ -542,8 +575,8 @@ export default function StudentDetailPage() {
 
     const standards = (standardRows ?? []) as DbStandard[];
 
-    // ── Sessions + Responses in parallel ───────────────────────────────────
-    const [sessionsRes, responsesRes] = await Promise.all([
+    // ── Sessions + Responses + Cognitive Profile in parallel ───────────────
+    const [sessionsRes, responsesRes, cogProfileRes] = await Promise.all([
       supabase
         .from('sessions')
         .select('id, standard_id, phase, status, mastery_achieved, started_at, completed_at, time_spent_seconds')
@@ -555,10 +588,19 @@ export default function StudentDetailPage() {
         .select('id, session_id, standard_id, cognitive_skill_targeted, diagnostic_classification, intervention_type, student_response, mastery_achieved, attempt_number, ai_feedback, teacher_override, created_at')
         .eq('student_id', studentId)
         .order('created_at', { ascending: true }),
+
+      supabase
+        .from('cognitive_profiles')
+        .select('working_memory_score, inferencing_score, vocab_breadth_score, syntax_score, overall_risk, administered_at')
+        .eq('student_id', studentId)
+        .order('administered_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
-    const allSessions = (sessionsRes.data ?? []) as DbSession[];
+    const allSessions  = (sessionsRes.data ?? []) as DbSession[];
     const allResponses = (responsesRes.data ?? []) as DbResponse[];
+    setCognitiveProfile((cogProfileRes.data ?? null) as DbCognitiveProfile | null);
 
     // ── Build per-standard data ─────────────────────────────────────────────
     const built: StandardData[] = standards.map((standard) => {
@@ -712,6 +754,54 @@ export default function StudentDetailPage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* PRE-LITERARY COGNITIVE PROFILE */}
+        <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <p className="text-xs font-semibold text-[#4B5563] uppercase tracking-wide">
+              Pre-Literary Cognitive Profile
+            </p>
+            {cognitiveProfile ? (
+              <span className="text-xs text-[#4B5563]">
+                Administered {formatAdministeredAt(cognitiveProfile.administered_at)}
+              </span>
+            ) : (
+              <span className="text-xs text-[#4B5563]">Not yet administered</span>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            {(
+              [
+                { label: 'Working Memory',      score: cognitiveProfile?.working_memory_score ?? null },
+                { label: 'Inferencing',         score: cognitiveProfile?.inferencing_score    ?? null },
+                { label: 'Vocab Breadth',       score: cognitiveProfile?.vocab_breadth_score  ?? null },
+                { label: 'Syntactic Awareness', score: cognitiveProfile?.syntax_score         ?? null },
+              ] as { label: string; score: number | null }[]
+            ).map(({ label, score }) => (
+              <div key={label}>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs text-[#94A3B8]">{label}</p>
+                  <p className="text-xs font-mono font-bold text-white">
+                    {score !== null ? `${Math.round(score)}%` : '—%'}
+                  </p>
+                </div>
+                <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#2E75B6] rounded-full transition-all"
+                    style={{ width: score !== null ? `${Math.round(score)}%` : '0%' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-[#4B5563] mt-4">
+            {cognitiveProfile
+              ? derivePredictedGap(cognitiveProfile)
+              : 'Predicted gap: pending Reading Profile'}
+          </p>
         </div>
 
         {/* Per-standard sections */}

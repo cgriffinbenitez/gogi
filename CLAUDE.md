@@ -32,6 +32,10 @@ This is the single source of truth for all database tables and columns. Never re
 
 **students**
 - id, teacher_id, full_name, grade_level, fast_pm1_score, fast_pm2_score, created_at, user_id
+- reading_profile_complete (boolean, default false)
+- consent_on_file (boolean NOT NULL, default false), consent_signed_date (date), consent_signed_by (text)
+- assent_on_file (boolean NOT NULL, default false), assent_signed_date (date)
+- cohort_group (text, CHECK IN ('A','B') OR NULL) — pilot cohort assignment
 
 **standards**
 - id, code, title, description, cognitive_domain, created_at

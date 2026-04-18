@@ -189,6 +189,96 @@ function riskColors(risk: 'low' | 'moderate' | 'high') {
   return                          { bg: C.redLight,   text: C.red   };
 }
 
+// ─── Module-scope nav + page wrapper ─────────────────────────────────────────
+// These MUST live outside ReadingProfilePage so their identity is stable across
+// re-renders. Defining them inside the parent causes React to treat them as new
+// component types on every keystroke, unmounting the subtree and losing focus.
+
+interface ProfileNavProps {
+  phase:       ProfilePhase;
+  displayName: string;
+  moduleInfo:  { num: number; name: string } | null;
+}
+
+function ProfileNav({ phase, displayName, moduleInfo }: ProfileNavProps) {
+  const router       = useRouter();
+  const { role }     = useAuth();
+  const timerPhase   = phase === 'wm_show' || phase === 'syntax_show';
+
+  function handleHomeClick() {
+    router.push(role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
+  }
+
+  return (
+    <div style={{
+      background:     C.navy,
+      height:         52,
+      display:        'flex',
+      alignItems:     'center',
+      justifyContent: 'space-between',
+      padding:        '0 20px',
+      fontFamily:     FONTS.ui,
+      flexShrink:     0,
+    }}>
+      <button
+        onClick={handleHomeClick}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s', textAlign: 'left' }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+        title="Back to dashboard"
+      >
+        {moduleInfo && (
+          <div style={{ fontSize: 9, fontWeight: 700, color: C.blueMid, letterSpacing: 2, textTransform: 'uppercase', lineHeight: 1.2 }}>
+            READING PROFILE  |  MODULE {moduleInfo.num} OF 4
+          </div>
+        )}
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.white, lineHeight: 1.3 }}>
+          {moduleInfo ? moduleInfo.name : 'Reading Profile'}
+        </div>
+      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {!timerPhase && (
+          <button
+            onClick={handleHomeClick}
+            style={{ fontSize: 11, color: 'rgba(181,212,244,0.5)', cursor: 'pointer', background: 'none', border: 'none', fontFamily: FONTS.ui, transition: 'color 0.2s', padding: 0 }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#B5D4F4'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(181,212,244,0.5)'; }}
+          >
+            ← Dashboard
+          </button>
+        )}
+        <div style={{ fontSize: 12, color: C.blueMid, fontWeight: 600 }}>
+          {displayName}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ProfilePageProps {
+  phase:       ProfilePhase;
+  displayName: string;
+  moduleInfo:  { num: number; name: string } | null;
+  children:    React.ReactNode;
+}
+
+function ProfilePage({ phase, displayName, moduleInfo, children }: ProfilePageProps) {
+  return (
+    <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONTS.ui, display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        input::placeholder, textarea::placeholder { color: #888780 !important; }
+        textarea { direction: ltr !important; unicode-bidi: normal !important; text-align: left !important; writing-mode: horizontal-tb !important; }
+      `}</style>
+      <ProfileNav phase={phase} displayName={displayName} moduleInfo={moduleInfo} />
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '24px 20px' }}>
+        <div style={{ width: '100%', maxWidth: 600 }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function ReadingProfilePage() {
@@ -500,76 +590,6 @@ export default function ReadingProfilePage() {
     ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`
     : (nameParts[0] ?? '');
 
-  function Nav() {
-    const timerPhase = phase === 'wm_show' || phase === 'syntax_show';
-    function handleHomeClick() {
-      router.push(role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
-    }
-    return (
-      <div style={{
-        background:   C.navy,
-        height:       52,
-        display:      'flex',
-        alignItems:   'center',
-        justifyContent: 'space-between',
-        padding:      '0 20px',
-        fontFamily:   FONTS.ui,
-        flexShrink:   0,
-      }}>
-        <button
-          onClick={handleHomeClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', padding: '4px 8px', borderRadius: 6, transition: 'background 0.2s', textAlign: 'left' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
-          title="Back to dashboard"
-        >
-          {moduleInfo && (
-            <div style={{ fontSize: 9, fontWeight: 700, color: C.blueMid, letterSpacing: 2, textTransform: 'uppercase', lineHeight: 1.2 }}>
-              READING PROFILE  |  MODULE {moduleInfo.num} OF 4
-            </div>
-          )}
-          <div style={{ fontSize: 13, fontWeight: 700, color: C.white, lineHeight: 1.3 }}>
-            {moduleInfo ? moduleInfo.name : 'Reading Profile'}
-          </div>
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {!timerPhase && (
-            <button
-              onClick={handleHomeClick}
-              style={{ fontSize: 11, color: 'rgba(181,212,244,0.5)', cursor: 'pointer', background: 'none', border: 'none', fontFamily: FONTS.ui, transition: 'color 0.2s', padding: 0 }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#B5D4F4'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(181,212,244,0.5)'; }}
-            >
-              ← Dashboard
-            </button>
-          )}
-          <div style={{ fontSize: 12, color: C.blueMid, fontWeight: 600 }}>
-            {displayName}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Wrapper ────────────────────────────────────────────────────────────────
-
-  function Page({ children }: { children: React.ReactNode }) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONTS.ui, display: 'flex', flexDirection: 'column' }}>
-        <style>{`
-          input::placeholder, textarea::placeholder { color: #888780 !important; }
-          textarea { direction: ltr !important; unicode-bidi: normal !important; text-align: left !important; writing-mode: horizontal-tb !important; }
-        `}</style>
-        <Nav />
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '24px 20px' }}>
-          <div style={{ width: '100%', maxWidth: 600 }}>
-            {children}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // ── Amber warning box ──────────────────────────────────────────────────────
 
   function Warning({ children }: { children: React.ReactNode }) {
@@ -645,7 +665,7 @@ export default function ReadingProfilePage() {
     ];
 
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ marginBottom: 4 }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: C.navy, marginBottom: 4 }}>Your Reading Profile</div>
           <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.6, marginBottom: 20 }}>
@@ -690,7 +710,7 @@ export default function ReadingProfilePage() {
         <button style={{ ...BTN_NAVY, marginTop: 16 }} onClick={() => setPhase('wm_intro')}>
           Start Module 1 — Working Memory →
         </button>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -700,7 +720,7 @@ export default function ReadingProfilePage() {
 
   if (phase === 'wm_intro') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD, textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>🧠</div>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.dark, marginBottom: 6 }}>Working Memory</div>
@@ -740,7 +760,7 @@ export default function ReadingProfilePage() {
             I understand — start Round 1 →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -751,7 +771,7 @@ export default function ReadingProfilePage() {
     const barColor = wmTimerSec <= 3 ? C.red : wmTimerSec <= 5 ? C.amber : C.blue;
 
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           {/* Round badge */}
           <div style={{ fontSize: 11, fontWeight: 700, color: C.gray, marginBottom: 12, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
@@ -795,13 +815,13 @@ export default function ReadingProfilePage() {
             Timer is automatic — words disappear at zero
           </div>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
   if (phase === 'wm_recall') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.gray, marginBottom: 12, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 }}>
             Round {wmRound + 1} of 3 — Recall
@@ -853,7 +873,7 @@ export default function ReadingProfilePage() {
             Submit →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -865,7 +885,7 @@ export default function ReadingProfilePage() {
     const BTN_GREEN: React.CSSProperties = { ...BTN_NAVY, background: C.green };
 
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD, textAlign: 'center' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.green, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>
             {isLastRound ? 'Round 3 Complete' : `Round ${wmRound + 1} Complete`}
@@ -892,7 +912,7 @@ export default function ReadingProfilePage() {
             </button>
           )}
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -902,7 +922,7 @@ export default function ReadingProfilePage() {
 
   if (phase === 'infer_intro') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.dark, marginBottom: 6 }}>Inferencing</div>
           <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.6, marginBottom: 12 }}>
@@ -921,14 +941,14 @@ export default function ReadingProfilePage() {
             Start →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
   if (phase === 'infer_question') {
     const scenario = INFER_SCENARIOS[inferIdx];
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           {/* Progress dots */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 14, alignItems: 'center' }}>
@@ -1001,7 +1021,7 @@ export default function ReadingProfilePage() {
             Next →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -1011,7 +1031,7 @@ export default function ReadingProfilePage() {
 
   if (phase === 'vocab_intro') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.dark, marginBottom: 6 }}>Vocabulary Breadth</div>
           <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.6, marginBottom: 12 }}>
@@ -1025,7 +1045,7 @@ export default function ReadingProfilePage() {
             Start →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -1065,7 +1085,7 @@ export default function ReadingProfilePage() {
     }
 
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           {/* Word count */}
           <div style={{ fontSize: 11, color: C.gray, marginBottom: 10 }}>Word {vocabIdx + 1} of 20</div>
@@ -1194,7 +1214,7 @@ export default function ReadingProfilePage() {
             {vocabIdx < 19 ? 'Next word →' : 'Finish Module 3 →'}
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -1204,7 +1224,7 @@ export default function ReadingProfilePage() {
 
   if (phase === 'syntax_intro') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 17, fontWeight: 700, color: C.dark, marginBottom: 6 }}>Sentence Complexity</div>
           <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.6, marginBottom: 12 }}>
@@ -1244,7 +1264,7 @@ export default function ReadingProfilePage() {
             Start →
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -1254,7 +1274,7 @@ export default function ReadingProfilePage() {
     const barColor = ratio <= 0.3 ? C.red : ratio <= 0.6 ? C.amber : C.blue;
 
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, textAlign: 'center' }}>
             Sentence {syntaxIdx + 1} of 5 — {sentence.complexity}
@@ -1306,13 +1326,13 @@ export default function ReadingProfilePage() {
             {sentence.text}
           </div>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
   if (phase === 'syntax_answer') {
     return (
-      <Page>
+      <ProfilePage phase={phase} displayName={displayName} moduleInfo={moduleInfo}>
         <div style={{ ...CARD }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: C.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, textAlign: 'center' }}>
             Sentence {syntaxIdx + 1} of 5
@@ -1364,7 +1384,7 @@ export default function ReadingProfilePage() {
             {syntaxIdx < 4 ? 'Submit → Next sentence' : 'Submit → Finish'}
           </button>
         </div>
-      </Page>
+      </ProfilePage>
     );
   }
 
@@ -1373,81 +1393,75 @@ export default function ReadingProfilePage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   if (phase === 'complete') {
-    const moduleResults = [
-      { name: 'Working Memory',   score: finalScores.wm     },
-      { name: 'Inferencing',      score: finalScores.infer  },
-      { name: 'Vocabulary',       score: finalScores.vocab  },
-      { name: 'Syntax',           score: finalScores.syntax },
+    const skillCards = [
+      { num: 1, label: 'Holding information while you read'  },
+      { num: 2, label: 'Figuring out what the author means'  },
+      { num: 3, label: 'Understanding tricky words'          },
+      { num: 4, label: 'Untangling long sentences'           },
     ];
-
-    const riskMsg = {
-      low:      'Strong foundation. Your diagnostics will show exactly where to focus.',
-      moderate: 'GOGI knows where to support you. Your learning plan will be built around your specific needs.',
-      high:     'GOGI has what it needs to help you build this from the ground up. You\'re in the right place.',
-    }[overallRisk];
-
-    const rc = riskColors(overallRisk);
 
     return (
       <div style={{ minHeight: '100vh', background: C.navy, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '40px 20px', fontFamily: FONTS.ui }}>
         {/* Avatar */}
         <GogiAvatar size={80} state="celebrate" />
 
-        {/* Title */}
+        {/* Heading */}
         <div style={{ fontSize: 28, fontWeight: 700, color: C.white, textAlign: 'center' }}>
-          Reading Profile Complete
+          Reading profile complete
         </div>
 
-        {/* 4 module score cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, maxWidth: 560, width: '100%' }}>
-          {moduleResults.map(m => {
-            const sc = scoreColor(m.score);
-            return (
-              <div key={m.name} style={{
-                background:   sc.bg,
-                border:       `0.5px solid ${sc.border}`,
-                borderRadius: 10,
-                padding:      '12px 8px',
-                textAlign:    'center',
-              }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: sc.text, marginBottom: 2 }}>
-                  {m.score}%
-                </div>
-                <div style={{ fontSize: 10, color: sc.text, fontWeight: 600, lineHeight: 1.3 }}>
-                  {m.name}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Overall risk badge */}
-        <div style={{
-          background:   rc.bg,
-          border:       `1px solid ${rc.text}`,
-          borderRadius: 20,
-          padding:      '6px 20px',
-          fontSize:     13,
-          fontWeight:   700,
-          color:        rc.text,
-          textTransform: 'capitalize',
-        }}>
-          {overallRisk === 'low' ? 'Low Risk' : overallRisk === 'moderate' ? 'Moderate Risk' : 'High Risk'}
-        </div>
-
-        {/* Message card */}
+        {/* Gogi message bubble */}
         <div style={{
           background:   'rgba(255,255,255,0.08)',
           border:       '1px solid rgba(255,255,255,0.15)',
           borderRadius: 14,
           padding:      '18px 22px',
-          maxWidth:     360,
+          maxWidth:     400,
           width:        '100%',
           textAlign:    'center',
         }}>
-          <div style={{ fontSize: 14, color: C.white, lineHeight: 1.6 }}>
-            {riskMsg}
+          <div style={{ fontSize: 14, color: C.white, lineHeight: 1.7 }}>
+            Nice work finishing all four parts. Gogi now knows how you read — and that&apos;s exactly what we needed to start.
           </div>
+        </div>
+
+        {/* Four skill cards — neutral, no color-coding */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 400, width: '100%' }}>
+          {skillCards.map(card => (
+            <div key={card.num} style={{
+              background:   'rgba(255,255,255,0.06)',
+              border:       '1px solid rgba(255,255,255,0.10)',
+              borderRadius: 10,
+              padding:      '12px 16px',
+              display:      'flex',
+              alignItems:   'center',
+              gap:          14,
+            }}>
+              <div style={{
+                width:          28,
+                height:         28,
+                borderRadius:   '50%',
+                background:     'rgba(133,183,235,0.25)',
+                display:        'flex',
+                alignItems:     'center',
+                justifyContent: 'center',
+                fontSize:       13,
+                fontWeight:     700,
+                color:          '#85B7EB',
+                flexShrink:     0,
+              }}>
+                {card.num}
+              </div>
+              <div style={{ fontSize: 13, color: C.white, fontWeight: 500 }}>
+                {card.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer text */}
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: 360, lineHeight: 1.7 }}>
+          We&apos;ll work on these one at a time. You won&apos;t have to figure out what to focus on — Gogi already has a plan.
         </div>
 
         {/* Back to dashboard */}

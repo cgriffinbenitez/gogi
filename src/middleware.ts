@@ -35,9 +35,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Legacy routes → /sign-up-login-screen
+    // Unauthenticated fallback → canonical /login
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = '/sign-up-login-screen';
+    loginUrl.pathname = '/login';
     return NextResponse.redirect(loginUrl);
   }
 

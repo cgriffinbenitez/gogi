@@ -64,11 +64,28 @@ interface SchemaRow {
   readiness_score: number | null;
 }
 
+interface CognitiveProfileRow {
+  working_memory_score: number | null;
+  inferencing_score:    number | null;
+  vocab_breadth_score:  number | null;
+  syntax_score:         number | null;
+  overall_risk:         string | null;
+  administered_at:      string;
+}
+
+interface VocabReadinessRow {
+  standard_id:    string;
+  coverage_score: number | null;
+  completed_at:   string;
+}
+
 interface StudentData {
-  student:  StudentRow;
-  progress: ProgressRow[];
-  sessions: SessionRow[];
-  schemas:  SchemaRow[];
+  student:          StudentRow;
+  progress:         ProgressRow[];
+  sessions:         SessionRow[];
+  schemas:          SchemaRow[];
+  cognitiveProfile: CognitiveProfileRow | null;
+  vocabReadiness:   VocabReadinessRow[];
 }
 
 // ─── Classification labels ────────────────────────────────────────────────────
@@ -93,6 +110,25 @@ const CLS_LABELS: Record<string, string> = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function derivePredictedGap(p: CognitiveProfileRow): string {
+  const dims = [
+    { label: 'Vocab Breadth',       score: p.vocab_breadth_score  },
+    { label: 'Syntactic Awareness', score: p.syntax_score         },
+    { label: 'Inferencing',         score: p.inferencing_score    },
+    { label: 'Working Memory',      score: p.working_memory_score },
+  ];
+  // Lowest score wins. Ties broken by array order (vocab_breadth wins over syntax, etc.).
+  // Strict < keeps the first entry in a tie as the minimum.
+  return dims.reduce((min, d) =>
+    (d.score ?? Infinity) < (min.score ?? Infinity) ? d : min
+  ).label;
+}
+
+function fmtLongDate(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
 
 function clsLabel(cls: string | null | undefined): string {
   if (!cls) return '—';
@@ -272,7 +308,7 @@ function StudentDetailPanel({
 }: {
   sd: StudentData; standards: PilotStandard[]; onClose: () => void;
 }) {
-  const { student, progress, sessions, schemas } = sd;
+  const { student, progress, sessions, schemas, cognitiveProfile, vocabReadiness } = sd;
   const [notes, setNotes] = useState(student.teacher_notes ?? '');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -331,17 +367,30 @@ function StudentDetailPanel({
         <div style={cardStyle}>
           <div style={sectionTitle}>Pre-Literary Cognitive Profile</div>
           <div style={{ fontSize: 10, color: C.gray, fontStyle: 'italic', marginBottom: 10 }}>
-            Not yet administered
+            {cognitiveProfile
+              ? `Administered ${fmtLongDate(cognitiveProfile.administered_at)}`
+              : 'Not yet administered'}
           </div>
-          {['Working Memory', 'Inferencing', 'Vocab Breadth', 'Syntactic Awareness'].map((m) => (
-            <div key={m} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-              <span style={{ fontSize: 10, color: C.dark, width: 120, flexShrink: 0 }}>{m}</span>
-              <ProgressBar pct={0} />
-              <span style={{ fontSize: 10, color: C.gray, width: 28, textAlign: 'right' as const }}>—%</span>
+          {(
+            [
+              { label: 'Working Memory',      score: cognitiveProfile?.working_memory_score ?? null },
+              { label: 'Inferencing',         score: cognitiveProfile?.inferencing_score    ?? null },
+              { label: 'Vocab Breadth',       score: cognitiveProfile?.vocab_breadth_score  ?? null },
+              { label: 'Syntactic Awareness', score: cognitiveProfile?.syntax_score         ?? null },
+            ] as { label: string; score: number | null }[]
+          ).map(({ label, score }) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
+              <span style={{ fontSize: 10, color: C.dark, width: 120, flexShrink: 0 }}>{label}</span>
+              <ProgressBar pct={score ?? 0} />
+              <span style={{ fontSize: 10, color: C.gray, width: 28, textAlign: 'right' as const }}>
+                {score !== null ? `${Math.round(score)}%` : '—%'}
+              </span>
             </div>
           ))}
           <div style={{ fontSize: 9, color: C.gray, fontStyle: 'italic', marginTop: 6 }}>
-            Predicted gap: pending Reading Profile
+            {cognitiveProfile
+              ? `Predicted gap: ${derivePredictedGap(cognitiveProfile)}`
+              : 'Predicted gap: pending Reading Profile'}
           </div>
         </div>
 
@@ -349,15 +398,28 @@ function StudentDetailPanel({
         <div style={cardStyle}>
           <div style={sectionTitle}>Vocabulary Readiness</div>
           <div style={{ fontSize: 10, color: C.gray, fontStyle: 'italic', marginBottom: 10 }}>
-            Not yet administered
+            {vocabReadiness.length > 0
+              ? `Administered ${fmtLongDate(
+                  vocabReadiness.reduce((latest, r) =>
+                    r.completed_at > latest ? r.completed_at : latest,
+                    vocabReadiness[0].completed_at
+                  )
+                )}`
+              : 'Not yet administered'}
           </div>
-          {PILOT_CODES.map((code) => (
-            <div key={code} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-              <span style={{ fontSize: 10, color: C.dark, width: 90, flexShrink: 0 }}>{code}</span>
-              <ProgressBar pct={0} />
-              <span style={{ fontSize: 10, color: C.gray, width: 28, textAlign: 'right' as const }}>—%</span>
-            </div>
-          ))}
+          {standards.map((std) => {
+            const row = vocabReadiness.find((r) => r.standard_id === std.id) ?? null;
+            const score = row?.coverage_score ?? null;
+            return (
+              <div key={std.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
+                <span style={{ fontSize: 10, color: C.dark, width: 90, flexShrink: 0 }}>{std.code}</span>
+                <ProgressBar pct={score ?? 0} />
+                <span style={{ fontSize: 10, color: C.gray, width: 28, textAlign: 'right' as const }}>
+                  {score !== null ? `${Math.round(score)}%` : '—%'}
+                </span>
+              </div>
+            );
+          })}
           <div style={{ fontSize: 9, color: C.gray, fontStyle: 'italic', marginTop: 6 }}>
             98% threshold for independent comprehension
           </div>
@@ -574,6 +636,8 @@ export default function TeacherDashboardPage() {
           { data: progressData },
           { data: sessionData },
           { data: schemaData },
+          { data: cogProfileData },
+          { data: vocabReadinessData },
         ] = await Promise.all([
           supabase
             .from('standard_progress')
@@ -591,6 +655,15 @@ export default function TeacherDashboardPage() {
             .in('student_id', studentIds)
             .order('created_at', { ascending: false })
             .limit(100),
+          supabase
+            .from('cognitive_profiles')
+            .select('student_id, working_memory_score, inferencing_score, vocab_breadth_score, syntax_score, overall_risk, administered_at')
+            .in('student_id', studentIds)
+            .order('administered_at', { ascending: false }),
+          supabase
+            .from('vocab_readiness')
+            .select('student_id, standard_id, coverage_score, completed_at')
+            .in('student_id', studentIds),
         ]);
 
         // Fetch schema responses for all interventions
@@ -609,9 +682,12 @@ export default function TeacherDashboardPage() {
         }
 
         // Group by student
-        const progressByStudent: Record<string, ProgressRow[]> = {};
-        const sessionsByStudent:  Record<string, SessionRow[]>  = {};
-        const schemasByStudent:   Record<string, SchemaRow[]>   = {};
+        const progressByStudent:       Record<string, ProgressRow[]>             = {};
+        const sessionsByStudent:        Record<string, SessionRow[]>              = {};
+        const schemasByStudent:         Record<string, SchemaRow[]>               = {};
+        // cognitive_profiles: keep only most recent row per student (DESC order from query)
+        const cogProfileByStudent:      Record<string, CognitiveProfileRow | null> = {};
+        const vocabReadinessByStudent:  Record<string, VocabReadinessRow[]>       = {};
 
         for (const p of (progressData ?? []) as unknown as ProgressRow[]) {
           if (!progressByStudent[p.student_id]) progressByStudent[p.student_id] = [];
@@ -625,12 +701,27 @@ export default function TeacherDashboardPage() {
           if (!schemasByStudent[s.student_id]) schemasByStudent[s.student_id] = [];
           schemasByStudent[s.student_id].push({ ...s, readiness_score: schemaRespMap[s.id] ?? null });
         }
+        // cognitive_profiles: rows are DESC by administered_at — first seen per student is most recent
+        type RawCogRow = CognitiveProfileRow & { student_id: string };
+        for (const row of (cogProfileData ?? []) as unknown as RawCogRow[]) {
+          if (!(row.student_id in cogProfileByStudent)) {
+            cogProfileByStudent[row.student_id] = row;
+          }
+        }
+        // vocab_readiness: one row per (student, standard) — collect all for each student
+        type RawVocabRow = VocabReadinessRow & { student_id: string };
+        for (const row of (vocabReadinessData ?? []) as unknown as RawVocabRow[]) {
+          if (!vocabReadinessByStudent[row.student_id]) vocabReadinessByStudent[row.student_id] = [];
+          vocabReadinessByStudent[row.student_id].push(row);
+        }
 
         setStudentData(students.map((student) => ({
           student,
-          progress: progressByStudent[student.id] ?? [],
-          sessions: sessionsByStudent[student.id] ?? [],
-          schemas:  schemasByStudent[student.id]  ?? [],
+          progress:         progressByStudent[student.id]      ?? [],
+          sessions:         sessionsByStudent[student.id]      ?? [],
+          schemas:          schemasByStudent[student.id]       ?? [],
+          cognitiveProfile: cogProfileByStudent[student.id]    ?? null,
+          vocabReadiness:   vocabReadinessByStudent[student.id] ?? [],
         })));
       } catch (err) {
         console.error('[TeacherDashboard] load error:', err);
