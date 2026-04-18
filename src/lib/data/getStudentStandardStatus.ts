@@ -38,6 +38,11 @@ export interface StandardStatusResult {
   // Vocab readiness (Sprint L)
   vocabCheckComplete:  boolean;
   vocabCoverageScore:  number | null;
+
+  // Sprint 3 — gap journey tracking
+  gapsIdentified: string[];        // all gaps from diagnostic (2+ wrong each)
+  gapsAddressed:  string[];        // gaps where student passed a practice session
+  currentGap:     string | null;   // gap currently being targeted
 }
 
 // ─── Internal row types ───────────────────────────────────────────────────────
@@ -48,6 +53,9 @@ type ProgressRow = {
   sessions_passed:    number;
   sessions_attempted: number;
   last_session_at:    string | null;
+  gaps_identified:    string[] | null;
+  gaps_addressed:     string[] | null;
+  current_gap:        string | null;
 };
 
 type SessionRow = {
@@ -163,6 +171,9 @@ export async function getStudentStandardStatus(
       skillGaps:                   [],
       vocabCheckComplete:          false,
       vocabCoverageScore:          null,
+      gapsIdentified:              [],
+      gapsAddressed:               [],
+      currentGap:                  null,
     };
   });
 
@@ -170,7 +181,7 @@ export async function getStudentStandardStatus(
   const [progressResult, sessionsResult, responsesResult, vocabResult] = await Promise.all([
     supabase
       .from('standard_progress')
-      .select('standard_id, current_status, sessions_passed, sessions_attempted, last_session_at')
+      .select('standard_id, current_status, sessions_passed, sessions_attempted, last_session_at, gaps_identified, gaps_addressed, current_gap')
       .eq('student_id', studentId)
       .in('standard_id', standardIds),
 
@@ -282,9 +293,9 @@ export async function getStudentStandardStatus(
           currentStatus:               progress.current_status,
           sessionId:                   session?.id ?? null,
           phase:                       session?.phase ?? null,
-          sessionsPassed:              progress.sessions_passed  ?? 0,
+          sessionsPassed:              progress.sessions_passed    ?? 0,
           sessionsAttempted:           progress.sessions_attempted ?? 0,
-          lastSessionAt:               progress.last_session_at ?? null,
+          lastSessionAt:               progress.last_session_at    ?? null,
           diagnosticQuestionsAnswered: diagQsAnswered,
           diagnosticQuestionsTotal:    10,
           currentIntervention:         intervention,
@@ -292,6 +303,9 @@ export async function getStudentStandardStatus(
           skillGaps,
           vocabCheckComplete:          vocabComplete,
           vocabCoverageScore:          vocabScore,
+          gapsIdentified:              progress.gaps_identified ?? [],
+          gapsAddressed:               progress.gaps_addressed  ?? [],
+          currentGap:                  progress.current_gap     ?? null,
         };
         return;
       }
@@ -324,6 +338,9 @@ export async function getStudentStandardStatus(
         skillGaps,
         vocabCheckComplete:          vocabComplete,
         vocabCoverageScore:          vocabScore,
+        gapsIdentified:              [],
+        gapsAddressed:               [],
+        currentGap:                  null,
       };
     }
   });

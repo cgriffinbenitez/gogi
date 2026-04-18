@@ -3,15 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { GogiNav } from '@/components/nav/GogiNav';
-import { GogiAvatar } from '@/components/gogi/GogiAvatar';
-import { GogiBubble } from '@/components/gogi/GogiBubble';
 import { StandardTile } from '@/components/dashboard/StandardTile';
 import { StreakCounter } from '@/components/dashboard/StreakCounter';
 import { getStudentStandardStatus, type StandardStatusResult } from '@/lib/data/getStudentStandardStatus';
 import { calculateStreak } from '@/lib/data/calculateStreak';
 import { getActiveStandard } from '@/lib/data/getActiveStandard';
-import { getWelcomeMessage } from '@/lib/gogi/welcomeMessages';
-import { C, FONTS, type StandardStatus } from '@/lib/constants/design';
+import { C, FONTS } from '@/lib/constants/design';
 import { createClient } from '@/lib/supabase/client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -41,18 +38,6 @@ interface DashboardData {
 
 const PILOT_MODE         = true;
 const PILOT_STANDARD_ID  = '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e';
-
-// ─── Intervention route map ───────────────────────────────────────────────────
-
-const INTERVENTION_ROUTES: Record<string, string> = {
-  vocabulary_frayer:    'vocabulary',
-  schema_building:      'schema',
-  inferencing_scaffold: 'inferencing',
-  evidence_organizer:   'evidence',
-  synthesis_scaffold:   'synthesis',
-  morphology_breakdown: 'morphology',
-  strategy_card:        'strategy',
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -95,7 +80,7 @@ export default function StudentDashboardContent({ studentId, studentName, standa
         standards.forEach((s) => {
           richData[s.code] = statusMap[s.id] ?? {
             standardId:                  s.id,
-            status:                      'notStarted' as StandardStatus,
+            status:                      'notStarted' as const,
             currentStatus:               'not_started',
             sessionId:                   null,
             phase:                       null,
@@ -109,6 +94,9 @@ export default function StudentDashboardContent({ studentId, studentName, standa
             skillGaps:                   [],
             vocabCheckComplete:          false,
             vocabCoverageScore:          null,
+            gapsIdentified:              [],
+            gapsAddressed:               [],
+            currentGap:                  null,
           };
         });
 
@@ -127,7 +115,7 @@ export default function StudentDashboardContent({ studentId, studentName, standa
 
         setData({ streak, richData, activeCode, activePhase: activeStandard?.phase ?? 'diagnostic' });
         // Auto-open most active standard
-        setActiveCard(activeCode);
+        setActiveCard(null);
 
       } catch (err) {
         console.error('[StudentDashboard] load error:', err);
@@ -150,6 +138,9 @@ export default function StudentDashboardContent({ studentId, studentName, standa
             skillGaps:                   [],
             vocabCheckComplete:          false,
             vocabCoverageScore:          null,
+            gapsIdentified:              [],
+            gapsAddressed:               [],
+            currentGap:                  null,
           };
         });
         setData({ streak: 0, richData, activeCode: 'ELA.9.R.1.1', activePhase: 'diagnostic' });
@@ -181,37 +172,11 @@ export default function StudentDashboardContent({ studentId, studentName, standa
     );
   }
 
-  const { streak, richData, activeCode, activePhase } = data;
-  const statuses         = Object.fromEntries(standards.map((s) => [s.code, richData[s.code]?.status ?? 'notStarted']));
+  const { streak, richData, activeCode } = data;
   // Pilot mode: show only R.1.1; production: show all 3 standards
   const visibleStandards = PILOT_MODE
     ? standards.filter((s) => s.id === PILOT_STANDARD_ID)
     : standards;
-  const masteredCount    = visibleStandards.filter((s) => statuses[s.code] === 'mastered').length;
-
-  // ── CTA route logic ────────────────────────────────────────────────────────
-
-  function buildCTARoute(
-    code:                string,
-    status:              StandardStatus,
-    currentIntervention: string | null,
-  ): string {
-    if (status === 'notStarted' || status === 'inDiagnostic') {
-      return `/standard/${code}/diagnostic`;
-    }
-    if (status === 'inIntervention') {
-      const route = currentIntervention
-        ? (INTERVENTION_ROUTES[currentIntervention] ?? 'vocabulary')
-        : 'vocabulary';
-      return `/standard/${code}/teach/${route}`;
-    }
-    if (status === 'mastered') {
-      // Route to next unmastered standard
-      const next = standards.find((s) => statuses[s.code] !== 'mastered' && s.code !== code);
-      return next ? `/standard/${next.code}/diagnostic` : `/standard/${code}/reassess`;
-    }
-    return `/standard/${code}/diagnostic`;
-  }
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -293,18 +258,21 @@ export default function StudentDashboardContent({ studentId, studentName, standa
 
         {/* Section B: Standards */}
         <div>
-          <div
-            style={{
-              fontSize:      10,
-              fontWeight:    700,
-              color:         C.gray,
-              textTransform: 'uppercase',
-              letterSpacing: 1.5,
-              marginBottom:  8,
-            }}
-          >
-            YOUR STANDARDS
+          <div style={{
+            fontSize:      10,
+            fontWeight:    700,
+            color:         C.gray,
+            textTransform: 'uppercase',
+            letterSpacing: 1.5,
+            marginBottom:  PILOT_MODE ? 2 : 8,
+          }}>
+            {PILOT_MODE ? 'YOUR SKILL — PILOT' : 'YOUR STANDARDS'}
           </div>
+          {PILOT_MODE && visibleStandards[0] && (
+            <div style={{ fontSize: 11, color: C.gray, marginBottom: 8 }}>
+              {visibleStandards[0].code} · Literary Elements &amp; Layers of Meaning
+            </div>
+          )}
 
           <div
             style={
@@ -340,54 +308,19 @@ export default function StudentDashboardContent({ studentId, studentName, standa
                     currentStatus={result?.currentStatus                ?? 'not_started'}
                     vocabCheckComplete={result?.vocabCheckComplete      ?? false}
                     vocabCoverageScore={result?.vocabCoverageScore      ?? null}
+                    gapsIdentified={result?.gapsIdentified              ?? []}
+                    gapsAddressed={result?.gapsAddressed                ?? []}
+                    currentGap={result?.currentGap                      ?? null}
+                    profileComplete={profileComplete}
                     isOpen={activeCard === s.code}
                     onToggle={() =>
                       setActiveCard((prev) => (prev === s.code ? null : s.code))
-                    }
-                    onCTAClick={() =>
-                      router.push(buildCTARoute(s.code, status, result?.currentIntervention ?? null))
                     }
                   />
                 </div>
               );
             })}
           </div>
-        </div>
-
-        {/* Section C: Mastery summary */}
-        <div style={{ marginTop: 12, marginBottom: 4 }}>
-          <div style={{ fontSize: 13, color: C.gray, marginBottom: 6 }}>
-            {PILOT_MODE
-              ? `Standards Mastered: ${masteredCount} of 1 (pilot launch)`
-              : `Standards Mastered: ${masteredCount} of 3`}
-          </div>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            {visibleStandards.map((s) => {
-              const isMastered = statuses[s.code] === 'mastered';
-              return (
-                <div
-                  key={s.id}
-                  title={s.code}
-                  style={{
-                    width:        10,
-                    height:       10,
-                    borderRadius: '50%',
-                    background:   isMastered ? C.green : 'transparent',
-                    border:       `1.5px solid ${isMastered ? C.green : C.border}`,
-                    flexShrink:   0,
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Section D: Gogi welcome row */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 20 }}>
-          <GogiAvatar size={36} state="neutral" />
-          <GogiBubble state="neutral">
-            {getWelcomeMessage(streak)}
-          </GogiBubble>
         </div>
 
       </main>
