@@ -541,31 +541,27 @@ export default function ReadingProfilePage() {
 
     try {
       const supabase = createClient();
-      await Promise.all([
-        supabase.from('cognitive_profiles').insert({
-          student_id:          studentId,
-          working_memory_r1:   wmRoundScoresRef.current[0] ?? 0,
-          working_memory_r2:   wmRoundScoresRef.current[1] ?? 0,
-          working_memory_r3:   wmRoundScoresRef.current[2] ?? 0,
-          working_memory_score: wmScore,
-          inferencing_score:   inferScore,
-          vocab_breadth_score: vocabScore,
-          syntax_score:        syntaxScore,
-          overall_risk:               risk,
-          vocab_contamination_signal: vocabContaminationSignal,
-          raw_responses:              {
-            wm_rounds:      wmRoundScoresRef.current,
-            infer_correct:  inferCorrectRef.current,
-            vocab_results:  vocabResultsRef.current,
-            syntax_total:   syntaxTotal,
-            drop_rate:      dropRate,
-          },
-        }),
-        supabase
-          .from('students')
-          .update({ reading_profile_complete: true })
-          .eq('id', studentId),
-      ]);
+      // Insert fires the trg_mark_reading_profile_complete trigger,
+      // which sets students.reading_profile_complete = true server-side.
+      await supabase.from('cognitive_profiles').insert({
+        student_id:          studentId,
+        working_memory_r1:   wmRoundScoresRef.current[0] ?? 0,
+        working_memory_r2:   wmRoundScoresRef.current[1] ?? 0,
+        working_memory_r3:   wmRoundScoresRef.current[2] ?? 0,
+        working_memory_score: wmScore,
+        inferencing_score:   inferScore,
+        vocab_breadth_score: vocabScore,
+        syntax_score:        syntaxScore,
+        overall_risk:               risk,
+        vocab_contamination_signal: vocabContaminationSignal,
+        raw_responses:              {
+          wm_rounds:      wmRoundScoresRef.current,
+          infer_correct:  inferCorrectRef.current,
+          vocab_results:  vocabResultsRef.current,
+          syntax_total:   syntaxTotal,
+          drop_rate:      dropRate,
+        },
+      });
     } catch (err) {
       console.error('[ReadingProfile] DB save error:', err);
     }
