@@ -36,7 +36,22 @@ function parseOptions(content: string): Record<string, string> {
   return opts;
 }
 
-function parseQuestionContent(raw: string, id: string): Omit<ParsedQuestion, 'passageText' | 'title' | 'author' | 'pub_year'> {
+interface QuestionRow {
+  id: string;
+  content: string;
+  cognitive_skill_targeted: string;
+  title?: string;
+  author?: string;
+  pub_year?: string;
+  keyword_flags?: string[];
+  option_a_class?: string | null;
+  option_b_class?: string | null;
+  option_c_class?: string | null;
+  option_d_class?: string | null;
+}
+
+function parseQuestionContent(row: QuestionRow): Omit<ParsedQuestion, 'passageText' | 'title' | 'author' | 'pub_year'> {
+  const raw = row.content;
   const lines = raw.split('\n');
   const get = (prefix: string) => {
     const line = lines.find((l) => l.trimStart().startsWith(prefix));
@@ -51,13 +66,28 @@ function parseQuestionContent(raw: string, id: string): Omit<ParsedQuestion, 'pa
   }));
   const correctLetter = get('CORRECT:').replace(/[^A-D]/g, '');
   const cognitiveSkill = get('COGNITIVE_SKILL:');
+
+  // Dual-source classification: column values take priority, content markers are fallback.
+  // seed-sprint-o.ts stores classifications in option_x_class columns only.
+  // buildPassageLibrary.ts and others embed DIAGNOSTIC_CLASSIFICATION_X: in the content string.
+  const colMap: Record<string, string | null | undefined> = {
+    A: row.option_a_class,
+    B: row.option_b_class,
+    C: row.option_c_class,
+    D: row.option_d_class,
+  };
   const classifications: Record<string, string> = {};
   for (const letter of ['A', 'B', 'C', 'D']) {
-    const val = get(`DIAGNOSTIC_CLASSIFICATION_${letter}:`);
-    if (val) classifications[letter] = val;
+    const fromCol = colMap[letter];
+    if (fromCol) {
+      classifications[letter] = fromCol;
+    } else {
+      const fromContent = get(`DIAGNOSTIC_CLASSIFICATION_${letter}:`);
+      if (fromContent) classifications[letter] = fromContent;
+    }
   }
 
-  return { id, stem, choices, correctLetter, cognitiveSkill, classifications };
+  return { id: row.id, stem, choices, correctLetter, cognitiveSkill, classifications };
 }
 
 function extractPassageFromContent(content: string): string {
@@ -254,7 +284,7 @@ export default function DiagnosticPage() {
         // ── Step 5: Fetch questions ─────────────────────────────────────────
         const { data: qRows, error: qErr } = await supabase
           .from('questions')
-          .select('id, content, cognitive_skill_targeted, title, author, pub_year, keyword_flags')
+          .select('id, content, cognitive_skill_targeted, title, author, pub_year, keyword_flags, option_a_class, option_b_class, option_c_class, option_d_class')
           .eq('standard_id', standard.id)
           .order('created_at', { ascending: false })
           .limit(10);
@@ -263,7 +293,7 @@ export default function DiagnosticPage() {
         const shuffled = [...(qRows ?? [])].sort(() => Math.random() - 0.5);
 
         const parsed: ParsedQuestion[] = shuffled.map((row) => ({
-          ...parseQuestionContent(row.content, row.id),
+          ...parseQuestionContent(row as QuestionRow),
           passageText: extractPassageFromContent(row.content),
           title:       row.title    ?? 'Literary Selection',
           author:      row.author   ?? 'Public Domain',
@@ -394,7 +424,7 @@ export default function DiagnosticPage() {
               student_id:                studentId,
               standard_id:               standardUuid,
               cognitive_skill_targeted:  q.cognitiveSkill,
-              diagnostic_classification: q.classifications[letter] ?? null,
+              diagnostic_classification: (q.classifications[letter] && q.classifications[letter] !== 'CORRECT') ? q.classifications[letter] : null,
               student_response:          letter,
               mastery_achieved:          letter === q.correctLetter,
               attempt_number:            1,
