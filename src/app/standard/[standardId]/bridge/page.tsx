@@ -14,6 +14,7 @@ import { getTeachRoute } from '@/lib/classify/getTeachRoute';
 const BADGE_TEXT: Record<string, string> = {
   // Layer 1 — Pre-reading
   no_metacognitive_strategy:           'Layer 1  |  Reading strategy needed',
+  schema_deficit:                      'Layer 1  |  Background knowledge needed',
   // Layer 2 — During reading
   vocabulary_gap:                      'Layer 2  |  Vocabulary support needed',
   morphology_gap:                      'Layer 2  |  Word structure support needed',
@@ -48,7 +49,8 @@ export default function BridgePage() {
   const standardCode = standardId.replace(/-/g, '.');
   const { user, loading: authLoading } = useAuth();
 
-  const [classification, setClassification] = useState<string>('vocabulary_gap');
+  const [classification, setClassification] = useState<string | null>(null);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [showButton, setShowButton] = useState(false);
 
   const standard = STANDARDS[standardCode as keyof typeof STANDARDS];
@@ -68,7 +70,11 @@ export default function BridgePage() {
           .eq('user_id', user!.id)
           .maybeSingle();
 
-        if (!student?.id) return; // stay on vocabulary_gap default
+        if (!student?.id) {
+          console.error('[bridge] student record not found for current user');
+          setStatus('error');
+          return;
+        }
 
         // Get standard UUID
         const { data: std } = await supabase
@@ -77,25 +83,39 @@ export default function BridgePage() {
           .eq('code', standardCode)
           .maybeSingle();
 
-        if (!std?.id) return;
+        if (!std?.id) {
+          console.error('[bridge] standard not found:', standardCode);
+          setStatus('error');
+          return;
+        }
 
-        // Read dominant_classification from most recent session
-        // NOTE: sessions table requires a `dominant_classification text` column.
-        //   ALTER TABLE sessions ADD COLUMN dominant_classification text;
+        // Read dominant_classification from most recent completed diagnostic session.
+        // Filter on phase + status so in-progress or non-diagnostic sessions are ignored.
+        // Sort by completed_at so seeded sessions (which may have older started_at) are found correctly.
         const { data: session } = await supabase
           .from('sessions')
           .select('dominant_classification')
           .eq('student_id', student.id)
           .eq('standard_id', std.id)
-          .order('started_at', { ascending: false })
+          .eq('phase', 'diagnostic')
+          .eq('status', 'complete')
+          .order('completed_at', { ascending: false, nullsFirst: false })
           .limit(1)
           .maybeSingle();
 
         const cls = (session as { dominant_classification?: string | null } | null)
           ?.dominant_classification;
-        if (cls) setClassification(cls);
+
+        if (cls) {
+          setClassification(cls);
+          setStatus('ready');
+        } else {
+          console.error('[bridge] no completed diagnostic session found, or dominant_classification is null');
+          setStatus('error');
+        }
       } catch (err) {
-        console.error('[Bridge] init error:', err);
+        console.error('[bridge] init error:', err);
+        setStatus('error');
       }
     }
 
@@ -107,6 +127,28 @@ export default function BridgePage() {
     const t = setTimeout(() => setShowButton(true), 2000);
     return () => clearTimeout(t);
   }, []);
+
+  // ── Error state ───────────────────────────────────────────────────────────────
+  if (status === 'error') {
+    return (
+      <div style={{ background: C.navy, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+        <div style={{ maxWidth: 320, textAlign: 'center', padding: 24 }}>
+          <p style={{ color: C.white, fontSize: 15, lineHeight: 1.6 }}>
+            We couldn&rsquo;t load your diagnostic results. Please tell your teacher.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Loading state (classification not yet resolved) ───────────────────────────
+  if (status === 'loading' || classification === null) {
+    return (
+      <div style={{ background: C.navy, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+        <p style={{ color: C.blueMid, fontSize: 13 }}>Loading your diagnostic…</p>
+      </div>
+    );
+  }
 
   return (
     <div

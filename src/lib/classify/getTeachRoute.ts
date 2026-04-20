@@ -36,6 +36,7 @@ export function getTeachRoute(classification: string): string {
   const routes: Record<string, string> = {
     // ── Layer 1 — Pre-reading ──────────────────────────────────────────────
     no_metacognitive_strategy:           'strategy',
+    schema_deficit:                      'schema',
 
     // ── Layer 2 — During reading ───────────────────────────────────────────
     vocabulary_gap:                      'vocabulary',
