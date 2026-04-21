@@ -1,0 +1,11 @@
+{
+  "classification": "comprehension_integration_failure",
+  "targetSkill": "",
+  "mustHave": [],
+  "mustNotHave": [],
+  "tierSignals": {
+    "tier1": "",
+    "tier2": "",
+    "tier3": ""
+  }
+}

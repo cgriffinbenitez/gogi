@@ -1,0 +1,227 @@
+import crypto from 'crypto';
+import type { FetchedBook, Paragraph } from '../types';
+
+// ─── Front-matter stripping ───────────────────────────────────────────────────
+
+const FRONT_MATTER_MARKERS = [
+  /^CHAPTER\s+(I|1|ONE)\b/m,
+  /^STORY\s+(I|1|ONE)\b/m,
+  /^TALE\s+(I|1|ONE)\b/m,
+  /^BOOK\s+(I|1|ONE)\b/m,
+  /^PART\s+(I|1|ONE)\b/m,
+  /^\*\s*\*\s*\*/m,
+];
+
+/**
+ * Strip Gutenberg front matter (title pages, prefaces, biographical essays,
+ * tables of contents) from the beginning of a book's text.
+ * Returns the stripped book and how many characters were removed.
+ */
+export function stripBookFrontMatter(
+  book: FetchedBook,
+): { strippedBook: FetchedBook; charsSkipped: number } {
+  // Normalize line endings first so regex anchors work
+  const normalized = book.text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const tenPercent = Math.floor(normalized.length * 0.1);
+  const searchWindow = normalized.slice(0, tenPercent);
+
+  for (const re of FRONT_MATTER_MARKERS) {
+    const match = re.exec(searchWindow);
+    if (match) {
+      return {
+        strippedBook: { ...book, text: normalized.slice(match.index) },
+        charsSkipped: match.index,
+      };
+    }
+  }
+
+  // Fallback: skip first 15%
+  const cutPoint = Math.floor(normalized.length * 0.15);
+  return {
+    strippedBook: { ...book, text: normalized.slice(cutPoint) },
+    charsSkipped: cutPoint,
+  };
+}
+
+const MIN_WORDS = 40;
+const MAX_WORDS = 120;
+const MAX_DIALOGUE_RATIO = 0.35; // skip if >35% of chars are inside quotation marks
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function wordCount(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function sha256Short(text: string): string {
+  return crypto.createHash('sha256').update(text).digest('hex').slice(0, 16);
+}
+
+function isDialogueHeavy(text: string): boolean {
+  // Count characters inside "..." pairs
+  let inQuote    = false;
+  let quoteChars = 0;
+  for (const ch of text) {
+    if (ch === '"') { inQuote = !inQuote; continue; }
+    if (inQuote) quoteChars++;
+  }
+  return quoteChars / text.length > MAX_DIALOGUE_RATIO;
+}
+
+function isSectionHeader(text: string): boolean {
+  const trimmed = text.trim();
+  // Chapter headings, roman numerals, all-caps short lines
+  if (/^(chapter|part|book|section|act|scene)\s+[ivxlcdm\d]/i.test(trimmed)) return true;
+  if (/^[IVXLCDM]+\.?\s*$/.test(trimmed)) return true;
+  if (trimmed.length < 40 && trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed)) return true;
+  return false;
+}
+
+function normalizeWhitespace(text: string): string {
+  return text
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n +/g, '\n')
+    .trim();
+}
+
+export function isCompleteParagraph(text: string): { complete: boolean; reason?: string } {
+  const trimmed = text.trim();
+
+  // 1. Must start with capital letter or opening quotation mark
+  if (!/^[A-Z"']/.test(trimmed)) {
+    return { complete: false, reason: 'starts mid-sentence' };
+  }
+
+  // 2. Must end with terminal punctuation
+  if (!/[.!?"']\s*$/.test(trimmed)) {
+    return { complete: false, reason: 'ends without terminal punctuation' };
+  }
+
+  // 3. Unbalanced double quotes
+  const doubleQuoteCount = (text.match(/"/g) ?? []).length;
+  if (doubleQuoteCount % 2 !== 0) {
+    return { complete: false, reason: 'unbalanced double quotes' };
+  }
+
+  // 4. Unbalanced parentheses
+  const openParens  = (text.match(/\(/g) ?? []).length;
+  const closeParens = (text.match(/\)/g) ?? []).length;
+  if (openParens !== closeParens) {
+    return { complete: false, reason: 'unbalanced parentheses' };
+  }
+
+  // 5. Chapter/section header
+  if (/^\s*(CHAPTER|BOOK|PART|SECTION|ACT|SCENE)\s+[IVXLC0-9]+/i.test(text)) {
+    return { complete: false, reason: 'chapter or section header' };
+  }
+
+  // 6. Divider lines
+  if (/^\s*[\*_=\-\.]{3,}\s*$/.test(text)) {
+    return { complete: false, reason: 'divider or decoration' };
+  }
+
+  // 7. Illustration/footnote markers
+  if (/\[Illustration|\[Image|\[Footnote/.test(text)) {
+    return { complete: false, reason: 'illustration or footnote marker' };
+  }
+
+  // 8. Trailing em-dash or en-dash (cut off)
+  if (/[—–]\s*$/.test(trimmed)) {
+    return { complete: false, reason: 'trailing em-dash, likely cut off' };
+  }
+
+  // 9. Leading em-dash or en-dash (cut off)
+  if (/^\s*[—–]/.test(text)) {
+    return { complete: false, reason: 'leading em-dash, likely cut off' };
+  }
+
+  // 10. Editorial or biographical content
+  if (
+    /\bborn\s+(in|on)\s+\d{4}/i.test(text) ||
+    /\bdied\s+(in|on)\s+\d{4}/i.test(text) ||
+    /\b\d{4}(\s*[-–]\s*\d{4})?\b.*\b(birth|death|biography)/i.test(text) ||
+    /\beditor('s)?\s+(note|introduction|preface)/i.test(text) ||
+    /\btranslated\s+(by|from)/i.test(text)
+  ) {
+    return { complete: false, reason: 'editorial or biographical content' };
+  }
+
+  return { complete: true };
+}
+
+function cleanParagraph(text: string): string {
+  return text
+    // Remove Gutenberg footnote refs like [1] [23]
+    .replace(/\[\s*[0-9]+\s*\]/g, '')
+    // Collapse multi-spaces
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+export function extractParagraphs(
+  book: FetchedBook,
+): Array<Paragraph & { skippedReason?: string }> {
+  // Normalize line endings before splitting (Gutenberg books use CRLF)
+  const normalizedText = book.text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  // Split on blank lines (one or more)
+  const raw = normalizedText.split(/\n{2,}/);
+  const results: Array<Paragraph & { skippedReason?: string }> = [];
+
+  for (const block of raw) {
+    let text = normalizeWhitespace(block.replace(/\n/g, ' '));
+    if (!text) continue;
+    if (isSectionHeader(text)) continue;
+
+    const wc = wordCount(text);
+    if (wc < MIN_WORDS || wc > MAX_WORDS) continue;
+
+    // Clean before completeness check
+    text = cleanParagraph(text);
+
+    // Completeness check (after word-count, before dialogue)
+    const completeness = isCompleteParagraph(text);
+    if (!completeness.complete) {
+      results.push({
+        text,
+        wordCount:    wordCount(text),
+        sourceTitle:  book.title,
+        sourceAuthor: book.author,
+        sourceYear:   book.year,
+        gutenbergId:  book.gutenbergId,
+        hash:         sha256Short(text),
+        skippedReason: completeness.reason,
+      });
+      continue;
+    }
+
+    if (isDialogueHeavy(text)) {
+      results.push({
+        text,
+        wordCount:    wordCount(text),
+        sourceTitle:  book.title,
+        sourceAuthor: book.author,
+        sourceYear:   book.year,
+        gutenbergId:  book.gutenbergId,
+        hash:         sha256Short(text),
+        skippedReason: 'dialogue_heavy',
+      });
+      continue;
+    }
+
+    results.push({
+      text,
+      wordCount:   wordCount(text),
+      sourceTitle:  book.title,
+      sourceAuthor: book.author,
+      sourceYear:   book.year,
+      gutenbergId:  book.gutenbergId,
+      hash:         sha256Short(text),
+    });
+  }
+
+  return results;
+}

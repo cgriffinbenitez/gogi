@@ -1,0 +1,30 @@
+{
+  "classification": "mood_misreading",
+  "targetSkill": "Teach the student to identify the mood a writer creates in the reader — separate from what characters feel — by reading diction, imagery, omission, and rhythm as deliberate authorial choices.",
+  "mustHave": [
+    "A single dominant mood that is nameable in one word (tense, melancholy, ominous, hopeful, grief-struck, peaceful, dread-filled, wistful, suspenseful, eerie, oppressive, serene — choose one)",
+    "Mood built through at least two of: diction (word choice), imagery (sensory detail), omission (what is conspicuously unsaid), rhythm (sentence length and pacing)",
+    "Observable mood signals — specific words or phrases a reader can point to as the source of the feeling",
+    "Mood that lives in the writing itself, not in character dialogue stating an emotion"
+  ],
+  "mustNotHave": [
+    "Multiple competing moods (shifts from fear to joy mid-paragraph)",
+    "Mood that depends on a character stating their emotion directly (e.g., 'She was sad'). Mood must live in the prose, not in what characters say they feel.",
+    "Mood that requires knowledge of surrounding story context to land — paragraph must stand alone",
+    "Paragraphs dominated by dialogue (60%+ quotation marks)",
+    "Mood created primarily through exclamation points or melodrama rather than craft",
+    "Archaic or heavily poetic prose that obscures mood signals behind unfamiliar syntax"
+  ],
+  "tierSignals": {
+    "tier1": "Mood is thick and unmistakable. Signals concrete and repeated (rain, darkness, silence, cold). A student notices the feeling on first read.",
+    "tier2": "Mood is present but subtler. Requires noticing 3 or more contributing signals working together. Student must slow down to feel it.",
+    "tier3": "Mood is built more through omission or rhythm than through diction. Requires sharper attention. Student must re-read to identify what's doing the work."
+  },
+  "canonicalVocabulary": [
+    "tense", "melancholy", "ominous", "hopeful", "grief-struck",
+    "peaceful", "dread-filled", "dread", "wistful", "suspenseful",
+    "eerie", "oppressive", "serene", "unsettling", "tranquil",
+    "drowsy", "haunting", "foreboding", "nostalgic", "reverent",
+    "desolate"
+  ]
+}

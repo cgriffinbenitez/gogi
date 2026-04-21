@@ -1,0 +1,11 @@
+{
+  "classification": "morphology_gap",
+  "targetSkill": "",
+  "mustHave": [],
+  "mustNotHave": [],
+  "tierSignals": {
+    "tier1": "",
+    "tier2": "",
+    "tier3": ""
+  }
+}

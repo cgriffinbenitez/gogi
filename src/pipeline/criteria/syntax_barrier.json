@@ -1,0 +1,11 @@
+{
+  "classification": "syntax_barrier",
+  "targetSkill": "",
+  "mustHave": [],
+  "mustNotHave": [],
+  "tierSignals": {
+    "tier1": "",
+    "tier2": "",
+    "tier3": ""
+  }
+}

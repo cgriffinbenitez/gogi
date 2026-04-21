@@ -1,0 +1,11 @@
+{
+  "classification": "structure_purpose_disconnect",
+  "targetSkill": "",
+  "mustHave": [],
+  "mustNotHave": [],
+  "tierSignals": {
+    "tier1": "",
+    "tier2": "",
+    "tier3": ""
+  }
+}

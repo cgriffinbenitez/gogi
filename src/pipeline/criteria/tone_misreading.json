@@ -1,0 +1,11 @@
+{
+  "classification": "tone_misreading",
+  "targetSkill": "",
+  "mustHave": [],
+  "mustNotHave": [],
+  "tierSignals": {
+    "tier1": "",
+    "tier2": "",
+    "tier3": ""
+  }
+}
