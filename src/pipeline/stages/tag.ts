@@ -74,7 +74,22 @@ YOUR TASKS:
    - Tier 3 (Independent Practice): 200-500 words, 2-3 paragraphs, more distributed signal
    - Tier 4 (Transfer/Assessment): 400-800 words, 3-5 paragraphs, full-passage complexity
 
-   Word count is primary criterion. May adjust upward by one tier if syntax/vocabulary complexity is unusually high for the word count range. Provide tier_rationale.
+   Word count is the PRIMARY criterion. Tier assignment must start from word count, then apply the override check below.
+
+   COMPLEXITY OVERRIDE — upward adjustment by ONE tier is permitted ONLY if the passage contains at least one of these genuine parsing barriers:
+   - Nested subordinate clauses more than 2 levels deep that obscure the main clause
+   - Sustained archaic vocabulary density: 3+ words within any 50-word span that a 9th-grade student cannot resolve from sentence context alone
+   - Syntactic ambiguity requiring re-reading to determine which noun a verb or modifier applies to
+   - Period-specific grammatical structures that obscure meaning (not merely flavor)
+
+   The following features are explicitly NOT complexity markers and must NOT trigger an upward override:
+   - Anaphora or other repetition structures (aid comprehension, do not impede it)
+   - Periodic sentences with parallel structure (register-flagged but structurally clear)
+   - Syntactic inversion where the meaning is still immediately parseable (e.g., "It is a truth universally acknowledged, that...")
+   - Rhetorical sophistication, formal diction, or elevated register that does not block parsing
+   - Vivid or emotionally intense language
+
+   When applying an override, you MUST name the specific complexity marker in tier_rationale (e.g., "Override applied: nested subordinate clauses in sentence 3 obscure main clause"). If you cannot name a specific marker from the permitted list, do NOT apply the override.
 
 CRITICAL — NULL ESCAPE HATCH:
 If you cannot confidently construct 2+ supporting evidence elements AND 2+ non-supporting elements, return:
@@ -115,7 +130,7 @@ async function callClaude(prompt: string): Promise<string> {
   await sleep(ANTHROPIC_DELAY_MS);
   const msg = await getClient().messages.create({
     model: MODEL,
-    max_tokens: 1024,
+    max_tokens: 2500,
     system: 'You are tagging a passage for a literacy intervention teach page.',
     messages: [{ role: 'user', content: prompt }],
   });
