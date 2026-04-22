@@ -34,6 +34,7 @@ const TEST_CASES: TestCase[] = [
     para: {
       text: 'There were a king with a large jaw and a queen with a plain face, on the throne of England; there were a king with a large jaw and a queen with a fair face, on the throne of France. In both countries it was clearer than crystal to the lords of the State preserves of loaves and fishes, that things in general were settled for ever.',
       wordCount: 62,
+      paragraphCount: 1,
       sourceTitle: 'A Tale of Two Cities',
       sourceAuthor: 'Dickens, Charles',
       sourceYear: 1859,
@@ -45,8 +46,9 @@ const TEST_CASES: TestCase[] = [
     label: 'TEST 2 — should REJECT (institutional schema) — Bleak House',
     expected: 'REJECT',
     para: {
-      text: 'The raw afternoon is rawest, and the dense fog is densest, and the muddy streets are muddiest near that leaden-headed old obstruction, appropriate ornament for the threshold of a leaden-headed old corporation, Temple Bar. And hard by Temple Bar, in Lincoln\'s Inn Hall, at the very heart of the fog, sits the Lord High Chancellor in his High Court of Chancery.',
-      wordCount: 61,
+      text: 'The raw afternoon is rawest, and the dense fog is densest, and the muddy streets are muddiest near that leaden-headed old corporation, Temple Bar. And hard by Temple Bar, in Lincoln\'s Inn Hall, at the very heart of the fog, sits the Lord High Chancellor in his High Court of Chancery.',
+      wordCount: 51,
+      paragraphCount: 1,
       sourceTitle: 'Bleak House',
       sourceAuthor: 'Dickens, Charles',
       sourceYear: 1853,
@@ -60,6 +62,7 @@ const TEST_CASES: TestCase[] = [
     para: {
       text: 'The same face: the very same. Marley in his pigtail, usual waistcoat, tights and boots; the tassels on the latter bristling, like his pigtail, and his coat-skirts, and the hair upon his head. The chain he drew was clasped about his middle. It was long, and wound about him like a tail; and it was made (for Scrooge observed it closely) of cash-boxes, keys, padlocks, ledgers, deeds, and heavy purses wrought in steel.',
       wordCount: 72,
+      paragraphCount: 1,
       sourceTitle: 'A Christmas Carol in Prose; Being a Ghost Story of Christmas',
       sourceAuthor: 'Dickens, Charles',
       sourceYear: 1843,
@@ -73,6 +76,7 @@ const TEST_CASES: TestCase[] = [
     para: {
       text: 'The Dodger said nothing, but he smoothed Oliver\'s hair over his eyes, and said he\'d know better, by and by; upon which the old gentleman, observing Oliver\'s colour mounting, changed the subject by asking whether there had been much of a crowd at the execution that morning? This made him wonder more and more; for it was plain from the replies of the two boys that they had both been there; and Oliver naturally wondered how they could possibly have found time to be so very industrious.',
       wordCount: 84,
+      paragraphCount: 1,
       sourceTitle: 'Oliver Twist',
       sourceAuthor: 'Dickens, Charles',
       sourceYear: 1839,
@@ -86,6 +90,7 @@ const TEST_CASES: TestCase[] = [
     para: {
       text: 'Mr. Dashwood\'s disappointment was, at first, severe; but his temper was cheerful and sanguine; and he might reasonably hope to live many years, and by living economically, lay by a considerable sum from the produce of an estate already large, and capable of almost immediate improvement. But the fortune, which had been so tardy in coming, was his only one twelvemonth.',
       wordCount: 62,
+      paragraphCount: 1,
       sourceTitle: 'Sense and Sensibility',
       sourceAuthor: 'Austen, Jane',
       sourceYear: 1811,

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * GOGI Pipeline v2 Validator
- * Runs filter-only against 20 candidate paragraphs and reports per-Q breakdown.
- * Does NOT write to DB. Use before real pipeline runs to verify v2 calibration.
+ * GOGI Pipeline v3 Validator
+ * Runs filter-only against N candidate paragraphs and reports per-Q breakdown,
+ * Q5 pattern distribution, and 5e flag counts.
+ * Does NOT write to DB. Use before real pipeline runs to verify v3 calibration.
  *
  * Usage: npm run validate -- --classification tone_misreading [--sample 20]
  */
@@ -119,7 +120,7 @@ async function main() {
     .map(([t, n]) => `    ${n}  ${t.slice(0, 55)}`)
     .join('\n');
   console.log(`[Validator] Collected ${candidates.length} candidates (per-source cap: ${perSourceCap}):\n${sourceBreakdown}\n`);
-  console.log(`[Validator] Running v2 filter...\n`);
+  console.log(`[Validator] Running v3 filter...\n`);
 
   // Run filter on each candidate
   const results: ValidatorResult[] = [];
@@ -135,12 +136,36 @@ async function main() {
   const yes = results.filter(r => r.result.suitable);
   const no  = results.filter(r => !r.result.suitable);
 
-  // Per-Q failure counts
+  // Per-Q failure counts (first failing Q per rejected passage)
   const q1Fail = no.filter(r => r.result.q1 === 'fail').length;
   const q2Fail = no.filter(r => r.result.q1 === 'pass' && r.result.q2 === 'fail').length;
   const q3Fail = no.filter(r => r.result.q1 === 'pass' && r.result.q2 === 'pass' && r.result.q3 === 'fail').length;
   const q4Fail = no.filter(r => r.result.q1 === 'pass' && r.result.q2 === 'pass' && r.result.q3 === 'pass' && r.result.q4 === 'fail').length;
+  const q5Fail = no.filter(r =>
+    r.result.q1 === 'pass' && r.result.q2 === 'pass' &&
+    r.result.q3 === 'pass' && r.result.q4 === 'pass' &&
+    r.result.q5 === 'fail'
+  ).length;
   const parseErr = no.filter(r => r.result.reasoning === 'parse_error').length;
+
+  // Q5 pattern distribution among YES passages
+  const patternCounts: Record<string, number> = { '5a': 0, '5b': 0, '5c': 0, '5d': 0 };
+  let flag5eCount = 0;
+  for (const r of yes) {
+    for (const p of r.result.q5_patterns_supported ?? []) {
+      patternCounts[p] = (patternCounts[p] ?? 0) + 1;
+    }
+    if (r.result.q5_flag_5e_compatible) flag5eCount++;
+  }
+  const patternLines = Object.entries(patternCounts)
+    .map(([p, n]) => `    ${p}: ${n}`)
+    .join('\n');
+
+  // Q5 failure breakdown among NO passages (those that reached Q5)
+  const reachedQ5 = no.filter(r =>
+    r.result.q1 === 'pass' && r.result.q2 === 'pass' &&
+    r.result.q3 === 'pass' && r.result.q4 === 'pass'
+  );
 
   // Rejection reason distribution
   const reasonCounts: Record<string, number> = {};
@@ -171,14 +196,18 @@ async function main() {
     .map(([f, n]) => `    ${n.toString().padStart(3)}  ${f.slice(0, 80)}`)
     .join('\n');
 
-  // YES passages list
+  // YES passages list with Q5 patterns
   const yesLines = yes
-    .map(r => `    "${r.para.sourceTitle.slice(0, 40)}" — ${r.para.text.slice(0, 60)}…`)
+    .map(r => {
+      const patterns = (r.result.q5_patterns_supported ?? []).join(',') || 'none';
+      const flag5e = r.result.q5_flag_5e_compatible ? ' [5e]' : '';
+      return `    "${r.para.sourceTitle.slice(0, 38)}" — patterns:[${patterns}]${flag5e} — ${r.para.text.slice(0, 50)}…`;
+    })
     .join('\n');
 
   console.log(`
 ═══════════════════════════════════════════════════════
-  Validator complete — ${classification}
+  v3 Validator complete — ${classification}
   Candidates tested:       ${results.length}
   YES (suitable):          ${yes.length} / ${results.length} (${results.length > 0 ? (yes.length / results.length * 100).toFixed(1) : 0}%)
   NO  (rejected):          ${no.length} / ${results.length}
@@ -188,7 +217,12 @@ async function main() {
     Q2 fail (not dominant):  ${q2Fail}
     Q3 fail (accessibility): ${q3Fail}
     Q4 fail (isolation):     ${q4Fail}
+    Q5 fail (item construct): ${q5Fail}  (of ${reachedQ5.length} that reached Q5)
     Parse error:             ${parseErr}
+
+  Q5 item pattern distribution (YES passages):
+${patternLines}
+    5e cross-text flags:     ${flag5eCount}
 
   Top rejection reasons:
 ${topReasons || '    (none)'}
@@ -196,7 +230,7 @@ ${topReasons || '    (none)'}
   Schema dependency flags encountered (YES + NO combined):
 ${topFlags || '    (none)'}
 
-  YES passages:
+  YES passages (with Q5 patterns):
 ${yesLines || '    (none)'}
 ═══════════════════════════════════════════════════════
 `);

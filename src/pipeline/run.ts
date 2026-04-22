@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * GOGI Intervention Passage Pipeline
- * Usage: npm run pipeline -- --classification mood_misreading [--max 15] [--dry-run]
+ * GOGI Intervention Passage Pipeline v3
+ * Usage: npm run pipeline -- --classification mood_misreading [--max 15] [--dry-run] [--per-source-cap 3]
  */
 
 import dotenv from 'dotenv';
@@ -9,12 +9,19 @@ dotenv.config({ path: '.env.local' });
 dotenv.config(); // fallback
 
 import path from 'path';
-import type { CriteriaConfig, Paragraph, PipelineOptions, SourceConfig } from './types';
+import type {
+  CriteriaConfig,
+  FilterResult,
+  Paragraph,
+  PipelineOptions,
+  SourceConfig,
+  TierKey,
+} from './types';
 import { fetchBooksForClassification } from './stages/fetch';
-import { extractParagraphs, stripBookFrontMatter } from './stages/extract';
+import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
 import { filterParagraph } from './stages/filter';
 import { tagParagraph } from './stages/tag';
-import { appendCSV, initCSV, isDuplicate, writePassage } from './stages/write';
+import { appendCSV, initCSV, isDuplicateV3, writePassageV3 } from './stages/write';
 
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
@@ -24,11 +31,12 @@ const VALID_CLASSIFICATIONS = [
   'evidence_retrieval_failure', 'comprehension_integration_failure',
   'topic_vs_theme_confusion', 'structure_purpose_disconnect',
   'no_metacognitive_strategy', 'schema_strategy_missing',
+  'central_idea_confusion', 'theme_misreading',
 ];
 
 function printHelp() {
   console.log(`
-GOGI Intervention Passage Pipeline
+GOGI Intervention Passage Pipeline v3
 
 Usage:
   npm run pipeline -- --classification <name> [options]
@@ -36,20 +44,12 @@ Usage:
 Options:
   --classification  Required. Classification to run.
   --max             Max passages to insert (default: 15).
-  --dry-run         Run stages 1–3 (no DB write, no tagging).
+  --per-source-cap  Max insertions per source title (default: ceil(max/3)).
+  --dry-run         Run stages 1-3 (no DB write, no tagging).
   --help            Show this help.
 
 Valid classifications:
   ${VALID_CLASSIFICATIONS.join('\n  ')}
-
-Examples:
-  npm run pipeline -- --classification mood_misreading
-  npm run pipeline -- --classification mood_misreading --max 5 --dry-run
-
-Environment variables required:
-  ANTHROPIC_API_KEY
-  NEXT_PUBLIC_SUPABASE_URL
-  SUPABASE_SERVICE_ROLE_KEY  (or NEXT_PUBLIC_SUPABASE_ANON_KEY as fallback)
 `);
 }
 
@@ -111,28 +111,30 @@ function loadSources(classification: string): SourceConfig {
   return require(path.join(__dirname, 'sources', `${classification}.json`)) as SourceConfig;
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type SuitableParagraph = Paragraph & { filterReasoning: string };
-
 // ─── Author-group cap helpers ─────────────────────────────────────────────────
 
-/** Loose match: all name tokens in displayName appear in the Gutendex "Last, First" format. */
 function authorMatchesDisplayName(gutendexAuthor: string, displayName: string): boolean {
   const norm = gutendexAuthor.toLowerCase();
   return displayName.toLowerCase().split(/\s+/).every(tok => norm.includes(tok));
 }
 
-/** Returns the group index (from sources.authorGroupCaps) that this author belongs to, or -1. */
 function authorGroupIndex(
   sourceAuthor: string,
-  groupCaps: NonNullable<import('./types').SourceConfig['authorGroupCaps']>,
+  groupCaps: NonNullable<SourceConfig['authorGroupCaps']>,
 ): number {
   for (let i = 0; i < groupCaps.length; i++) {
     if (groupCaps[i].authors.some(a => authorMatchesDisplayName(sourceAuthor, a))) return i;
   }
   return -1;
 }
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type SuitableParagraph = Paragraph & {
+  filterReasoning: string;
+  filterResult: FilterResult;
+  tierKey: TierKey;
+};
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -152,7 +154,7 @@ async function main() {
   }
 
   console.log(`\n═══════════════════════════════════════════════════════`);
-  console.log(`  GOGI Pipeline  |  ${classification}`);
+  console.log(`  GOGI Pipeline v3  |  ${classification}`);
   console.log(`  max: ${max}  |  dry-run: ${dryRun}`);
   console.log(`═══════════════════════════════════════════════════════\n`);
 
@@ -165,25 +167,22 @@ async function main() {
   initCSV(csvPath);
   console.log(`[CSV] writing to ${csvPath}\n`);
 
-  // Per-source cap: no single book contributes more than ceil(max/3) passages
-  // Can be overridden with --per-source-cap for diversity runs
-  const perSourceCap = perSourceCapOverride ?? Math.ceil(max / 3);
-  // How many suitable paragraphs to collect per book (buffer above the cap)
-  const poolCapPerBook = perSourceCap + 3;
+  // Per-source cap (write phase) and per-tier-per-book cap (pool build)
+  const perSourceCap         = perSourceCapOverride ?? Math.ceil(max / 3);
+  // Pool build: stop per tier per book after this many suitables
+  const poolCapPerBookPerTier = Math.max(2, Math.ceil(max / 8));
 
   // Counters
   let fetched              = 0;
-  let extracted            = 0;
-  let completenessSkipped  = 0;
-  let dialogueSkipped      = 0;
-  let frontMatterTotal     = 0;
   let filtered             = 0;
   let tagged               = 0;
   let tagRejected          = 0;
   let inserted             = 0;
   let duplicates           = 0;
   let skipped              = 0;
-  const completenessReasons: Record<string, number> = {};
+  let frontMatterTotal     = 0;
+
+  const tierCounts: Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
   const frontMatterPerBook: Array<{ title: string; chars: number }> = [];
 
   // ── Stage 1: Fetch ───────────────────────────────────────────────────────────
@@ -193,107 +192,81 @@ async function main() {
 
   // ── Phase 1: Extract + Filter all books → build suitable pool ────────────────
   const suitablePool: SuitableParagraph[] = [];
-  const poolPerSource: Record<string, number> = {};
+  const poolPerSourceTier: Record<string, number> = {};
+
+  const TIER_KEYS: TierKey[] = ['T1', 'T2', 'T3', 'T4'];
 
   for (const book of books) {
-    // Strip front matter (biographical essays, TOC, prefaces)
     const { strippedBook, charsSkipped } = stripBookFrontMatter(book);
     frontMatterTotal += charsSkipped;
     frontMatterPerBook.push({ title: book.title, chars: charsSkipped });
 
-    // Extract paragraphs
-    const allParagraphs = extractParagraphs(strippedBook);
-    const paragraphs    = allParagraphs.filter(p => !p.skippedReason);
-    const skippedParas  = allParagraphs.filter(p => p.skippedReason);
-
-    extracted += paragraphs.length;
-
-    for (const sp of skippedParas) {
-      if (sp.skippedReason === 'dialogue_heavy') {
-        dialogueSkipped++;
-      } else {
-        completenessSkipped++;
-        const reason = sp.skippedReason ?? 'unknown';
-        completenessReasons[reason] = (completenessReasons[reason] ?? 0) + 1;
-      }
-      appendCSV(csvPath, {
-        classification,
-        gutenberg_id:    sp.gutenbergId,
-        title:           sp.sourceTitle,
-        author:          sp.sourceAuthor,
-        paragraph_text:  sp.text,
-        word_count:      sp.wordCount,
-        suitable:        false,
-        reasoning:       sp.skippedReason ?? 'unknown',
-        canonical_answer: '',
-        distractors:     '',
-        keyword_flags:   '',
-        difficulty_tier: '' as const,
-        status:          sp.skippedReason === 'dialogue_heavy'
-                           ? 'skipped_dialogue'
-                           : 'skipped_completeness',
-      });
-    }
-
-    // Filter paragraphs from this book; stop when we have poolCapPerBook suitable
+    const tierUnits = extractPassageUnits(strippedBook);
     let bookSuitable = 0;
 
-    for (const para of paragraphs) {
-      if (bookSuitable >= poolCapPerBook) break;
+    for (const tierKey of TIER_KEYS) {
+      const units = tierUnits[tierKey];
+      let tierSuitable = 0;
 
-      const filterResult = await filterParagraph(para, criteria);
-      filtered++;
+      for (const unit of units) {
+        if (tierSuitable >= poolCapPerBookPerTier) break;
 
-      const csvBase = {
-        classification,
-        gutenberg_id:     para.gutenbergId,
-        title:            para.sourceTitle,
-        author:           para.sourceAuthor,
-        paragraph_text:   para.text,
-        word_count:       para.wordCount,
-        suitable:         filterResult.suitable,
-        reasoning:        filterResult.reasoning,
-        canonical_answer: '',
-        distractors:      '',
-        keyword_flags:    '',
-        difficulty_tier:  '' as const,
-      };
+        const filterResult = await filterParagraph(unit, criteria);
+        filtered++;
 
-      if (filterResult.suitable) {
-        suitablePool.push({ ...para, filterReasoning: filterResult.reasoning });
-        poolPerSource[para.sourceTitle] = (poolPerSource[para.sourceTitle] ?? 0) + 1;
-        bookSuitable++;
+        const csvBase = {
+          classification,
+          gutenberg_id:     unit.gutenbergId,
+          title:            unit.sourceTitle,
+          author:           unit.sourceAuthor,
+          paragraph_text:   unit.text,
+          word_count:       unit.wordCount,
+          paragraph_count:  unit.paragraphCount,
+          suitable:         filterResult.suitable,
+          reasoning:        filterResult.reasoning,
+          canonical_answer: '',
+          distractors:      '',
+          keyword_flags:    '',
+          difficulty_tier:  '' as const,
+          tier:             '' as const,
+          pipeline_version: 'v3',
+        };
 
-        if (dryRun) {
-          appendCSV(csvPath, { ...csvBase, status: 'dry_run_suitable' });
+        if (filterResult.suitable) {
+          suitablePool.push({
+            ...unit,
+            filterReasoning: filterResult.reasoning,
+            filterResult,
+            tierKey,
+          });
+          const key = `${unit.sourceTitle}:${tierKey}`;
+          poolPerSourceTier[key] = (poolPerSourceTier[key] ?? 0) + 1;
+          tierSuitable++;
+          bookSuitable++;
+
+          if (dryRun) {
+            appendCSV(csvPath, { ...csvBase, status: 'dry_run_suitable' });
+          }
+        } else {
+          skipped++;
+          appendCSV(csvPath, { ...csvBase, status: 'rejected_by_filter' });
         }
-      } else {
-        skipped++;
-        appendCSV(csvPath, { ...csvBase, status: 'rejected_by_filter' });
       }
     }
 
     console.log(
       `[Stage 2-3] "${book.title.slice(0, 50)}"` +
       `  front-matter: ${charsSkipped.toLocaleString()} chars stripped` +
-      `  complete: ${paragraphs.length}` +
       `  suitable: ${bookSuitable}` +
-      `  (completeness-skipped: ${skippedParas.filter(p => p.skippedReason !== 'dialogue_heavy').length}` +
-      `, dialogue: ${skippedParas.filter(p => p.skippedReason === 'dialogue_heavy').length})`,
+      `  (T1:${tierUnits.T1.length} T2:${tierUnits.T2.length} T3:${tierUnits.T3.length} T4:${tierUnits.T4.length} candidate units)`,
     );
   }
 
   // ── Dry-run: report pool and exit ────────────────────────────────────────────
   if (dryRun) {
-    const topReasons = Object.entries(completenessReasons)
+    const poolBySource = Object.entries(poolPerSourceTier)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([r, n]) => `    ${n.toString().padStart(4)}  ${r}`)
-      .join('\n');
-
-    const poolBySource = Object.entries(poolPerSource)
-      .sort((a, b) => b[1] - a[1])
-      .map(([title, n]) => `    ${n.toString().padStart(4)}  ${title.slice(0, 60)}`)
+      .map(([key, n]) => `    ${n.toString().padStart(4)}  ${key.slice(0, 65)}`)
       .join('\n');
 
     const frontMatterLines = frontMatterPerBook
@@ -303,25 +276,19 @@ async function main() {
 
     console.log(`
 ═══════════════════════════════════════════════════════
-  Pipeline complete (dry-run) — ${classification}
+  Pipeline v3 complete (dry-run) — ${classification}
   Books fetched:           ${fetched}
-  Paragraphs (complete):   ${extracted}
-  Skipped completeness:    ${completenessSkipped}
-  Skipped dialogue:        ${dialogueSkipped}
-  Front-matter stripped:   ${frontMatterTotal.toLocaleString()} chars total
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${suitablePool.length} / ${filtered} (${filtered > 0 ? (suitablePool.length / filtered * 100).toFixed(1) : 0}%)
   Suitable pool size:      ${suitablePool.length}
   Per-source cap (write):  ${perSourceCap}
+  Pool cap/book/tier:      ${poolCapPerBookPerTier}
 
-  Suitable pool by source:
+  Suitable pool by source:tier:
 ${poolBySource || '    (none)'}
 
   Front-matter stripped per book:
 ${frontMatterLines || '    (none stripped)'}
-
-  Top completeness skip reasons:
-${topReasons || '    (none)'}
 
   CSV: ${csvPath}
 ═══════════════════════════════════════════════════════
@@ -330,12 +297,11 @@ ${topReasons || '    (none)'}
   }
 
   // ── Phase 2: Round-robin tag + write from pool ───────────────────────────────
-  const writtenPerSource: Record<string, number> = {};
+  const writtenPerSource:     Record<string, number> = {};
   const writtenPerAuthorGroup: number[] = (sources.authorGroupCaps ?? []).map(() => 0);
 
   while (inserted < max && suitablePool.length > 0) {
-    // Filter out paragraphs from sources that have hit the per-source cap
-    // or whose author group has hit its combined cap
+    // Filter to eligible: per-source cap + author-group cap
     const eligible = suitablePool.filter(p => {
       if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
       const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
@@ -347,12 +313,13 @@ ${topReasons || '    (none)'}
     });
     if (eligible.length === 0) break;
 
-    // Prefer source with fewest written passages so far (round-robin effect)
-    eligible.sort(
-      (a, b) =>
-        (writtenPerSource[a.sourceTitle] ?? 0) -
-        (writtenPerSource[b.sourceTitle] ?? 0),
-    );
+    // Round-robin: prefer source with fewest written, then prefer lower tiers first
+    eligible.sort((a, b) => {
+      const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
+      if (sourceDiff !== 0) return sourceDiff;
+      // T1 < T2 < T3 < T4 within same source count
+      return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
+    });
     const para = eligible[0];
     suitablePool.splice(suitablePool.indexOf(para), 1);
 
@@ -363,24 +330,28 @@ ${topReasons || '    (none)'}
       author:           para.sourceAuthor,
       paragraph_text:   para.text,
       word_count:       para.wordCount,
+      paragraph_count:  para.paragraphCount,
       suitable:         true,
-      reasoning:        (para as SuitableParagraph).filterReasoning,
+      reasoning:        para.filterReasoning,
       canonical_answer: '',
       distractors:      '',
       keyword_flags:    '',
       difficulty_tier:  '' as const,
+      pipeline_version: 'v3',
     };
 
-    // Duplicate check (save tag API cost)
-    const dup = await isDuplicate(para.gutenbergId, para.hash);
+    // Duplicate check (tier-aware)
+    const dup = await isDuplicateV3(para.gutenbergId, para.hash, 0); // tier from tag
     if (dup) {
       appendCSV(csvPath, { ...csvBase, status: 'duplicate' });
       duplicates++;
       continue;
     }
 
-    // Tag
-    const tagResult = await tagParagraph(para, criteria);
+    // Tag (pass Q5 patterns so prompt has context)
+    const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
+    const tagResult = await tagParagraph(para, criteria, q5Patterns);
+
     if (!tagResult) {
       appendCSV(csvPath, { ...csvBase, status: 'tagging_failed' });
       skipped++;
@@ -394,31 +365,37 @@ ${topReasons || '    (none)'}
     }
     tagged++;
 
-    // Write
+    // Write v3 row
     const row = {
       classification,
-      paragraph_text:      para.text,
-      word_count:          para.wordCount,
-      source:              'gutenberg',
-      source_title:        para.sourceTitle,
-      source_author:       para.sourceAuthor,
-      source_year:         para.sourceYear,
-      source_gutenberg_id: para.gutenbergId,
-      canonical_answer:    tagResult.canonical_answer,
-      distractors:         tagResult.distractors,
-      keyword_flags:       tagResult.keyword_flags,
-      difficulty_tier:     tagResult.difficulty_tier,
-      approved:            false,
-      paragraph_hash:      para.hash,
+      paragraph_text:           para.text,
+      word_count:               para.wordCount,
+      paragraph_count:          para.paragraphCount,
+      source:                   'gutenberg',
+      source_title:             para.sourceTitle,
+      source_author:            para.sourceAuthor,
+      source_year:              para.sourceYear,
+      source_gutenberg_id:      para.gutenbergId,
+      approved:                 false,
+      paragraph_hash:           para.hash,
+      pipeline_version:         'v3' as const,
+      target_signal:            tagResult.target_signal,
+      item_patterns_supported:  tagResult.item_patterns_supported,
+      supporting_evidence:      tagResult.supporting_evidence,
+      non_supporting_evidence:  tagResult.non_supporting_evidence,
+      dominant_concept:         tagResult.dominant_concept ?? null,
+      plausible_distractors:    tagResult.plausible_distractors ?? null,
+      craft_features:           tagResult.craft_features ?? null,
+      discrimination_item_type: tagResult.discrimination_item_type,
+      intervention_tier:        tagResult.intervention_tier,
+      tier_rationale:           tagResult.tier_rationale,
+      q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
     };
 
-    const writeResult = await writePassage(row);
+    const writeResult = await writePassageV3(row);
     appendCSV(csvPath, {
       ...csvBase,
-      canonical_answer: tagResult.canonical_answer,
-      distractors:      tagResult.distractors.join(' | '),
-      keyword_flags:    tagResult.keyword_flags.join(', '),
-      difficulty_tier:  tagResult.difficulty_tier,
+      tier:             tagResult.intervention_tier,
       status:           writeResult.status,
     });
 
@@ -427,8 +404,10 @@ ${topReasons || '    (none)'}
       writtenPerSource[para.sourceTitle] = (writtenPerSource[para.sourceTitle] ?? 0) + 1;
       const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
       if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
+      tierCounts[para.tierKey]++;
+
       console.log(
-        `  [Stage 5] inserted ${inserted}/${max}` +
+        `  [Stage 5] inserted ${inserted}/${max} [T${tagResult.intervention_tier}]` +
         ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
       );
     } else if (writeResult.status === 'duplicate') {
@@ -440,12 +419,6 @@ ${topReasons || '    (none)'}
   }
 
   // ── Summary ──────────────────────────────────────────────────────────────────
-  const topReasons = Object.entries(completenessReasons)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([r, n]) => `    ${n.toString().padStart(4)}  ${r}`)
-    .join('\n');
-
   const writtenBySource = Object.entries(writtenPerSource)
     .sort((a, b) => b[1] - a[1])
     .map(([title, n]) => `    ${n.toString().padStart(4)}  ${title.slice(0, 60)}`)
@@ -462,20 +435,23 @@ ${topReasons || '    (none)'}
 
   console.log(`
 ═══════════════════════════════════════════════════════
-  Pipeline complete — ${classification}
+  Pipeline v3 complete — ${classification}
   Books fetched:           ${fetched}
-  Paragraphs (complete):   ${extracted}
-  Skipped completeness:    ${completenessSkipped}
-  Skipped dialogue:        ${dialogueSkipped}
-  Front-matter stripped:   ${frontMatterTotal.toLocaleString()} chars total
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
   Claude tag calls:        ${tagged}
   Tag-stage rejected:      ${tagRejected}
   Inserted:                ${inserted}
   Per-source cap applied:  ${perSourceCap}
+  Pool cap/book/tier:      ${poolCapPerBookPerTier}
   Duplicates skipped:      ${duplicates}
   Other skipped:           ${skipped}
+
+  Tier distribution of inserted:
+    T1 (Foundation):       ${tierCounts.T1}
+    T2 (Guided Practice):  ${tierCounts.T2}
+    T3 (Independent):      ${tierCounts.T3}
+    T4 (Transfer):         ${tierCounts.T4}
 
   Inserted by source:
 ${writtenBySource || '    (none)'}
@@ -485,9 +461,6 @@ ${authorGroupLines || '    (no groups configured)'}
 
   Front-matter stripped per book:
 ${frontMatterLines || '    (none stripped)'}
-
-  Top completeness skip reasons:
-${topReasons || '    (none)'}
 
   CSV: ${csvPath}
 ═══════════════════════════════════════════════════════

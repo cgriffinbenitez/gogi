@@ -56,12 +56,17 @@ export interface FetchedBook {
 export interface Paragraph {
   text: string;
   wordCount: number;
+  /** Number of source paragraphs in this unit (1 for T1, 2-3 for T2/T3, 3-5 for T4). */
+  paragraphCount: number;
   sourceTitle: string;
   sourceAuthor: string;
   sourceYear: number | null;
   gutenbergId: number;
   hash: string;
 }
+
+/** Tier keys used during pool-build phase. */
+export type TierKey = 'T1' | 'T2' | 'T3' | 'T4';
 
 export interface FilterResult {
   suitable: boolean;
@@ -72,13 +77,39 @@ export interface FilterResult {
   q3?: 'pass' | 'fail';
   q4?: 'pass' | 'fail';
   schemaFlags?: string[];
+  // v3 Q5 fields
+  q5?: 'pass' | 'fail';
+  q5_patterns_supported?: string[];
+  q5_flag_5e_compatible?: boolean;
+  evidence_preview?: {
+    pointable_target_supporting: string[];
+    pointable_non_supporting: string[];
+  };
 }
 
+/**
+ * @deprecated Use TagResultV3 for new pipeline runs. This interface is kept
+ * for backwards compatibility with v2 rows and review CLI display.
+ */
 export interface TagResult {
   canonical_answer: string;
   distractors: string[];
   keyword_flags: string[];
   difficulty_tier: 1 | 2 | 3;
+}
+
+/** v3 tag output — richer evidence structure + tier assignment. */
+export interface TagResultV3 {
+  target_signal: string;
+  item_patterns_supported: string[];
+  supporting_evidence: Array<{ element: string; rationale: string }>;
+  non_supporting_evidence: Array<{ element: string; rationale: string }>;
+  dominant_concept?: string;
+  plausible_distractors?: string[];
+  craft_features?: Array<{ type: string; location: string; description: string }>;
+  discrimination_item_type: 'phrase_level' | 'sentence_level' | 'paragraph_level';
+  intervention_tier: 1 | 2 | 3 | 4;
+  tier_rationale: string;
 }
 
 /** Returned by tagParagraph when the model signals the target skill is not present. */
@@ -87,6 +118,7 @@ export interface TagNotDetected {
   reason: string;
 }
 
+/** v2 passage row — written by v2 pipeline. Old columns kept. */
 export interface PassageRow {
   classification: string;
   paragraph_text: string;
@@ -104,6 +136,34 @@ export interface PassageRow {
   paragraph_hash: string;
 }
 
+/** v3 passage row — written by v3 pipeline. Old v2 columns left null in DB. */
+export interface PassageRowV3 {
+  classification: string;
+  paragraph_text: string;
+  word_count: number;
+  paragraph_count: number;
+  source: string;
+  source_title: string | null;
+  source_author: string | null;
+  source_year: number | null;
+  source_gutenberg_id: number;
+  approved: boolean;
+  paragraph_hash: string;
+  pipeline_version: 'v3';
+  // v3 evidence fields
+  target_signal: string;
+  item_patterns_supported: string[];
+  supporting_evidence: Array<{ element: string; rationale: string }>;
+  non_supporting_evidence: Array<{ element: string; rationale: string }>;
+  dominant_concept: string | null;
+  plausible_distractors: string[] | null;
+  craft_features: Array<{ type: string; location: string; description: string }> | null;
+  discrimination_item_type: 'phrase_level' | 'sentence_level' | 'paragraph_level';
+  intervention_tier: number;
+  tier_rationale: string;
+  q5_flag_5e_compatible: boolean;
+}
+
 export type WriteStatus = 'inserted' | 'duplicate' | 'error';
 
 export interface WriteResult {
@@ -118,12 +178,15 @@ export interface CSVRow {
   author: string;
   paragraph_text: string;
   word_count: number;
+  paragraph_count?: number;
   suitable: boolean;
   reasoning: string;
   canonical_answer: string;
   distractors: string;
   keyword_flags: string;
   difficulty_tier: number | '';
+  tier?: number | '';
+  pipeline_version?: string;
   status: string;
 }
 

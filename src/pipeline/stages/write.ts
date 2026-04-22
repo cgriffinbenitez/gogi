@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
-import type { CSVRow, PassageRow, WriteResult } from '../types';
+import type { CSVRow, PassageRow, PassageRowV3, WriteResult } from '../types';
 
 // ─── Supabase client ──────────────────────────────────────────────────────────
 
@@ -18,7 +18,7 @@ function getSupabase() {
   return createClient(url, key);
 }
 
-// ─── Duplicate check ──────────────────────────────────────────────────────────
+// ─── Duplicate check (v2) ─────────────────────────────────────────────────────
 
 export async function isDuplicate(
   gutenbergId: number,
@@ -34,7 +34,25 @@ export async function isDuplicate(
   return data !== null;
 }
 
-// ─── DB insert ────────────────────────────────────────────────────────────────
+// ─── Duplicate check (v3 — tier-aware) ───────────────────────────────────────
+
+export async function isDuplicateV3(
+  gutenbergId: number,
+  hash: string,
+  interventionTier: number,
+): Promise<boolean> {
+  const supabase = getSupabase();
+  const { data } = await supabase
+    .from('intervention_passages')
+    .select('id')
+    .eq('source_gutenberg_id', gutenbergId)
+    .eq('paragraph_hash', hash)
+    .eq('intervention_tier', interventionTier)
+    .maybeSingle();
+  return data !== null;
+}
+
+// ─── DB insert (v2) ───────────────────────────────────────────────────────────
 
 export async function writePassage(row: PassageRow): Promise<WriteResult> {
   const supabase = getSupabase();
@@ -42,6 +60,19 @@ export async function writePassage(row: PassageRow): Promise<WriteResult> {
 
   if (error) {
     // unique violation = duplicate
+    if (error.code === '23505') return { status: 'duplicate' };
+    return { status: 'error', error: error.message };
+  }
+  return { status: 'inserted' };
+}
+
+// ─── DB insert (v3) ───────────────────────────────────────────────────────────
+
+export async function writePassageV3(row: PassageRowV3): Promise<WriteResult> {
+  const supabase = getSupabase();
+  const { error } = await supabase.from('intervention_passages').insert([row]);
+
+  if (error) {
     if (error.code === '23505') return { status: 'duplicate' };
     return { status: 'error', error: error.message };
   }
@@ -61,9 +92,9 @@ function escapeCSV(val: string | number | null | undefined): string {
 
 const CSV_HEADERS = [
   'classification', 'gutenberg_id', 'title', 'author',
-  'paragraph_text', 'word_count', 'suitable', 'reasoning',
+  'paragraph_text', 'word_count', 'paragraph_count', 'suitable', 'reasoning',
   'canonical_answer', 'distractors', 'keyword_flags',
-  'difficulty_tier', 'status',
+  'difficulty_tier', 'tier', 'pipeline_version', 'status',
 ];
 
 export function initCSV(csvPath: string) {
@@ -80,12 +111,15 @@ export function appendCSV(csvPath: string, row: CSVRow) {
     escapeCSV(row.author),
     escapeCSV(row.paragraph_text),
     escapeCSV(row.word_count),
+    escapeCSV(row.paragraph_count ?? 1),
     escapeCSV(String(row.suitable)),
     escapeCSV(row.reasoning),
     escapeCSV(row.canonical_answer),
     escapeCSV(row.distractors),
     escapeCSV(row.keyword_flags),
     escapeCSV(row.difficulty_tier),
+    escapeCSV(row.tier ?? ''),
+    escapeCSV(row.pipeline_version ?? 'v2'),
     escapeCSV(row.status),
   ].join(',');
   fs.appendFileSync(csvPath, line + '\n', 'utf8');

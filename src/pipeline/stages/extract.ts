@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import type { FetchedBook, Paragraph } from '../types';
+import type { FetchedBook, Paragraph, TierKey } from '../types';
 
 // ─── Front-matter stripping ───────────────────────────────────────────────────
 
@@ -199,7 +199,7 @@ export function extractParagraphs(
   const normalizedText = book.text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   // Split on blank lines (one or more)
   const raw = normalizedText.split(/\n{2,}/);
-  const results: Array<Paragraph & { skippedReason?: string }> = [];
+  const results: Array<Paragraph & { skippedReason?: string; paragraphCount: number }> = [];
 
   for (const block of raw) {
     let text = normalizeWhitespace(block.replace(/\n/g, ' '));
@@ -223,6 +223,7 @@ export function extractParagraphs(
         sourceYear:   book.year,
         gutenbergId:  book.gutenbergId,
         hash:         sha256Short(text),
+        paragraphCount: 1,
         skippedReason: completeness.reason,
       });
       continue;
@@ -237,6 +238,7 @@ export function extractParagraphs(
         sourceYear:   book.year,
         gutenbergId:  book.gutenbergId,
         hash:         sha256Short(text),
+        paragraphCount: 1,
         skippedReason: 'dialogue_heavy',
       });
       continue;
@@ -244,14 +246,98 @@ export function extractParagraphs(
 
     results.push({
       text,
-      wordCount:   wordCount(text),
-      sourceTitle:  book.title,
-      sourceAuthor: book.author,
-      sourceYear:   book.year,
-      gutenbergId:  book.gutenbergId,
-      hash:         sha256Short(text),
+      wordCount:      wordCount(text),
+      sourceTitle:    book.title,
+      sourceAuthor:   book.author,
+      sourceYear:     book.year,
+      gutenbergId:    book.gutenbergId,
+      hash:           sha256Short(text),
+      paragraphCount: 1,
     });
   }
 
   return results;
+}
+
+// ─── v3: Multi-tier passage unit extraction ───────────────────────────────────
+
+// Tier word-count windows
+const TIER_BOUNDS: Record<TierKey, { min: number; max: number }> = {
+  T1: { min: 40,  max: 150 },
+  T2: { min: 100, max: 300 },
+  T3: { min: 200, max: 500 },
+  T4: { min: 400, max: 800 },
+};
+
+// Paragraph span sizes per tier
+const TIER_PARA_COUNTS: Record<TierKey, number[]> = {
+  T1: [1],
+  T2: [1, 2],
+  T3: [2, 3],
+  T4: [3, 4, 5],
+};
+
+type PassageUnit = Paragraph & { skippedReason?: string };
+
+/**
+ * v3 multi-tier extraction. Returns candidate passage units grouped by tier.
+ * Units may overlap across tiers (same paragraph can be start of T1 and T3).
+ * Deduplicates within each tier by paragraph_hash.
+ * Keeps extractParagraphs intact for v2 compat.
+ */
+export function extractPassageUnits(
+  book: FetchedBook,
+): Record<TierKey, PassageUnit[]> {
+  const normalizedText = book.text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const rawBlocks = normalizedText.split(/\n{2,}/);
+
+  // Normalize and filter all blocks to candidate prose blocks (no headers, non-empty)
+  const blocks: string[] = [];
+  for (const block of rawBlocks) {
+    const t = normalizeWhitespace(block.replace(/\n/g, ' '));
+    if (!t || isSectionHeader(t)) continue;
+    blocks.push(cleanParagraph(t));
+  }
+
+  const result: Record<TierKey, PassageUnit[]> = { T1: [], T2: [], T3: [], T4: [] };
+
+  for (const tierKey of (['T1', 'T2', 'T3', 'T4'] as TierKey[])) {
+    const { min, max } = TIER_BOUNDS[tierKey];
+    const seenHashes = new Set<string>();
+
+    for (const spanLen of TIER_PARA_COUNTS[tierKey]) {
+      for (let i = 0; i <= blocks.length - spanLen; i++) {
+        const span = blocks.slice(i, i + spanLen);
+
+        // Completeness: first block must start clean, last must end cleanly
+        const firstCheck = isCompleteParagraph(span[0]);
+        const lastCheck  = isCompleteParagraph(span[span.length - 1]);
+        if (!firstCheck.complete || !lastCheck.complete) continue;
+
+        const joined = span.join('\n\n');
+        const wc = wordCount(joined);
+        if (wc < min || wc > max) continue;
+
+        // Skip if dialogue-heavy (check joined unit)
+        if (isDialogueHeavy(joined)) continue;
+
+        const hash = sha256Short(joined);
+        if (seenHashes.has(hash)) continue;
+        seenHashes.add(hash);
+
+        result[tierKey].push({
+          text:           joined,
+          wordCount:      wc,
+          paragraphCount: spanLen,
+          sourceTitle:    book.title,
+          sourceAuthor:   book.author,
+          sourceYear:     book.year,
+          gutenbergId:    book.gutenbergId,
+          hash,
+        });
+      }
+    }
+  }
+
+  return result;
 }
