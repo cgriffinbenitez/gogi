@@ -1,11 +1,48 @@
 {
   "classification": "tone_misreading",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to identify the author's attitude toward the subject — separate from the mood the passage creates or the emotion any character feels — by reading word choice, irony, emphasis, and what the author chooses to include or withhold.",
+  "mustHave": [
+    "A single dominant tone that is nameable in one word (sarcastic, reverent, critical, admiring, mocking, affectionate, bitter, detached, indignant, wistful, nostalgic, earnest, skeptical)",
+    "Tone built through authorial choices — diction with clear attitudinal charge, strategic inclusion or omission, emphasis, irony, or understatement",
+    "Observable tone signals — specific words, phrases, or juxtapositions a reader can point to as evidence of the author's stance",
+    "Tone that lives in the writer's voice, not in a character's dialogue expressing opinion"
+  ],
+  "mustNotHave": [
+    "Tone that is completely indistinguishable from mood — no identifiable craft signal separating the author's attitude from the reader's felt emotion",
+    "Competing or ambiguous tones within a single paragraph",
+    "Tone that depends on knowing surrounding context to land — paragraph must stand alone",
+    "Tone conveyed primarily through a character stating their opinion (e.g., 'I hate this,' said John)",
+    "Paragraphs dominated by dialogue (60%+ quotation marks)",
+    "Archaic or heavily poetic prose that obscures the author's voice behind unfamiliar syntax",
+    "Passages where tone requires specific historical, political, or cultural knowledge the 9th grader is unlikely to have (e.g., political satire about specific events or figures, religious satire requiring doctrinal knowledge). General period atmosphere is fine.",
+    "Nonfiction biographical or memoir prose about real people's lives (biographies, autobiographies, memoirs, eulogies, obituaries); tone analysis requires authorial fiction, not documentary or personal narrative about real individuals"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Tone is direct and unmistakable. Diction is clearly charged (loaded adjectives, obvious praise or criticism). Reader can name the tone on first pass.",
+    "tier2": "Tone is present but requires noticing 2-3 signals working together. Irony or understatement may be at play. Student must slow down.",
+    "tier3": "Tone is built through omission, juxtaposition, or subtle irony. Reader must notice what the author chose NOT to say. Requires re-reading."
+  },
+  "canonicalVocabulary": [
+    "sarcastic",
+    "reverent",
+    "critical",
+    "admiring",
+    "mocking",
+    "affectionate",
+    "bitter",
+    "detached",
+    "indignant",
+    "wistful",
+    "nostalgic",
+    "earnest",
+    "skeptical",
+    "ironic",
+    "cynical",
+    "contemptuous",
+    "sympathetic",
+    "tender",
+    "disapproving",
+    "amused",
+    "solemn"
+  ]
 }

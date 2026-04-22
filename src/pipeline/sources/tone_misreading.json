@@ -1,4 +1,13 @@
 {
-  "gutendexSearchTerms": ["satire", "literary fiction"],
-  "priorityAuthors": ["Mark Twain", "Oscar Wilde", "Jane Austen"]
+  "gutendexSearchTerms": ["short stories", "literary fiction", "novels"],
+  "priorityAuthors": [
+    "Mark Twain",
+    "Oscar Wilde",
+    "Jane Austen",
+    "Charles Dickens",
+    "O. Henry",
+    "Edith Wharton",
+    "Sinclair Lewis",
+    "Henry James"
+  ]
 }

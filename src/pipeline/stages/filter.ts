@@ -21,6 +21,10 @@ function buildFilterPrompt(para: Paragraph, criteria: CriteriaConfig): string {
 
   return `Evaluate whether the following paragraph is suitable for teaching the skill: ${criteria.classification}.
 
+SOURCE CONTEXT (use this to evaluate nonfiction/memoir/biography exclusions — the paragraph itself may not reveal the source type):
+Title: ${para.sourceTitle}
+Author: ${para.sourceAuthor}
+
 UNIVERSAL EXCLUSION RULES (apply regardless of classification):
 
 Reject any paragraph that:
@@ -29,8 +33,10 @@ Reject any paragraph that:
 - Depicts substance impairment in a clinical or medical frame
 - Uses clinical or psychiatric terminology as the dominant mode of description
 - Depicts real people's deaths, illnesses, or tragedies in a documentary or biographical frame
+- Is nonfiction biographical prose about a real person's life — biographies, autobiographies, eulogies, obituaries, or critical essays about real authors, artists, or historical figures; even if the prose has strong authorial voice, the subject matter is documentary, not fiction
+- Is memoir or personal essay describing real lived experiences, real places, or real events in a first-person or third-person documentary frame
 
-These exclusions apply even if the paragraph otherwise matches the classification's criteria. Return suitable: false with reasoning that names the specific exclusion triggered.
+These exclusions apply even if the paragraph otherwise matches the classification's criteria. Return suitable: false with reasoning that names the specific exclusion triggered (e.g., "nonfiction biography", "memoir").
 
 CRITERIA:
 Target skill: ${criteria.targetSkill || '(not yet specified — use best judgment)'}
