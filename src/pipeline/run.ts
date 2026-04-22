@@ -147,6 +147,7 @@ async function main() {
   let frontMatterTotal     = 0;
   let filtered             = 0;
   let tagged               = 0;
+  let tagRejected          = 0;
   let inserted             = 0;
   let duplicates           = 0;
   let skipped              = 0;
@@ -345,6 +346,12 @@ ${topReasons || '    (none)'}
       skipped++;
       continue;
     }
+    if ('targetNotDetected' in tagResult) {
+      console.log(`  [Stage 4] TARGET_NOT_DETECTED: ${tagResult.reason}`);
+      appendCSV(csvPath, { ...csvBase, status: 'tag_not_detected' });
+      tagRejected++;
+      continue;
+    }
     tagged++;
 
     // Write
@@ -418,6 +425,7 @@ ${topReasons || '    (none)'}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
   Claude tag calls:        ${tagged}
+  Tag-stage rejected:      ${tagRejected}
   Inserted:                ${inserted}
   Per-source cap applied:  ${perSourceCap}
   Duplicates skipped:      ${duplicates}

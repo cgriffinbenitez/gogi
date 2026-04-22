@@ -48,7 +48,8 @@
     "serve": "next start",
     "type-check": "tsc --noEmit",
     "pipeline": "tsx src/pipeline/run.ts",
-    "review-passages": "tsx src/pipeline/review-cli.ts"
+    "review-passages": "tsx src/pipeline/review-cli.ts",
+    "validate": "tsx src/pipeline/validate.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

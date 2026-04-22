@@ -16,38 +16,79 @@ async function sleep(ms: number) {
 }
 
 function buildFilterPrompt(para: Paragraph, criteria: CriteriaConfig): string {
-  const mustHave    = criteria.mustHave.length    ? criteria.mustHave.join('; ')    : '(none specified)';
-  const mustNotHave = criteria.mustNotHave.length ? criteria.mustNotHave.join('; ') : '(none specified)';
+  const vocab = criteria.canonicalVocabulary?.length
+    ? criteria.canonicalVocabulary.join(', ')
+    : '(none specified for this classification)';
+  const sourceYear = para.sourceYear ? String(para.sourceYear) : 'unknown';
 
-  return `Evaluate whether the following paragraph is suitable for teaching the skill: ${criteria.classification}.
+  return `You are evaluating whether a paragraph is suitable as a GOGI intervention passage for the target classification: ${criteria.classification}.
 
-SOURCE CONTEXT (use this to evaluate nonfiction/memoir/biography exclusions — the paragraph itself may not reveal the source type):
-Title: ${para.sourceTitle}
-Author: ${para.sourceAuthor}
+A GOGI intervention passage must teach the target cognitive skill to a Title I 9th grade student. The passage must be directly accessible — the student must be able to detect the target skill signal using ONLY content present in the passage itself, plus universal human and social understanding.
 
-UNIVERSAL EXCLUSION RULES (apply regardless of classification):
+SOURCE CONTEXT:
+- Source title: ${para.sourceTitle}
+- Source author: ${para.sourceAuthor}
+- Source year: ${sourceYear}
 
-Reject any paragraph that:
-- Depicts or describes a character experiencing dissociation, psychosis, mania, or another clinical mental-health episode
-- Depicts self-harm, suicide ideation, suicide attempt, or related content
-- Depicts substance impairment in a clinical or medical frame
-- Uses clinical or psychiatric terminology as the dominant mode of description
-- Depicts real people's deaths, illnesses, or tragedies in a documentary or biographical frame
-- Is nonfiction biographical prose about a real person's life — biographies, autobiographies, eulogies, obituaries, or critical essays about real authors, artists, or historical figures; even if the prose has strong authorial voice, the subject matter is documentary, not fiction
-- Is memoir or personal essay describing real lived experiences, real places, or real events in a first-person or third-person documentary frame
+TARGET SKILL DEFINITION:
+${criteria.targetSkill || '(not yet specified — use best judgment)'}
 
-These exclusions apply even if the paragraph otherwise matches the classification's criteria. Return suitable: false with reasoning that names the specific exclusion triggered (e.g., "nonfiction biography", "memoir").
+CANONICAL VOCABULARY FOR THIS SKILL:
+${vocab}
 
-CRITERIA:
-Target skill: ${criteria.targetSkill || '(not yet specified — use best judgment)'}
-Must have: ${mustHave}
-Must NOT have: ${mustNotHave}
-
-PARAGRAPH:
+PARAGRAPH TO EVALUATE:
+"""
 ${para.text}
+"""
 
-Respond in strict JSON only, no prose:
-{ "suitable": true|false, "reasoning": "1-2 sentences" }`;
+Evaluate against all four clinical questions. The passage must pass ALL FOUR to be accepted.
+
+Q1 — PRESENCE: Is the target skill signal present in this passage? Can the target cognitive phenomenon be named using the canonical vocabulary above? If no, reject.
+
+Q2 — DOMINANCE: Is the target skill the dominant signal in this passage? The target skill must be the primary cognitive work, not a secondary feature beneath plot action, character emotion, description, or symbolism. If subordinate to another primitive, reject.
+
+Q3 — ACCESSIBILITY (primary architectural criterion): Can a Title I 9th grader detect the target skill signal using ONLY content present in this passage plus universal human/social understanding?
+
+REJECT if the target skill detection requires any of the following external schema:
+
+- Specific historical events the reader must already know (French Revolution, Civil War, specific wars, specific political movements) UNLESS the event is named AND contextualized within the passage itself
+- Named institutions requiring outside knowledge (Court of Chancery, Parliament, specific legal or political systems, specific religious institutions)
+- Biblical, classical, or literary allusions UNLESS the allusion is explained within the passage
+- Named landmarks, monuments, or geographic references requiring outside knowledge (Temple Bar, Canterbury, specific historical sites)
+- Novel-level metaphors — symbols or motifs that only function if the reader has read the entire source work (e.g., fog-as-legal-opacity in Bleak House, whiteness-as-obsession in Moby Dick)
+- Cultural registers or codes requiring period-specific social knowledge (Victorian mourning conventions, Regency courtship rules, specific class markers)
+- Named historical figures the reader must already know and whose symbolic weight carries the target skill
+
+ACCEPT period-specific content IF AND ONLY IF the passage itself gives the reader what they need to read the target skill. Examples:
+
+- ACCEPTABLE: period vocabulary (e.g., "needlework," "twelvemonth") where context makes the meaning and tonal function clear
+- ACCEPTABLE: period social dynamics (e.g., flattery met with indifference, social pressure, familial obligation) where the dynamic itself is universal
+- ACCEPTABLE: period setting that is inferable or irrelevant to target skill detection
+- REJECT: period setting where the target skill detection DEPENDS on knowing how the period worked
+
+THE ACID TEST: If you were to hand this passage to a Title I 9th grader cold, with no pre-teaching and no context, could they detect the target skill using only what is written in the passage? If detection requires outside knowledge the student almost certainly does not have, REJECT.
+
+When in doubt, REJECT. False negatives are recoverable. False positives contaminate training data.
+
+Q4 — CLEAN ISOLATION: Does the passage isolate the target skill without heavy cognitive overload from other primitives (severe syntax barrier, dense unrelated figurative language, vocabulary density that would block access)? If the passage is cognitively overloaded, reject.
+
+ADDITIONAL FORMAT EXCLUSIONS:
+- REJECT play/drama dialogue format (paragraphs beginning with "CHARACTER NAME." or "CHARACTER NAME:" patterns)
+- REJECT verse/poetry when prose is expected
+- REJECT biographical, memoir, or first-person nonfiction unless explicitly permitted for this classification
+- REJECT passages containing historically harmful racial, ethnic, or gender language that would cause student harm in a Title I cohort (regardless of historical context)
+
+OUTPUT FORMAT (strict JSON only, no prose, no markdown):
+{
+  "decision": "YES",
+  "q1_presence": "pass",
+  "q2_dominance": "pass",
+  "q3_accessibility": "pass",
+  "q4_isolation": "pass",
+  "primary_rejection_reason": null,
+  "schema_dependency_flags": [],
+  "clinical_notes": "brief reasoning"
+}`;
 }
 
 export async function filterParagraph(
@@ -59,16 +100,47 @@ export async function filterParagraph(
   try {
     const msg = await getClient().messages.create({
       model: MODEL,
-      max_tokens: 256,
-      system: 'You are a 9th grade literacy intervention specialist.',
+      max_tokens: 512,
+      system: 'You are a 9th grade literacy intervention specialist applying clinical passage evaluation criteria.',
       messages: [{ role: 'user', content: buildFilterPrompt(para, criteria) }],
     });
 
     const rawText = (msg.content[0] as { type: string; text: string }).text.trim();
-    // Strip markdown code fences if present (```json ... ``` or ``` ... ```)
     const raw = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
-    const parsed = JSON.parse(raw) as { suitable: boolean; reasoning: string };
-    return { suitable: Boolean(parsed.suitable), reasoning: parsed.reasoning ?? '' };
+    const parsed = JSON.parse(raw) as {
+      decision: 'YES' | 'NO';
+      q1_presence: 'pass' | 'fail';
+      q2_dominance: 'pass' | 'fail';
+      q3_accessibility: 'pass' | 'fail';
+      q4_isolation: 'pass' | 'fail';
+      primary_rejection_reason: string | null;
+      schema_dependency_flags: string[];
+      clinical_notes: string;
+    };
+
+    const suitable = parsed.decision === 'YES';
+    const reasoning = suitable
+      ? (parsed.clinical_notes ?? '')
+      : (parsed.primary_rejection_reason ?? parsed.clinical_notes ?? '');
+
+    // Log Q breakdown and schema flags
+    const qSummary = `Q1:${parsed.q1_presence} Q2:${parsed.q2_dominance} Q3:${parsed.q3_accessibility} Q4:${parsed.q4_isolation}`;
+    if (!suitable) {
+      console.log(`  [filter] NO  ${qSummary} — ${reasoning.slice(0, 100)}`);
+    }
+    if (parsed.schema_dependency_flags?.length) {
+      console.log(`  [filter] schema-flags: ${parsed.schema_dependency_flags.join('; ')}`);
+    }
+
+    return {
+      suitable,
+      reasoning,
+      q1: parsed.q1_presence,
+      q2: parsed.q2_dominance,
+      q3: parsed.q3_accessibility,
+      q4: parsed.q4_isolation,
+      schemaFlags: parsed.schema_dependency_flags ?? [],
+    };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.warn(`  [filter] error (${msg.slice(0, 120)}) — marking not suitable`);

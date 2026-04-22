@@ -61,6 +61,12 @@ export interface Paragraph {
 export interface FilterResult {
   suitable: boolean;
   reasoning: string;
+  // v2 diagnostic fields
+  q1?: 'pass' | 'fail';
+  q2?: 'pass' | 'fail';
+  q3?: 'pass' | 'fail';
+  q4?: 'pass' | 'fail';
+  schemaFlags?: string[];
 }
 
 export interface TagResult {
@@ -68,6 +74,12 @@ export interface TagResult {
   distractors: string[];
   keyword_flags: string[];
   difficulty_tier: 1 | 2 | 3;
+}
+
+/** Returned by tagParagraph when the model signals the target skill is not present. */
+export interface TagNotDetected {
+  targetNotDetected: true;
+  reason: string;
 }
 
 export interface PassageRow {
