@@ -124,7 +124,7 @@ export async function filterParagraph(
   try {
     const msg = await getClient().messages.create({
       model: MODEL,
-      max_tokens: 512,
+      max_tokens: 1024,
       system: 'You are a 9th grade literacy intervention specialist applying clinical passage evaluation criteria.',
       messages: [{ role: 'user', content: buildFilterPrompt(para, criteria) }],
     });

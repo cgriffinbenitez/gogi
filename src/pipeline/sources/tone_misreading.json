@@ -1,13 +1,17 @@
 {
   "gutendexSearchTerms": ["short stories", "literary fiction", "novels"],
   "priorityAuthors": [
-    "Mark Twain",
-    "Oscar Wilde",
-    "Jane Austen",
-    "Charles Dickens",
+    "Sarah Orne Jewett",
     "O. Henry",
     "Edith Wharton",
+    "Henry James",
     "Sinclair Lewis",
-    "Henry James"
+    "Oscar Wilde",
+    "Mark Twain",
+    "Jane Austen",
+    "Charles Dickens"
+  ],
+  "authorGroupCaps": [
+    { "authors": ["Jane Austen", "Charles Dickens"], "maxInserted": 3 }
   ]
 }

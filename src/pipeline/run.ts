@@ -82,9 +82,21 @@ function parseArgs(argv: string[]): PipelineOptions | null {
     ? parseInt(args[maxIdx + 1], 10)
     : 15;
 
+  const perSourceCapIdx = args.indexOf('--per-source-cap');
+  const perSourceCapOverride = perSourceCapIdx !== -1 && args[perSourceCapIdx + 1]
+    ? parseInt(args[perSourceCapIdx + 1], 10)
+    : undefined;
+
   const dryRun = args.includes('--dry-run');
 
-  return { classification, max: isNaN(max) ? 15 : max, dryRun };
+  return {
+    classification,
+    max: isNaN(max) ? 15 : max,
+    dryRun,
+    perSourceCapOverride: perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
+      ? perSourceCapOverride
+      : undefined,
+  };
 }
 
 // ─── Config loader ────────────────────────────────────────────────────────────
@@ -103,13 +115,32 @@ function loadSources(classification: string): SourceConfig {
 
 type SuitableParagraph = Paragraph & { filterReasoning: string };
 
+// ─── Author-group cap helpers ─────────────────────────────────────────────────
+
+/** Loose match: all name tokens in displayName appear in the Gutendex "Last, First" format. */
+function authorMatchesDisplayName(gutendexAuthor: string, displayName: string): boolean {
+  const norm = gutendexAuthor.toLowerCase();
+  return displayName.toLowerCase().split(/\s+/).every(tok => norm.includes(tok));
+}
+
+/** Returns the group index (from sources.authorGroupCaps) that this author belongs to, or -1. */
+function authorGroupIndex(
+  sourceAuthor: string,
+  groupCaps: NonNullable<import('./types').SourceConfig['authorGroupCaps']>,
+): number {
+  for (let i = 0; i < groupCaps.length; i++) {
+    if (groupCaps[i].authors.some(a => authorMatchesDisplayName(sourceAuthor, a))) return i;
+  }
+  return -1;
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
   const opts = parseArgs(process.argv);
   if (!opts) { process.exit(1); }
 
-  const { classification, max, dryRun } = opts;
+  const { classification, max, dryRun, perSourceCapOverride } = opts;
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error('Error: ANTHROPIC_API_KEY is not set.');
@@ -135,7 +166,8 @@ async function main() {
   console.log(`[CSV] writing to ${csvPath}\n`);
 
   // Per-source cap: no single book contributes more than ceil(max/3) passages
-  const perSourceCap = Math.ceil(max / 3);
+  // Can be overridden with --per-source-cap for diversity runs
+  const perSourceCap = perSourceCapOverride ?? Math.ceil(max / 3);
   // How many suitable paragraphs to collect per book (buffer above the cap)
   const poolCapPerBook = perSourceCap + 3;
 
@@ -299,12 +331,20 @@ ${topReasons || '    (none)'}
 
   // ── Phase 2: Round-robin tag + write from pool ───────────────────────────────
   const writtenPerSource: Record<string, number> = {};
+  const writtenPerAuthorGroup: number[] = (sources.authorGroupCaps ?? []).map(() => 0);
 
   while (inserted < max && suitablePool.length > 0) {
     // Filter out paragraphs from sources that have hit the per-source cap
-    const eligible = suitablePool.filter(
-      p => (writtenPerSource[p.sourceTitle] ?? 0) < perSourceCap,
-    );
+    // or whose author group has hit its combined cap
+    const eligible = suitablePool.filter(p => {
+      if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
+      const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
+      if (groupIdx !== -1) {
+        const groupCap = sources.authorGroupCaps![groupIdx].maxInserted;
+        if (writtenPerAuthorGroup[groupIdx] >= groupCap) return false;
+      }
+      return true;
+    });
     if (eligible.length === 0) break;
 
     // Prefer source with fewest written passages so far (round-robin effect)
@@ -385,6 +425,8 @@ ${topReasons || '    (none)'}
     if (writeResult.status === 'inserted') {
       inserted++;
       writtenPerSource[para.sourceTitle] = (writtenPerSource[para.sourceTitle] ?? 0) + 1;
+      const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
+      if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
       console.log(
         `  [Stage 5] inserted ${inserted}/${max}` +
         ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
@@ -407,6 +449,10 @@ ${topReasons || '    (none)'}
   const writtenBySource = Object.entries(writtenPerSource)
     .sort((a, b) => b[1] - a[1])
     .map(([title, n]) => `    ${n.toString().padStart(4)}  ${title.slice(0, 60)}`)
+    .join('\n');
+
+  const authorGroupLines = (sources.authorGroupCaps ?? [])
+    .map((g, i) => `    ${writtenPerAuthorGroup[i]}/${g.maxInserted}  [${g.authors.join(' + ')}]`)
     .join('\n');
 
   const frontMatterLines = frontMatterPerBook
@@ -433,6 +479,9 @@ ${topReasons || '    (none)'}
 
   Inserted by source:
 ${writtenBySource || '    (none)'}
+
+  Author-group cap tracking:
+${authorGroupLines || '    (no groups configured)'}
 
   Front-matter stripped per book:
 ${frontMatterLines || '    (none stripped)'}

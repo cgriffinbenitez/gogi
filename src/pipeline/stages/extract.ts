@@ -12,6 +12,13 @@ const FRONT_MATTER_MARKERS = [
   /^\*\s*\*\s*\*/m,
 ];
 
+// CC0 / public-domain dedication boilerplate that appears at the head of some
+// Gutenberg editions. If we see this pattern inside the 10% search window we
+// skip forward past it to the first blank-line-separated block that follows,
+// rather than letting it surface as filter candidates.
+const CC0_BOILERPLATE_RE =
+  /Creative Commons.*?CC0|relinquishment in perpetuity|vested or contingent/i;
+
 /**
  * Strip Gutenberg front matter (title pages, prefaces, biographical essays,
  * tables of contents) from the beginning of a book's text.
@@ -24,6 +31,29 @@ export function stripBookFrontMatter(
   const normalized = book.text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const tenPercent = Math.floor(normalized.length * 0.1);
   const searchWindow = normalized.slice(0, tenPercent);
+
+  // If CC0/public-domain boilerplate detected at the head, skip past it to
+  // the next double-newline block so legal text doesn't surface as candidates.
+  if (CC0_BOILERPLATE_RE.test(searchWindow)) {
+    const afterBoilerplate = normalized.indexOf('\n\n', searchWindow.length);
+    const cutTo = afterBoilerplate !== -1 ? afterBoilerplate + 2 : tenPercent;
+    // Still try the standard markers in the remaining text
+    const remainingWindow = normalized.slice(cutTo, cutTo + tenPercent);
+    for (const re of FRONT_MATTER_MARKERS) {
+      const match = re.exec(remainingWindow);
+      if (match) {
+        const absIndex = cutTo + match.index;
+        return {
+          strippedBook: { ...book, text: normalized.slice(absIndex) },
+          charsSkipped: absIndex,
+        };
+      }
+    }
+    return {
+      strippedBook: { ...book, text: normalized.slice(cutTo) },
+      charsSkipped: cutTo,
+    };
+  }
 
   for (const re of FRONT_MATTER_MARKERS) {
     const match = re.exec(searchWindow);

@@ -17,6 +17,11 @@ export interface CriteriaConfig {
 export interface SourceConfig {
   gutendexSearchTerms: string[];
   priorityAuthors: string[];
+  /** Optional combined author caps — e.g. cap Austen+Dickens at 3 inserted total. */
+  authorGroupCaps?: Array<{
+    authors: string[];    // display-name format ("Jane Austen") — matched loosely
+    maxInserted: number;
+  }>;
 }
 
 export interface GutendexAuthor {
@@ -126,4 +131,5 @@ export interface PipelineOptions {
   classification: string;
   max: number;
   dryRun: boolean;
+  perSourceCapOverride?: number;
 }

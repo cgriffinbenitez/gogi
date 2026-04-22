@@ -2,6 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import type { FetchedBook, GutendexBook, GutendexResponse, SourceConfig } from '../types';
 
+// Loose name match: all tokens in the display-name form ("Jane Austen")
+// appear in the Gutendex "Last, First" format ("Austen, Jane").
+function bookMatchesPriorityAuthor(book: GutendexBook, displayName: string): boolean {
+  const tokens = displayName.toLowerCase().split(/\s+/);
+  return book.authors.some(a => {
+    const norm = a.name.toLowerCase();
+    return tokens.every(tok => norm.includes(tok));
+  });
+}
+
 const GUTENDEX_BASE = 'https://gutendex.com/books/';
 const GUTENBERG_BASE = 'https://www.gutenberg.org';
 const CACHE_DIR = path.join('/tmp', 'gogi-pipeline-cache');
@@ -164,12 +174,37 @@ export async function fetchBooksForClassification(
 
   console.log(`[Stage 1] found ${allMeta.length} candidate books`);
 
-  // Sort by download count (higher popularity → better-known texts)
-  allMeta.sort((a, b) => b.download_count - a.download_count);
+  // ── Author-diverse selection ──────────────────────────────────────────────
+  // Guarantee up to 2 books per priority author before filling remaining slots
+  // with highest-download books. Prevents high-download authors (Austen, Dickens)
+  // from consuming all maxBooks slots and crowding out new priority authors.
+  const MAX_PER_PRIORITY_AUTHOR = 2;
+  const selectedIds  = new Set<number>();
+  const orderedMeta: GutendexBook[] = [];
+
+  // Pass 1: up to MAX_PER_PRIORITY_AUTHOR per priority author (by download count)
+  for (const authorName of sources.priorityAuthors) {
+    const authorBooks = allMeta
+      .filter(b => bookMatchesPriorityAuthor(b, authorName))
+      .sort((a, b) => b.download_count - a.download_count)
+      .slice(0, MAX_PER_PRIORITY_AUTHOR);
+    for (const b of authorBooks) {
+      if (!selectedIds.has(b.id)) {
+        selectedIds.add(b.id);
+        orderedMeta.push(b);
+      }
+    }
+  }
+
+  // Pass 2: fill remaining slots with highest-download unselected books
+  const remaining = allMeta
+    .filter(b => !selectedIds.has(b.id))
+    .sort((a, b) => b.download_count - a.download_count);
+  for (const b of remaining) orderedMeta.push(b);
 
   const fetched: FetchedBook[] = [];
 
-  for (const book of allMeta.slice(0, maxBooks)) {
+  for (const book of orderedMeta.slice(0, maxBooks)) {
     const text = await fetchBookText(book);
     if (!text) continue;
 
