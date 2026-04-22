@@ -157,7 +157,7 @@ async function doReject(supabase: ReturnType<typeof getSupabase>, id: string) {
   const reason = await prompt('  Rejection reason: ');
   const { error } = await supabase
     .from('intervention_passages')
-    .update({ rejection_reason: reason })
+    .update({ rejection_reason: reason, reviewed_at: new Date().toISOString() })
     .eq('id', id);
   if (error) console.error('  DB error:', error.message);
   else console.log('  ✓ rejected');
