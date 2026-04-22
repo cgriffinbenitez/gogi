@@ -93,21 +93,33 @@ async function main() {
   const books = await fetchBooksForClassification(sources, 20);
   console.log(`\n[Validator] ${books.length} books fetched. Collecting ${sample} candidate paragraphs...\n`);
 
-  // Collect up to `sample` complete paragraphs across books
+  // Round-robin source sampling — same logic as run.ts
+  // Per-source cap: ceil(sample / 3) so candidates spread across 3+ books
+  const perSourceCap = Math.ceil(sample / 3);
   const candidates: Paragraph[] = [];
+  const perSourceCount: Record<string, number> = {};
 
   for (const book of books) {
     if (candidates.length >= sample) break;
     const { strippedBook } = stripBookFrontMatter(book);
     const allParas = extractParagraphs(strippedBook);
     const complete = allParas.filter(p => !p.skippedReason);
+    let fromThisBook = 0;
     for (const p of complete) {
       if (candidates.length >= sample) break;
+      if (fromThisBook >= perSourceCap) break;
       candidates.push(p);
+      perSourceCount[p.sourceTitle] = (perSourceCount[p.sourceTitle] ?? 0) + 1;
+      fromThisBook++;
     }
   }
 
-  console.log(`[Validator] Collected ${candidates.length} candidates. Running v2 filter...\n`);
+  const sourceBreakdown = Object.entries(perSourceCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([t, n]) => `    ${n}  ${t.slice(0, 55)}`)
+    .join('\n');
+  console.log(`[Validator] Collected ${candidates.length} candidates (per-source cap: ${perSourceCap}):\n${sourceBreakdown}\n`);
+  console.log(`[Validator] Running v2 filter...\n`);
 
   // Run filter on each candidate
   const results: ValidatorResult[] = [];
