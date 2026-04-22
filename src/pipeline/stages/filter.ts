@@ -68,6 +68,30 @@ ACCEPT period-specific content IF AND ONLY IF the passage itself gives the reade
 
 THE ACID TEST: If you were to hand this passage to a Title I 9th grader cold, with no pre-teaching and no context, could they detect the target skill using only what is written in the passage? If detection requires outside knowledge the student almost certainly does not have, REJECT.
 
+CRITICAL DISTINCTION — period-flavored vs. schema-gated:
+
+Many great passages have period setting, period vocabulary, or period social context. This is NOT automatically a Q3 failure. The question is whether the target skill detection DEPENDS on outside schema, or whether the target skill mechanism fires from words on the page regardless of period context.
+
+PERIOD-FLAVORED BUT SELF-CONTAINED (ACCEPT):
+- Setting is period but irony/tone operates through words on the page
+- Period vocabulary exists but is resolvable from sentence context
+- Historical context enriches reading but ironic mechanism works without it
+- Example: "Mr. Dashwood's disappointment was severe; but... he might reasonably hope to live many years... But the fortune, which had been so tardy in coming, was his only one twelvemonth." The "But" pivot and immediate death after hopeful planning carries the irony. "Twelvemonth" is period vocabulary but context-resolvable. Inheritance law enriches but is not required — a student reads "he hoped to live many years... he died shortly after" and feels the structural irony.
+- Example: "they had both been there; and Oliver naturally wondered how they could possibly have found time to be so very industrious." The word "industrious" applied to boys who spent the morning at an execution carries the irony. Victorian child labor context enriches but is not required — a student reads "they went to the execution" + "wondered how they found time to be industrious" and feels the gap.
+
+SCHEMA-GATED (REJECT):
+- Target skill detection requires knowing specific institutions
+- Ironic mechanism lives in allusions not explained in passage
+- Tone carrier is a novel-level symbol requiring whole-book context
+- Example: "at the very heart of the fog, sits the Lord High Chancellor in his High Court of Chancery" — mocking tone REQUIRES knowing what Chancery is and does. Without that schema, student reads only atmospheric description. The tonal mechanism does not fire from words on the page alone.
+- Example: "the lords of the State preserves of loaves and fishes" — ironic stance REQUIRES recognizing Biblical allusion + institutional critique. Without that schema, student reads only period political language. The tonal mechanism does not fire without outside knowledge.
+
+THE REFINED ACID TEST:
+Ask: "If I removed all outside context — if the student knew nothing about the historical period, the institutions, the allusions — would the words on the page STILL carry the target skill signal?"
+
+- If YES: period-flavored but self-contained. ACCEPT on Q3.
+- If NO: schema-gated. REJECT on Q3.
+
 When in doubt, REJECT. False negatives are recoverable. False positives contaminate training data.
 
 Q4 — CLEAN ISOLATION: Does the passage isolate the target skill without heavy cognitive overload from other primitives (severe syntax barrier, dense unrelated figurative language, vocabulary density that would block access)? If the passage is cognitively overloaded, reject.
