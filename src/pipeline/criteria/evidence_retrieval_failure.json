@@ -1,11 +1,31 @@
 {
   "classification": "evidence_retrieval_failure",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to locate the specific textual evidence — the exact phrase, sentence, or detail — that supports an interpretation, claim, or inference about a passage. This covers both (a) when the student has already constructed the interpretation and must prove it from the text, and (b) when the student must construct the interpretation AND cite the evidence that supports it. The core cognitive target is discriminating stronger evidence from weaker evidence.",
+  "mustHave": [
+    "A passage with multiple discrete details, phrases, or sentences that could plausibly be candidates for evidence — enough textual material to support evidence-discrimination (strong support vs. weak support vs. non-support)",
+    "At least one clearly identifiable phrase or sentence that serves as strong evidence for an interpretation — pointable, specific, and defensible",
+    "At least 2-3 plausible but weaker candidates — details that relate to the passage's subject but do NOT do the primary work of supporting the interpretation (these become the distractors in evidence-citation items)",
+    "A passage that rewards close reading — the evidence is findable but not trivially obvious; the student must scan and discriminate",
+    "At least 2 paragraphs of prose, providing structural location as an additional evidence dimension (early vs. late, before vs. after a narrative shift)"
+  ],
+  "mustNotHave": [
+    "Passages where only one sentence could possibly be cited — no discrimination possible, no distractors constructable",
+    "Passages where all details are equally supportive — no hierarchy of evidence strength",
+    "Single-paragraph passages that lack the structural dimension evidence-retrieval items require",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the 'evidence' is what characters say rather than what the author conveys through craft",
+    "Nonfiction biographical or memoir prose about real people's lives; evidence retrieval practice requires authorial fiction where craft choices are the evidence",
+    "Archaic or heavily poetic prose that obscures the textual signals behind unfamiliar syntax",
+    "Passages where correct evidence requires specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Evidence is concentrated, obvious, and unambiguous. One sentence clearly does the supporting work; distractor details are noticeably weaker. Student can find the right evidence on first scan.",
+    "tier2": "Evidence discrimination requires comparing 2-3 candidates. Several details relate to the interpretation; student must judge which does the strongest supporting work. Near-distractors are plausible but weaker on closer reading.",
+    "tier3": "Evidence is built across multiple paragraphs or requires noticing authorial craft (juxtaposition, word choice, structural placement). Distractors are close — surface-similar to correct evidence. Requires re-reading and holding criteria in mind."
+  },
+  "canonicalVocabulary": [
+    "evidence", "support", "cite", "quote", "prove", "demonstrate", "show",
+    "textual evidence", "passage", "line", "phrase", "detail", "specific",
+    "direct", "explicit", "implicit", "supporting", "relevant", "irrelevant",
+    "strongest", "weakest", "best supports", "indicates", "suggests"
+  ]
 }
