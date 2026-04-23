@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config(); // fallback
 
+import fs from 'fs';
 import path from 'path';
 import type {
   CriteriaConfig,
@@ -465,6 +466,13 @@ ${frontMatterLines || '    (none stripped)'}
   CSV: ${csvPath}
 ═══════════════════════════════════════════════════════
 `);
+
+  // Persist CSV to repo for v4 calibration analysis
+  const runDate = csvPath.match(/(\d{4}-\d{2}-\d{2}T[\d-]+)/)?.[1]?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
+  const archivePath = path.join(__dirname, '../../docs/pipeline/runs', `${runDate}_${classification}_v3_run.csv`);
+  fs.mkdirSync(path.dirname(archivePath), { recursive: true });
+  fs.copyFileSync(csvPath, archivePath);
+  console.log(`[pipeline] CSV archived → ${archivePath}`);
 }
 
 main().catch(err => {
