@@ -1,11 +1,31 @@
 {
   "classification": "topic_vs_theme_confusion",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to distinguish the topic of a passage (what it is about — a subject like 'war,' 'love,' 'family') from the theme (what the passage says about that subject — a claim, insight, or argument the author advances through the narrative, such as 'war dehumanizes those who survive it' or 'love requires sacrifice of the self').",
+  "mustHave": [
+    "A discoverable theme — the passage advances an insight, claim, or argument about its subject that a careful reader can state as a complete sentence",
+    "Observable textual signals that carry the theme — character action, narrative consequence, juxtaposition, pattern of imagery, or authorial framing that a reader can point to",
+    "A theme that is discoverable from the passage alone — does not require the whole book's arc to land",
+    "A clear distinction between the passage's topic (one-word subject) and its theme (multi-word claim about that subject)"
+  ],
+  "mustNotHave": [
+    "The theme is stated explicitly by a character or narrator (moralizing, didactic passages)",
+    "Passages that describe only a topic without advancing a claim about it (pure description, pure setting, pure plot)",
+    "Theme requires whole-book context to construct — the paragraph must stand alone as a thematic unit",
+    "Competing plausible themes with no clear textual basis to distinguish them",
+    "Moral or thematic claims that depend on specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the theme is what a character says rather than what the author conveys",
+    "Nonfiction biographical or memoir prose about real people's lives; thematic analysis requires authorial fiction",
+    "Archaic or heavily poetic prose that obscures the thematic signal behind unfamiliar syntax"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Theme is direct and nearly stated. The passage's pattern of imagery, character action, and narrative consequence all point to one clear claim about the topic. Student can name the topic AND the theme on first pass.",
+    "tier2": "Theme requires separating what's stated from what's shown. Student must notice that the topic is one thing (e.g., a character's choice) but the theme is a claim about that topic (e.g., what that choice reveals about ambition). Must slow down to distinguish.",
+    "tier3": "Theme is built through pattern across 2-3 disconnected signals — a detail early, a contrast later, a resolution at the end. Student must hold the signals in mind and synthesize the author's claim. Requires re-reading."
+  },
+  "canonicalVocabulary": [
+    "topic", "subject", "theme", "central idea", "main idea", "message", "insight",
+    "claim", "argument", "lesson", "moral", "universal", "human experience",
+    "motif", "symbol", "pattern", "recurring", "significance", "meaning",
+    "perspective", "worldview", "commentary", "reveal", "convey"
+  ]
 }
