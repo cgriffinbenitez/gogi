@@ -20,11 +20,11 @@ import type {
 } from './types';
 import { fetchBooksForClassification } from './stages/fetch';
 import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
-import { filterParagraph } from './stages/filter';
-import { tagParagraph } from './stages/tag';
+import { filterParagraph, getFilterCacheStats, resetFilterCacheStats } from './stages/filter';
+import { tagParagraph, getTagCacheStats } from './stages/tag';
 import { appendCSV, initCSV, isDuplicateV3, writePassageV3 } from './stages/write';
 
-const PIPELINE_VERSION = 'v3';
+const PIPELINE_VERSION: 'v4' = 'v4';
 
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
@@ -199,7 +199,12 @@ async function main() {
 
   const TIER_KEYS: TierKey[] = ['T1', 'T2', 'T3', 'T4'];
 
+  let bookIndex = 0;
+
   for (const book of books) {
+    bookIndex++;
+    resetFilterCacheStats();
+
     const { strippedBook, charsSkipped } = stripBookFrontMatter(book);
     frontMatterTotal += charsSkipped;
     frontMatterPerBook.push({ title: book.title, chars: charsSkipped });
@@ -262,6 +267,17 @@ async function main() {
       `  front-matter: ${charsSkipped.toLocaleString()} chars stripped` +
       `  suitable: ${bookSuitable}` +
       `  (T1:${tierUnits.T1.length} T2:${tierUnits.T2.length} T3:${tierUnits.T3.length} T4:${tierUnits.T4.length} candidate units)`,
+    );
+
+    // Per-book cache hit rate (filter stage)
+    const fs = getFilterCacheStats();
+    const totalFilterInput = fs.input + fs.cacheRead + fs.cacheCreation;
+    const hitRate = totalFilterInput > 0
+      ? ((fs.cacheRead / totalFilterInput) * 100).toFixed(1)
+      : '0.0';
+    console.log(
+      `  [cache] Book ${bookIndex} filter hit rate: ${hitRate}%` +
+      ` (${fs.cacheRead.toLocaleString()} cached / ${totalFilterInput.toLocaleString()} total input tokens)`,
     );
   }
 
@@ -381,7 +397,7 @@ ${frontMatterLines || '    (none stripped)'}
       source_gutenberg_id:      para.gutenbergId,
       approved:                 false,
       paragraph_hash:           para.hash,
-      pipeline_version:         PIPELINE_VERSION as const,
+      pipeline_version:         PIPELINE_VERSION,
       target_signal:            tagResult.target_signal,
       item_patterns_supported:  tagResult.item_patterns_supported,
       supporting_evidence:      tagResult.supporting_evidence,
@@ -469,6 +485,25 @@ ${frontMatterLines || '    (none stripped)'}
   CSV: ${csvPath}
 ═══════════════════════════════════════════════════════
 `);
+
+  // ── Run-end cache report ─────────────────────────────────────────────────────
+  const tagStats = getTagCacheStats();
+  const filterStats = getFilterCacheStats(); // cumulative from last book (Phase 1 complete)
+  // Re-accumulate filter totals across all books using tag snapshot as reference
+  // (filter stats were reset per-book; tag stats cover the full Phase 2 run)
+  // For the run-end report, compute combined totals from the tag stage only
+  // (filter per-book totals were already logged above; here we report tag + guidance).
+  const totalCacheRead = tagStats.cacheRead;
+  const totalCacheCreation = tagStats.cacheCreation;
+  const totalInput = tagStats.input;
+  // Savings: cache reads cost $0.30/MTok vs $3.00/MTok standard → $2.70 saved per MTok cached
+  const savingsUsd = (totalCacheRead / 1_000_000) * 2.70;
+  console.log(
+    `  [cache] Tag stage — Total cache hits: ${totalCacheRead.toLocaleString()} tokens` +
+    ` | Cache created: ${totalCacheCreation.toLocaleString()} tokens` +
+    ` | Total input: ${totalInput.toLocaleString()} tokens` +
+    ` | Estimated savings vs. uncached: $${savingsUsd.toFixed(4)}`,
+  );
 
   // Persist CSV to repo for v4 calibration analysis
   const runDate = csvPath.match(/(\d{4}-\d{2}-\d{2}T[\d-]+)/)?.[1]?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);

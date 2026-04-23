@@ -15,33 +15,50 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function buildFilterPrompt(para: Paragraph, criteria: CriteriaConfig): string {
+// ── Cache metrics ─────────────────────────────────────────────────────────────
+
+export interface FilterCacheStats {
+  cacheCreation: number;
+  cacheRead: number;
+  input: number;
+  output: number;
+}
+
+const _stats: FilterCacheStats = { cacheCreation: 0, cacheRead: 0, input: 0, output: 0 };
+
+export function getFilterCacheStats(): Readonly<FilterCacheStats> {
+  return { ..._stats };
+}
+
+export function resetFilterCacheStats(): void {
+  _stats.cacheCreation = 0;
+  _stats.cacheRead = 0;
+  _stats.input = 0;
+  _stats.output = 0;
+}
+
+// ── Prompt builders ───────────────────────────────────────────────────────────
+
+/**
+ * STABLE block — cached across all calls within a run.
+ * Contains: role intro, target skill definition, canonical vocabulary,
+ * Q1–Q5 rubric, evidence preview instructions, and output format.
+ * This block must be ≥1024 tokens for Sonnet cache to activate.
+ */
+function buildFilterSystemStable(criteria: CriteriaConfig): string {
   const vocab = criteria.canonicalVocabulary?.length
     ? criteria.canonicalVocabulary.join(', ')
     : '(none specified for this classification)';
-  const sourceYear = para.sourceYear ? String(para.sourceYear) : 'unknown';
 
-  return `You are evaluating whether a passage is suitable as a GOGI intervention passage for the target classification: ${criteria.classification}.
+  return `You are a 9th grade literacy intervention specialist applying clinical passage evaluation criteria for the GOGI platform. Classification: ${criteria.classification}.
 
 A GOGI intervention passage must teach the target cognitive skill to a Title I 9th grade student. The passage must be directly accessible — the student must be able to detect the target skill signal using ONLY content present in the passage itself, plus universal human and social understanding.
-
-SOURCE CONTEXT:
-- Source title: ${para.sourceTitle}
-- Source author: ${para.sourceAuthor}
-- Source year: ${sourceYear}
-- Word count: ${para.wordCount}
-- Paragraph count: ${para.paragraphCount}
 
 TARGET SKILL DEFINITION:
 ${criteria.targetSkill || '(not yet specified — use best judgment)'}
 
 CANONICAL VOCABULARY FOR THIS SKILL:
 ${vocab}
-
-PASSAGE TO EVALUATE:
-"""
-${para.text}
-"""
 
 Evaluate against all five clinical questions. The passage must pass ALL FIVE to be accepted.
 
@@ -160,6 +177,25 @@ OUTPUT FORMAT (strict JSON only, no prose, no markdown):
 }`;
 }
 
+/**
+ * VARIABLE block — changes every call.
+ * Contains: source context (title, author, year, word/paragraph counts) and passage text.
+ */
+function buildFilterSystemVariable(para: Paragraph): string {
+  const sourceYear = para.sourceYear ? String(para.sourceYear) : 'unknown';
+  return `SOURCE CONTEXT:
+- Source title: ${para.sourceTitle}
+- Source author: ${para.sourceAuthor}
+- Source year: ${sourceYear}
+- Word count: ${para.wordCount}
+- Paragraph count: ${para.paragraphCount}
+
+PASSAGE TO EVALUATE:
+"""
+${para.text}
+"""`;
+}
+
 export async function filterParagraph(
   para: Paragraph,
   criteria: CriteriaConfig,
@@ -170,9 +206,31 @@ export async function filterParagraph(
     const msg = await getClient().messages.create({
       model: MODEL,
       max_tokens: 1536,
-      system: 'You are a 9th grade literacy intervention specialist applying clinical passage evaluation criteria.',
-      messages: [{ role: 'user', content: buildFilterPrompt(para, criteria) }],
+      system: [
+        {
+          type: 'text',
+          text: buildFilterSystemStable(criteria),
+          cache_control: { type: 'ephemeral' },
+        },
+        {
+          type: 'text',
+          text: buildFilterSystemVariable(para),
+        },
+      ],
+      messages: [{ role: 'user', content: 'Evaluate the passage against all five clinical questions and return the JSON result.' }],
     });
+
+    // Capture cache metrics
+    const usage = msg.usage as {
+      input_tokens: number;
+      output_tokens: number;
+      cache_creation_input_tokens?: number;
+      cache_read_input_tokens?: number;
+    };
+    _stats.cacheCreation += usage.cache_creation_input_tokens ?? 0;
+    _stats.cacheRead     += usage.cache_read_input_tokens ?? 0;
+    _stats.input         += usage.input_tokens;
+    _stats.output        += usage.output_tokens;
 
     const rawText = (msg.content[0] as { type: string; text: string }).text.trim();
     const raw = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');

@@ -15,33 +15,45 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function buildTagPrompt(
-  para: Paragraph,
-  criteria: CriteriaConfig,
-  q5PatternsSupported: string[],
-): string {
+// ── Cache metrics ─────────────────────────────────────────────────────────────
+
+export interface TagCacheStats {
+  cacheCreation: number;
+  cacheRead: number;
+  input: number;
+  output: number;
+}
+
+const _stats: TagCacheStats = { cacheCreation: 0, cacheRead: 0, input: 0, output: 0 };
+
+export function getTagCacheStats(): Readonly<TagCacheStats> {
+  return { ..._stats };
+}
+
+export function resetTagCacheStats(): void {
+  _stats.cacheCreation = 0;
+  _stats.cacheRead = 0;
+  _stats.input = 0;
+  _stats.output = 0;
+}
+
+// ── Prompt builders ───────────────────────────────────────────────────────────
+
+/**
+ * STABLE block — cached across all calls within a run.
+ * Contains: role intro, canonical vocabulary, all 7 tagging tasks,
+ * null escape hatch, and output format.
+ * This block must be ≥1024 tokens for Sonnet cache to activate.
+ */
+function buildTagSystemStable(criteria: CriteriaConfig): string {
   const vocab = criteria.canonicalVocabulary?.length
     ? criteria.canonicalVocabulary.join(', ')
     : '(none specified — use best clinical judgment)';
-
-  const patternsStr = q5PatternsSupported.length
-    ? q5PatternsSupported.join(', ')
-    : 'unknown — derive from passage';
 
   return `You are generating v3 evidence-discrimination tags for a GOGI intervention passage. Classification: ${criteria.classification}.
 
 CANONICAL VOCABULARY (target_signal MUST come from this list):
 ${vocab}
-
-PASSAGE METADATA:
-- Word count: ${para.wordCount}
-- Paragraph count: ${para.paragraphCount}
-- Q5 patterns identified at filter stage: ${patternsStr}
-
-PASSAGE:
-"""
-${para.text}
-"""
 
 YOUR TASKS:
 
@@ -123,17 +135,67 @@ OUTPUT FORMAT (strict JSON only, no prose, no markdown):
 Note: Include "craft_features" only if 5d is in item_patterns_supported. Include "dominant_concept" and "plausible_distractors" only if 5c is in item_patterns_supported. Omit rejection_reason unless returning TARGET_NOT_DETECTED.`;
 }
 
+/**
+ * VARIABLE block — changes every call.
+ * Contains: passage metadata (word count, paragraph count, Q5 patterns) and passage text.
+ */
+function buildTagSystemVariable(
+  para: Paragraph,
+  q5PatternsSupported: string[],
+): string {
+  const patternsStr = q5PatternsSupported.length
+    ? q5PatternsSupported.join(', ')
+    : 'unknown — derive from passage';
+
+  return `PASSAGE METADATA:
+- Word count: ${para.wordCount}
+- Paragraph count: ${para.paragraphCount}
+- Q5 patterns identified at filter stage: ${patternsStr}
+
+PASSAGE:
+"""
+${para.text}
+"""`;
+}
+
 const RETRY_PREFIX =
   'IMPORTANT: Your previous response was not valid JSON. Return valid JSON only, no markdown, no explanation.\n\n';
 
-async function callClaude(prompt: string): Promise<string> {
+async function callClaude(
+  stableSystem: string,
+  variableSystem: string,
+  userMessage: string,
+): Promise<string> {
   await sleep(ANTHROPIC_DELAY_MS);
   const msg = await getClient().messages.create({
     model: MODEL,
     max_tokens: 2500,
-    system: 'You are tagging a passage for a literacy intervention teach page.',
-    messages: [{ role: 'user', content: prompt }],
+    system: [
+      {
+        type: 'text',
+        text: stableSystem,
+        cache_control: { type: 'ephemeral' },
+      },
+      {
+        type: 'text',
+        text: variableSystem,
+      },
+    ],
+    messages: [{ role: 'user', content: userMessage }],
   });
+
+  // Capture cache metrics
+  const usage = msg.usage as {
+    input_tokens: number;
+    output_tokens: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
+  _stats.cacheCreation += usage.cache_creation_input_tokens ?? 0;
+  _stats.cacheRead     += usage.cache_read_input_tokens ?? 0;
+  _stats.input         += usage.input_tokens;
+  _stats.output        += usage.output_tokens;
+
   return (msg.content[0] as { type: string; text: string }).text.trim();
 }
 
@@ -185,16 +247,18 @@ export async function tagParagraph(
   criteria: CriteriaConfig,
   q5PatternsSupported: string[] = [],
 ): Promise<TagResultV3 | TagNotDetected | null> {
-  const prompt = buildTagPrompt(para, criteria, q5PatternsSupported);
+  const stable   = buildTagSystemStable(criteria);
+  const variable = buildTagSystemVariable(para, q5PatternsSupported);
+  const userMsg  = 'Tag this passage and return the JSON result.';
 
   try {
-    const raw = await callClaude(prompt);
+    const raw = await callClaude(stable, variable, userMsg);
     return parseTagResponse(raw);
   } catch {
-    // One retry
+    // One retry — RETRY_PREFIX prepended to user message to nudge JSON-only output
     try {
       console.warn('  [tag] first attempt invalid JSON — retrying');
-      const raw = await callClaude(RETRY_PREFIX + prompt);
+      const raw = await callClaude(stable, variable, RETRY_PREFIX + userMsg);
       return parseTagResponse(raw);
     } catch {
       console.warn('  [tag] second attempt also failed — marking tagging_failed');

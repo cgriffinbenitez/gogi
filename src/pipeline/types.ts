@@ -149,7 +149,7 @@ export interface PassageRowV3 {
   source_gutenberg_id: number;
   approved: boolean;
   paragraph_hash: string;
-  pipeline_version: 'v3';
+  pipeline_version: 'v3' | 'v4';
   // v3 evidence fields
   target_signal: string;
   item_patterns_supported: string[];
