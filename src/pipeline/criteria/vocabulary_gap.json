@@ -1,11 +1,31 @@
 {
   "classification": "vocabulary_gap",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to recover the meaning of unfamiliar words using context clues, word structure, and surrounding sentence relationships — and to recognize when a vocabulary gap is blocking comprehension. The student is not memorizing word lists; the student is learning a portable strategy for unlocking unknown words in any passage.",
+  "mustHave": [
+    "At least one Tier 2 academic vocabulary word per passage — words that appear across disciplines, carry substantial meaning-weight, and are commonly unfamiliar to 9th grade Title I students (words like 'admonish,' 'ephemeral,' 'conspicuous,' 'wistful,' 'ominous')",
+    "Context clues within the passage that support meaning-recovery — definition, restatement, example, contrast, or surrounding detail that allows a strategic reader to infer the word's meaning",
+    "Vocabulary whose meaning IS recoverable through context strategy — the word can be decoded without a dictionary if the reader attends carefully to surrounding language",
+    "A passage where the Tier 2 vocabulary does real meaning-work — replacing the word with a synonym would substantively shift comprehension, not just aesthetic texture"
+  ],
+  "mustNotHave": [
+    "Passages whose difficulty is primarily syntactic rather than lexical — that's syntax_barrier",
+    "Passages with Tier 2 vocabulary whose meaning CANNOT be recovered from context — no clues, no restatement, no surrounding help. Vocabulary practice requires context that supports strategy.",
+    "Passages overwhelmed with Tier 3 domain-specific vocabulary (medical, legal, scientific jargon) that requires expert knowledge",
+    "Extremely archaic vocabulary that doesn't transfer to modern usage (Middle English, heavily Latinate 17th-century diction)",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the vocabulary is character-voice rather than authorial diction",
+    "Nonfiction biographical or memoir prose about real people's lives",
+    "Passages requiring specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have to unlock vocabulary meaning"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "One Tier 2 word per passage, with strong context clues — a restatement nearby, an example that illustrates meaning, or an explicit definition. Student applies a context-clue strategy once and succeeds.",
+    "tier2": "Two to three Tier 2 words per passage, with moderate context clues. Student must apply strategy multiple times and integrate meanings across the passage. Some clues are restatement, others require inference from surrounding detail.",
+    "tier3": "Multiple Tier 2 words whose meanings depend on subtle contextual relationships — contrast, connotation shift, technical-use-in-non-technical-context. Student must deploy strategy flexibly and evaluate multiple possible meanings against the passage's coherent whole."
+  },
+  "canonicalVocabulary": [
+    "vocabulary", "word", "meaning", "definition", "synonym", "antonym",
+    "context", "context clues", "surrounding", "nearby", "passage",
+    "unfamiliar", "unknown", "difficult", "challenging",
+    "infer", "deduce", "figure out", "unlock",
+    "connotation", "denotation", "formal", "informal", "academic"
+  ]
 }
