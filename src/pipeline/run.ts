@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * GOGI Intervention Passage Pipeline v3
+ * GOGI Intervention Passage Pipeline — version controlled by PIPELINE_VERSION
  * Usage: npm run pipeline -- --classification mood_misreading [--max 15] [--dry-run] [--per-source-cap 3]
  */
 
@@ -24,6 +24,8 @@ import { filterParagraph } from './stages/filter';
 import { tagParagraph } from './stages/tag';
 import { appendCSV, initCSV, isDuplicateV3, writePassageV3 } from './stages/write';
 
+const PIPELINE_VERSION = 'v3';
+
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
 const VALID_CLASSIFICATIONS = [
@@ -37,7 +39,7 @@ const VALID_CLASSIFICATIONS = [
 
 function printHelp() {
   console.log(`
-GOGI Intervention Passage Pipeline v3
+GOGI Intervention Passage Pipeline ${PIPELINE_VERSION}
 
 Usage:
   npm run pipeline -- --classification <name> [options]
@@ -155,7 +157,7 @@ async function main() {
   }
 
   console.log(`\n═══════════════════════════════════════════════════════`);
-  console.log(`  GOGI Pipeline v3  |  ${classification}`);
+  console.log(`  GOGI Pipeline ${PIPELINE_VERSION}  |  ${classification}`);
   console.log(`  max: ${max}  |  dry-run: ${dryRun}`);
   console.log(`═══════════════════════════════════════════════════════\n`);
 
@@ -230,7 +232,7 @@ async function main() {
           keyword_flags:    '',
           difficulty_tier:  '' as const,
           tier:             '' as const,
-          pipeline_version: 'v3',
+          pipeline_version: PIPELINE_VERSION,
         };
 
         if (filterResult.suitable) {
@@ -277,7 +279,7 @@ async function main() {
 
     console.log(`
 ═══════════════════════════════════════════════════════
-  Pipeline v3 complete (dry-run) — ${classification}
+  Pipeline ${PIPELINE_VERSION} complete (dry-run) — ${classification}
   Books fetched:           ${fetched}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${suitablePool.length} / ${filtered} (${filtered > 0 ? (suitablePool.length / filtered * 100).toFixed(1) : 0}%)
@@ -338,7 +340,7 @@ ${frontMatterLines || '    (none stripped)'}
       distractors:      '',
       keyword_flags:    '',
       difficulty_tier:  '' as const,
-      pipeline_version: 'v3',
+      pipeline_version: PIPELINE_VERSION,
     };
 
     // Duplicate check (tier-aware)
@@ -379,7 +381,7 @@ ${frontMatterLines || '    (none stripped)'}
       source_gutenberg_id:      para.gutenbergId,
       approved:                 false,
       paragraph_hash:           para.hash,
-      pipeline_version:         'v3' as const,
+      pipeline_version:         PIPELINE_VERSION as const,
       target_signal:            tagResult.target_signal,
       item_patterns_supported:  tagResult.item_patterns_supported,
       supporting_evidence:      tagResult.supporting_evidence,
@@ -436,7 +438,7 @@ ${frontMatterLines || '    (none stripped)'}
 
   console.log(`
 ═══════════════════════════════════════════════════════
-  Pipeline v3 complete — ${classification}
+  Pipeline ${PIPELINE_VERSION} complete — ${classification}
   Books fetched:           ${fetched}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
@@ -469,7 +471,7 @@ ${frontMatterLines || '    (none stripped)'}
 
   // Persist CSV to repo for v4 calibration analysis
   const runDate = csvPath.match(/(\d{4}-\d{2}-\d{2}T[\d-]+)/)?.[1]?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
-  const archivePath = path.join(__dirname, '../../docs/pipeline/runs', `${runDate}_${classification}_v3_run.csv`);
+  const archivePath = path.join(__dirname, '../../docs/pipeline/runs', `${runDate}_${classification}_${PIPELINE_VERSION}_run.csv`);
   fs.mkdirSync(path.dirname(archivePath), { recursive: true });
   fs.copyFileSync(csvPath, archivePath);
   console.log(`[pipeline] CSV archived → ${archivePath}`);
