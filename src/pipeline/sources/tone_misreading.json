@@ -1,28 +1,16 @@
 {
   "gutendexSearchTerms": [
     "short stories",
-    "speeches",
-    "essays",
-    "autobiography",
-    "rhetoric",
-    "folk tales",
     "literary fiction",
     "novels",
-    "poetry",
-    "letters"
+    "folk tales"
   ],
   "priorityAuthors": [
-    "Frederick Douglass",
-    "Booker T. Washington",
-    "Harriet Jacobs",
-    "Ida B. Wells",
     "Jack London",
     "Willa Cather",
-    "Walt Whitman",
     "Sarah Orne Jewett",
     "Nathaniel Hawthorne",
     "Herman Melville",
-    "Thomas Paine",
     "Mark Twain",
     "Edith Wharton",
     "O. Henry",
@@ -30,7 +18,16 @@
     "Oscar Wilde",
     "Sinclair Lewis",
     "Jane Austen",
-    "Charles Dickens"
+    "Charles Dickens",
+    "Kate Chopin",
+    "George Eliot",
+    "Thomas Hardy",
+    "Joseph Conrad",
+    "E.M. Forster",
+    "Anton Chekhov",
+    "Guy de Maupassant",
+    "Stephen Crane",
+    "Louisa May Alcott"
   ],
   "authorGroupCaps": [
     { "authors": ["Jane Austen", "Charles Dickens"], "maxInserted": 3 }
