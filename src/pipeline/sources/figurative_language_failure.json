@@ -7,24 +7,27 @@
     "poetry"
   ],
   "priorityAuthors": [
-    "Nathaniel Hawthorne",
-    "Edgar Allan Poe",
-    "Herman Melville",
-    "Thomas Hardy",
-    "Joseph Conrad",
     "Edith Wharton",
     "Willa Cather",
     "Kate Chopin",
     "Sarah Orne Jewett",
     "Charlotte Perkins Gilman",
-    "Oscar Wilde",
-    "Stephen Crane",
-    "Henry James",
     "Mary Shelley",
-    "Bram Stoker",
-    "Ambrose Bierce",
+    "Charlotte Brontë",
+    "Emily Brontë",
+    "Katherine Mansfield",
+    "Sui Sin Far",
+    "Nathaniel Hawthorne",
+    "Edgar Allan Poe",
+    "Herman Melville",
+    "Thomas Hardy",
+    "Oscar Wilde",
+    "Henry James",
     "Anton Chekhov",
     "Guy de Maupassant",
-    "Algernon Blackwood"
+    "Charles W. Chesnutt",
+    "Jean Toomer",
+    "Paul Laurence Dunbar",
+    "Rabindranath Tagore"
   ]
 }
