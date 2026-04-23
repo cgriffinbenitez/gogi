@@ -1,11 +1,31 @@
 {
   "classification": "schema_strategy_missing",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to recognize when a passage requires background knowledge (historical context, setting conventions, character-type familiarity, genre expectations) to fully understand, and to activate that schema deliberately before reading rather than passively missing meaning. The student is not memorizing facts; the student is building the metacognitive habit of asking 'what do I already know about this?' before comprehension breaks down.",
+  "mustHave": [
+    "A passage whose core meaning depends on schema the reader brings to it — a historical setting, a genre convention, a character archetype, a cultural context that makes the passage legible",
+    "Schema that is discoverable or retrievable — a 9th grade Title I student either already has it, or can activate it via a pre-reading prompt (e.g., 'what do you know about life on a farm in the 1800s?')",
+    "Observable signals in the passage that flag the schema requirement — period details, setting-specific vocabulary, character types, genre markers the reader must recognize to orient",
+    "A meaningful gap between schema-activated and schema-missing reading — the same passage reads very differently depending on whether the reader brought the right prior knowledge"
+  ],
+  "mustNotHave": [
+    "Passages that require obscure, specialized, or expert-level schema a 9th grader cannot reasonably access or build in one pre-reading move (e.g., specific Victorian legal procedures, detailed religious doctrine, technical scientific background)",
+    "Passages where the schema requirement is so dominant the passage cannot be read at all without hours of context-building — schema must be activatable, not rebuildable",
+    "Passages where no schema is required — fully self-contained, fully explained on the page",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the schema is what characters assume about each other rather than what the author assumes about the reader",
+    "Nonfiction biographical or memoir prose about real people's lives",
+    "Archaic or heavily poetic prose whose schema requirement is inseparable from parsing difficulty",
+    "Passages that require sensitive schema a Title I classroom cannot safely activate (trauma-laden historical events, content requiring counselor support)"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Schema requirement is obvious and familiar. A farmhouse setting, a classic fairy-tale opening, a clear historical period a 9th grader recognizes. Quick schema activation (30 seconds of pre-reading) unlocks the passage.",
+    "tier2": "Schema requirement is identifiable but requires a specific activation move. A period-specific setting a student knows exists but hasn't thought about, a genre convention the student has seen before but needs to name. Moderate pre-reading (1-2 minutes) unlocks the passage.",
+    "tier3": "Schema requirement is subtle — the reader must recognize that multiple background elements are at play (historical period + social class + genre convention). Extended pre-reading (3-5 minutes) and explicit schema-activation protocol are required."
+  },
+  "canonicalVocabulary": [
+    "background knowledge", "prior knowledge", "schema", "context",
+    "setting", "period", "era", "historical", "cultural",
+    "genre", "convention", "tradition", "assume", "expect",
+    "familiar", "unfamiliar", "activate", "connect",
+    "before reading", "pre-reading", "anticipate", "predict"
+  ]
 }

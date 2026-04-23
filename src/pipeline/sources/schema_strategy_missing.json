@@ -1,4 +1,30 @@
 {
-  "gutendexSearchTerms": ["short stories"],
-  "priorityAuthors": ["Kate Chopin", "O. Henry"]
+  "gutendexSearchTerms": [
+    "novels",
+    "short stories",
+    "literary fiction",
+    "realist fiction",
+    "regional fiction"
+  ],
+  "priorityAuthors": [
+    "Willa Cather",
+    "Sarah Orne Jewett",
+    "Kate Chopin",
+    "Stephen Crane",
+    "Jack London",
+    "Mark Twain",
+    "Jane Austen",
+    "Edith Wharton",
+    "Charles Dickens",
+    "Nathaniel Hawthorne",
+    "Thomas Hardy",
+    "George Eliot",
+    "Sinclair Lewis",
+    "Sherwood Anderson",
+    "O. Henry",
+    "Anton Chekhov",
+    "Guy de Maupassant",
+    "Elizabeth Gaskell",
+    "Bret Harte"
+  ]
 }
