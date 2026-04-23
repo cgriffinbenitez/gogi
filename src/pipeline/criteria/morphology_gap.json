@@ -1,11 +1,33 @@
 {
   "classification": "morphology_gap",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to analyze unfamiliar words by identifying their morphemes — prefixes, roots, suffixes — and combining those morphemic meanings to infer the word's full meaning. The student is not memorizing Greek and Latin roots; the student is learning a systematic decoding strategy for unfamiliar words whose structure carries recoverable meaning.",
+  "mustHave": [
+    "At least one morphologically productive word per passage — a word built from identifiable prefix, root, and/or suffix elements whose combined meaning unlocks the word (e.g., 'incomprehensible' = in + comprehend + ible, 'retrospective' = retro + spect + ive, 'benevolent' = bene + vol + ent)",
+    "Morphemes that are productive in other English words — roots and affixes that transfer (not single-use borrowings)",
+    "Context in the passage that confirms the morphologically-derived meaning — the surrounding sentence supports the inferred meaning rather than contradicting it",
+    "A passage where morphology teaches transfer — the morphemic strategy used to unlock one word would unlock other words in similar contexts"
+  ],
+  "mustNotHave": [
+    "Passages with morphologically simple vocabulary — single-morpheme words that cannot be broken down",
+    "Passages whose difficulty is primarily context-based rather than morphemic — the word's meaning does not derive from its structure",
+    "Morphologically complex words whose historical structure no longer aligns with modern meaning (e.g., 'awful' no longer means 'full of awe')",
+    "Extremely archaic vocabulary whose morphology does not transfer to modern English",
+    "Passages with morphologically specialized vocabulary (medical, legal, scientific) that requires domain knowledge beyond morphemic analysis",
+    "Paragraphs dominated by dialogue (60%+ quotation marks)",
+    "Nonfiction biographical or memoir prose about real people's lives",
+    "Passages requiring specific historical, political, religious, or cultural knowledge"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "One morphologically productive word per passage with familiar, high-frequency morphemes (re-, un-, pre-, -able, -tion, -ly). Context strongly confirms the morphological meaning. Student applies prefix-root-suffix analysis once and succeeds.",
+    "tier2": "Two or three morphologically productive words, some with less common but still transferable morphemes (bio-, trans-, -logy, -ism, -ous). Student must recognize morpheme boundaries accurately and combine multiple morphemic elements per word.",
+    "tier3": "Morphologically rich words whose meaning depends on combining multiple morphemes correctly, including Greek and Latin roots that appear in academic vocabulary but require sustained analysis (chronological, anthropomorphic, multifaceted). Student must deploy morphological strategy flexibly and check against context."
+  },
+  "canonicalVocabulary": [
+    "morpheme", "prefix", "root", "suffix", "word part",
+    "structure", "breakdown", "analyze", "build", "construct",
+    "meaning", "combine", "root word", "base word",
+    "affix", "inflection", "derivation",
+    "Greek root", "Latin root", "origin", "etymology",
+    "productive", "transfer"
+  ]
 }

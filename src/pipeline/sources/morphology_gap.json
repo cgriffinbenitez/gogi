@@ -1,4 +1,29 @@
 {
-  "gutendexSearchTerms": ["literary fiction"],
-  "priorityAuthors": ["Charles Dickens", "Nathaniel Hawthorne"]
+  "gutendexSearchTerms": [
+    "novels",
+    "short stories",
+    "literary fiction",
+    "realist fiction"
+  ],
+  "priorityAuthors": [
+    "Henry James",
+    "Edith Wharton",
+    "Nathaniel Hawthorne",
+    "George Eliot",
+    "Joseph Conrad",
+    "Thomas Hardy",
+    "Herman Melville",
+    "Charles Dickens",
+    "Mary Shelley",
+    "Oscar Wilde",
+    "Jane Austen",
+    "Kate Chopin",
+    "Willa Cather",
+    "Mark Twain",
+    "Stephen Crane",
+    "Sinclair Lewis",
+    "O. Henry",
+    "Anton Chekhov",
+    "Guy de Maupassant"
+  ]
 }
