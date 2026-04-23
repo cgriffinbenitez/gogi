@@ -1,4 +1,30 @@
 {
-  "gutendexSearchTerms": ["short stories", "gothic fiction"],
-  "priorityAuthors": ["O. Henry", "Edgar Allan Poe", "Anton Chekhov", "Kate Chopin"]
+  "gutendexSearchTerms": [
+    "short stories",
+    "gothic fiction",
+    "regional fiction",
+    "atmospheric novels",
+    "literary fiction"
+  ],
+  "priorityAuthors": [
+    "Edgar Allan Poe",
+    "Anton Chekhov",
+    "Kate Chopin",
+    "Nathaniel Hawthorne",
+    "Thomas Hardy",
+    "Joseph Conrad",
+    "Willa Cather",
+    "Sarah Orne Jewett",
+    "Edith Wharton",
+    "Ambrose Bierce",
+    "Arthur Conan Doyle",
+    "Charlotte Perkins Gilman",
+    "Mary Shelley",
+    "Bram Stoker",
+    "Algernon Blackwood",
+    "Stephen Crane",
+    "Guy de Maupassant",
+    "Sherwood Anderson",
+    "Herman Melville"
+  ]
 }
