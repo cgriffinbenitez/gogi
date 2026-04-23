@@ -1,4 +1,29 @@
 {
-  "gutendexSearchTerms": ["literary fiction"],
-  "priorityAuthors": ["Henry James", "Charles Dickens", "George Eliot"]
+  "gutendexSearchTerms": [
+    "novels",
+    "literary fiction",
+    "realist fiction",
+    "Victorian fiction"
+  ],
+  "priorityAuthors": [
+    "Charles Dickens",
+    "Nathaniel Hawthorne",
+    "Herman Melville",
+    "Henry James",
+    "George Eliot",
+    "Thomas Hardy",
+    "Joseph Conrad",
+    "Jane Austen",
+    "Edith Wharton",
+    "Edgar Allan Poe",
+    "Charlotte Brontë",
+    "Emily Brontë",
+    "Thomas Carlyle",
+    "Mary Shelley",
+    "William Makepeace Thackeray",
+    "Anthony Trollope",
+    "Elizabeth Gaskell",
+    "Wilkie Collins",
+    "Bram Stoker"
+  ]
 }

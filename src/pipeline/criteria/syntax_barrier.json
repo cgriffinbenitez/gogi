@@ -1,11 +1,33 @@
 {
   "classification": "syntax_barrier",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to recover meaning from sentences whose syntactic structure — long clauses, embedded phrases, inverted order, parenthetical interruptions, multiple modifiers, archaic constructions — creates a parsing barrier. The student is not analyzing craft; the student is learning to deconstruct complex sentences into their core grammatical units (subject, verb, object, modifier) so meaning becomes accessible.",
+  "mustHave": [
+    "A passage with at least one sentence whose syntactic complexity creates a real parsing challenge — long sentence (30+ words), embedded clauses, inversion, interruption by parenthetical phrases, or chains of modifiers before the main verb",
+    "Complexity that is syntactic, not vocabulary-based — a student who knows every word in the sentence still has to work to identify who did what to whom",
+    "A core meaning that IS recoverable once the sentence is deconstructed — the syntax hides the meaning but does not obliterate it",
+    "Sentence structure that rewards teaching — once a student identifies the subject, verb, and core predicate, the rest of the sentence resolves into clear modification"
+  ],
+  "mustNotHave": [
+    "Passages where complexity is primarily lexical (unfamiliar vocabulary) rather than syntactic — that's vocabulary_gap, not syntax_barrier",
+    "Passages where the complex sentence has no recoverable core — syntax so tangled that no amount of parsing produces a clear subject-verb-object",
+    "Short or simple sentences that lack genuine syntactic barriers — student gets no practice if the sentence is trivial to parse",
+    "Passages where the parsing barrier requires specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have (e.g., archaic legal or biblical constructions requiring schema)",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) — dialogue syntax is conversational, not the authorial syntactic challenge this primitive targets",
+    "Nonfiction biographical or memoir prose about real people's lives; syntax practice requires authorial fiction where sentence construction is deliberate",
+    "Extremely archaic prose whose syntax is so foreign to modern English that parsing practice would not transfer (Middle English, heavily Latinate 17th-century prose)",
+    "Poetry where the syntactic inversion is metrical rather than rhetorical"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "One moderately long sentence (30-50 words) with one embedded clause or one inversion. Once the student identifies the subject and main verb, the rest falls into place. Parsing practice is focused and bounded.",
+    "tier2": "A sentence with two or three embedded structures — a relative clause AND a parenthetical interruption, or a long introductory phrase AND inversion. Student must deconstruct in steps: find the core, then unpack the modifiers.",
+    "tier3": "A sentence with multiple nested structures — clauses within clauses, modifiers stacked before the main verb, delayed subject or verb across 40+ words. Student must hold the sentence in mind and patiently resolve it. Requires re-reading with a parsing strategy."
+  },
+  "canonicalVocabulary": [
+    "sentence", "clause", "phrase", "subject", "verb", "object",
+    "modifier", "dependent clause", "independent clause", "relative clause",
+    "introductory phrase", "parenthetical", "embedded",
+    "inversion", "complex sentence", "compound sentence", "fragment",
+    "parse", "deconstruct", "core meaning", "main idea of the sentence",
+    "simplify", "rephrase", "structure"
+  ]
 }
