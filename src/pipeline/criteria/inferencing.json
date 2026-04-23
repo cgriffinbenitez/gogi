@@ -1,11 +1,30 @@
 {
   "classification": "inferencing",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to construct meaning that the text implies but does not state directly — by reading specific textual clues (word choice, descriptive details, character action, juxtaposition, omission) and combining them with what the reader already knows to arrive at a conclusion the author intends but does not spell out.",
+  "mustHave": [
+    "Implied meaning the reader must construct — the passage does not state the inference explicitly but provides observable clues that support it",
+    "Two or more discrete textual clues (word choices, details, actions, or juxtapositions) that a reader can point to as the basis for the inference",
+    "An inference that is discoverable from the passage alone — a careful reader can arrive at it without requiring specific outside knowledge not available within the passage",
+    "A stable, defensible inference — not ambiguous between multiple equally valid readings"
+  ],
+  "mustNotHave": [
+    "The inference is stated explicitly in the passage (a character says it, a narrator declares it, or a topic sentence names it)",
+    "The inference requires specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have",
+    "The inference depends on surrounding context the student cannot see — passage must stand alone",
+    "Competing plausible inferences with no clear textual basis to distinguish them",
+    "Inference primarily about plot prediction ('what happens next') rather than meaning construction ('what this reveals')",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the inference is what a speaker means rather than what the author conveys",
+    "Nonfiction biographical or memoir prose about real people's lives; inferencing practice requires authorial fiction, not documentary or personal narrative about real individuals",
+    "Archaic or heavily poetic prose that obscures the textual clues behind unfamiliar syntax or vocabulary"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Inference is one step from the text. Clues are concentrated, obvious, and charged. A student can point to 2-3 direct signals and name the inference on first pass.",
+    "tier2": "Inference requires noticing 2-3 signals and combining them. Some clues are concrete, others require reading between two details. Student must slow down and connect.",
+    "tier3": "Inference is built through omission, implication, or subtle juxtaposition. Reader must notice what the author chose NOT to say, or hold two pieces of evidence in mind to see the gap between them. Requires re-reading."
+  },
+  "canonicalVocabulary": [
+    "imply", "suggest", "indicate", "reveal", "signal", "hint", "clue", "evidence",
+    "infer", "conclude", "deduce", "interpret", "meaning", "motivation", "intention",
+    "characterization", "foreshadow", "subtext", "connotation", "implication", "contextual"
+  ]
 }
