@@ -6,24 +6,27 @@
     "gothic fiction"
   ],
   "priorityAuthors": [
-    "Charles Dickens",
-    "Nathaniel Hawthorne",
     "Edith Wharton",
     "Jane Austen",
-    "Herman Melville",
-    "Joseph Conrad",
-    "Thomas Hardy",
     "George Eliot",
-    "Mark Twain",
-    "Henry James",
     "Willa Cather",
     "Kate Chopin",
     "Sarah Orne Jewett",
-    "Stephen Crane",
-    "Guy de Maupassant",
+    "Charlotte Brontë",
+    "Emily Brontë",
+    "Mary Shelley",
+    "Elizabeth Gaskell",
+    "Charles Dickens",
+    "Nathaniel Hawthorne",
+    "Herman Melville",
+    "Joseph Conrad",
+    "Thomas Hardy",
+    "Henry James",
     "Anton Chekhov",
     "O. Henry",
     "Oscar Wilde",
-    "Sinclair Lewis"
+    "Charles W. Chesnutt",
+    "Wilkie Collins",
+    "Sutton E. Griggs"
   ]
 }
