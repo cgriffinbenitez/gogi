@@ -1,4 +1,30 @@
 {
-  "gutendexSearchTerms": ["short stories"],
-  "priorityAuthors": ["O. Henry", "Kate Chopin"]
+  "gutendexSearchTerms": [
+    "novels",
+    "literary fiction",
+    "short stories",
+    "gothic fiction",
+    "realist fiction"
+  ],
+  "priorityAuthors": [
+    "Nathaniel Hawthorne",
+    "Edith Wharton",
+    "Henry James",
+    "Joseph Conrad",
+    "Herman Melville",
+    "George Eliot",
+    "Thomas Hardy",
+    "Jane Austen",
+    "Charles Dickens",
+    "Kate Chopin",
+    "Willa Cather",
+    "Stephen Crane",
+    "Anton Chekhov",
+    "Guy de Maupassant",
+    "Sarah Orne Jewett",
+    "Charlotte Perkins Gilman",
+    "Edgar Allan Poe",
+    "Oscar Wilde",
+    "Sinclair Lewis"
+  ]
 }

@@ -1,11 +1,34 @@
 {
   "classification": "comprehension_integration_failure",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to synthesize multiple cognitive moves (inferencing, tone/mood identification, evidence citation, theme construction, character motivation) across a single passage to arrive at an integrated understanding of what the author is doing. The student is not performing one skill; the student is coordinating several skills simultaneously to construct a whole-passage reading.",
+  "mustHave": [
+    "A passage that requires at least two distinct cognitive moves to fully understand — for example, inferring character motivation AND identifying tone, or tracking theme development AND citing evidence, or connecting mood shifts AND structural choices",
+    "Observable signals for each of the required cognitive moves — each skill the integration demands is itself evidence-discriminable within the passage",
+    "A whole-passage reading that is more than the sum of its parts — the integrated understanding reveals something no single skill produces alone",
+    "At least 2 paragraphs of prose, providing enough material for integrated analysis across multiple cognitive dimensions",
+    "An integrated reading that is discoverable from the passage alone — does not require whole-book context to construct"
+  ],
+  "mustNotHave": [
+    "Passages that only exercise one cognitive skill — integration requires multiple skills working together",
+    "Passages where the 'integration' collapses to a single dominant skill — if tone dominates and everything else is secondary, this belongs in tone_misreading, not here",
+    "Passages where the integrated meaning requires whole-book context — must stand alone",
+    "Passages where competing integrated readings are equally valid — no clear dominant whole-passage meaning",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where integration is what characters discuss rather than what the author constructs",
+    "Nonfiction biographical or memoir prose about real people's lives; integration analysis requires authorial fiction where multiple craft choices work together deliberately",
+    "Archaic or heavily poetic prose that obscures the integrated signals behind unfamiliar syntax",
+    "Integrated readings that require specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have",
+    "Extremely short passages (under 2 paragraphs) that lack room for multiple cognitive dimensions to emerge"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Integration requires two obvious cognitive moves working together (e.g., tone + character motivation, or mood + theme). Each move is clearly signaled. Student can do each move and then combine them on first pass.",
+    "tier2": "Integration requires three cognitive moves, or two subtle moves that need careful reading. Signals for each skill are present but not surface-level. Student must slow down, identify each thread, then weave them.",
+    "tier3": "Integration is the only way the passage makes sense. No single cognitive move explains the whole. Student must track multiple craft dimensions simultaneously — tone shifting as theme develops as evidence accumulates as mood builds. Requires re-reading and synthesis."
+  },
+  "canonicalVocabulary": [
+    "integrate", "synthesize", "combine", "connect", "weave", "relationship",
+    "interplay", "work together", "multiple layers", "across the passage",
+    "whole", "overall", "cumulative", "build", "develop",
+    "complexity", "nuance", "simultaneous", "interaction", "convergence",
+    "meaning", "effect", "construct", "reveal"
+  ]
 }
