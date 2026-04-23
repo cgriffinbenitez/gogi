@@ -45,11 +45,13 @@ Usage:
   npm run pipeline -- --classification <name> [options]
 
 Options:
-  --classification  Required. Classification to run.
-  --max             Max passages to insert (default: 15).
-  --per-source-cap  Max insertions per source title (default: ceil(max/3)).
-  --dry-run         Run stages 1-3 (no DB write, no tagging).
-  --help            Show this help.
+  --classification   Required. Classification to run.
+  --max              Max passages to insert (default: 15).
+  --per-source-cap   Max insertions per source title (default: ceil(max/3)).
+  --write-all-passed Write every filter-passed passage as pending_review.
+                     Bypasses --max and --per-source-cap. Dedup still enforced.
+  --dry-run          Run stages 1-3 (no DB write, no tagging).
+  --help             Show this help.
 
 Valid classifications:
   ${VALID_CLASSIFICATIONS.join('\n  ')}
@@ -90,12 +92,14 @@ function parseArgs(argv: string[]): PipelineOptions | null {
     ? parseInt(args[perSourceCapIdx + 1], 10)
     : undefined;
 
-  const dryRun = args.includes('--dry-run');
+  const dryRun        = args.includes('--dry-run');
+  const writeAllPassed = args.includes('--write-all-passed');
 
   return {
     classification,
     max: isNaN(max) ? 15 : max,
     dryRun,
+    writeAllPassed,
     perSourceCapOverride: perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
       ? perSourceCapOverride
       : undefined,
@@ -145,7 +149,7 @@ async function main() {
   const opts = parseArgs(process.argv);
   if (!opts) { process.exit(1); }
 
-  const { classification, max, dryRun, perSourceCapOverride } = opts;
+  const { classification, max, dryRun, writeAllPassed, perSourceCapOverride } = opts;
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error('Error: ANTHROPIC_API_KEY is not set.');
@@ -158,7 +162,9 @@ async function main() {
 
   console.log(`\n═══════════════════════════════════════════════════════`);
   console.log(`  GOGI Pipeline ${PIPELINE_VERSION}  |  ${classification}`);
-  console.log(`  max: ${max}  |  dry-run: ${dryRun}`);
+  console.log(`  max: ${writeAllPassed ? '∞ (write-all-passed)' : max}  |  dry-run: ${dryRun}`);
+  console.log(`═══════════════════════════════════════════════════════`);
+  console.log(`  [mode] write-all-passed: ${writeAllPassed ? 'ON' : 'OFF (default cap)'}`);
   console.log(`═══════════════════════════════════════════════════════\n`);
 
   const criteria = loadCriteria(classification);
@@ -217,7 +223,7 @@ async function main() {
       let tierSuitable = 0;
 
       for (const unit of units) {
-        if (tierSuitable >= poolCapPerBookPerTier) break;
+        if (!writeAllPassed && tierSuitable >= poolCapPerBookPerTier) break;
 
         const filterResult = await filterParagraph(unit, criteria);
         filtered++;
@@ -315,32 +321,41 @@ ${frontMatterLines || '    (none stripped)'}
     return;
   }
 
-  // ── Phase 2: Round-robin tag + write from pool ───────────────────────────────
+  // ── Phase 2: Tag + write from pool ───────────────────────────────────────────
   const writtenPerSource:     Record<string, number> = {};
   const writtenPerAuthorGroup: number[] = (sources.authorGroupCaps ?? []).map(() => 0);
 
-  while (inserted < max && suitablePool.length > 0) {
-    // Filter to eligible: per-source cap + author-group cap
-    const eligible = suitablePool.filter(p => {
-      if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
-      const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
-      if (groupIdx !== -1) {
-        const groupCap = sources.authorGroupCaps![groupIdx].maxInserted;
-        if (writtenPerAuthorGroup[groupIdx] >= groupCap) return false;
-      }
-      return true;
-    });
-    if (eligible.length === 0) break;
+  while (suitablePool.length > 0) {
+    let para: SuitableParagraph;
 
-    // Round-robin: prefer source with fewest written, then prefer lower tiers first
-    eligible.sort((a, b) => {
-      const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
-      if (sourceDiff !== 0) return sourceDiff;
-      // T1 < T2 < T3 < T4 within same source count
-      return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
-    });
-    const para = eligible[0];
-    suitablePool.splice(suitablePool.indexOf(para), 1);
+    if (writeAllPassed) {
+      // write-all-passed: drain pool in order, no cap gates
+      para = suitablePool.shift()!;
+    } else {
+      // default: enforce --max and --per-source-cap via round-robin
+      if (inserted >= max) break;
+
+      const eligible = suitablePool.filter(p => {
+        if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
+        const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
+        if (groupIdx !== -1) {
+          const groupCap = sources.authorGroupCaps![groupIdx].maxInserted;
+          if (writtenPerAuthorGroup[groupIdx] >= groupCap) return false;
+        }
+        return true;
+      });
+      if (eligible.length === 0) break;
+
+      // Round-robin: prefer source with fewest written, then prefer lower tiers first
+      eligible.sort((a, b) => {
+        const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
+        if (sourceDiff !== 0) return sourceDiff;
+        // T1 < T2 < T3 < T4 within same source count
+        return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
+      });
+      para = eligible[0];
+      suitablePool.splice(suitablePool.indexOf(para), 1);
+    }
 
     const csvBase = {
       classification,
@@ -426,8 +441,9 @@ ${frontMatterLines || '    (none stripped)'}
       if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
       tierCounts[para.tierKey]++;
 
+      const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
       console.log(
-        `  [Stage 5] inserted ${inserted}/${max} [T${tagResult.intervention_tier}]` +
+        `  [Stage 5] inserted ${insertedLabel} [T${tagResult.intervention_tier}]` +
         ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
       );
     } else if (writeResult.status === 'duplicate') {
@@ -456,14 +472,15 @@ ${frontMatterLines || '    (none stripped)'}
   console.log(`
 ═══════════════════════════════════════════════════════
   Pipeline ${PIPELINE_VERSION} complete — ${classification}
+  Mode:                    ${writeAllPassed ? 'write-all-passed (no cap)' : 'default (capped)'}
   Books fetched:           ${fetched}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
   Claude tag calls:        ${tagged}
   Tag-stage rejected:      ${tagRejected}
-  Inserted:                ${inserted}
-  Per-source cap applied:  ${perSourceCap}
-  Pool cap/book/tier:      ${poolCapPerBookPerTier}
+  Inserted:                ${inserted}${writeAllPassed ? ' (all pending_review)' : ''}
+  Per-source cap applied:  ${writeAllPassed ? 'N/A (write-all-passed)' : perSourceCap}
+  Pool cap/book/tier:      ${writeAllPassed ? 'N/A (write-all-passed)' : poolCapPerBookPerTier}
   Duplicates skipped:      ${duplicates}
   Other skipped:           ${skipped}
 

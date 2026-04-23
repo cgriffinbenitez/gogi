@@ -195,5 +195,6 @@ export interface PipelineOptions {
   classification: string;
   max: number;
   dryRun: boolean;
+  writeAllPassed: boolean;
   perSourceCapOverride?: number;
 }
