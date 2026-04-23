@@ -1,4 +1,30 @@
 {
-  "gutendexSearchTerms": ["poetry", "literary fiction"],
-  "priorityAuthors": ["Walt Whitman", "Emily Dickinson", "Nathaniel Hawthorne"]
+  "gutendexSearchTerms": [
+    "novels",
+    "short stories",
+    "literary fiction",
+    "gothic fiction",
+    "poetry"
+  ],
+  "priorityAuthors": [
+    "Nathaniel Hawthorne",
+    "Edgar Allan Poe",
+    "Herman Melville",
+    "Thomas Hardy",
+    "Joseph Conrad",
+    "Edith Wharton",
+    "Willa Cather",
+    "Kate Chopin",
+    "Sarah Orne Jewett",
+    "Charlotte Perkins Gilman",
+    "Oscar Wilde",
+    "Stephen Crane",
+    "Henry James",
+    "Mary Shelley",
+    "Bram Stoker",
+    "Ambrose Bierce",
+    "Anton Chekhov",
+    "Guy de Maupassant",
+    "Algernon Blackwood"
+  ]
 }

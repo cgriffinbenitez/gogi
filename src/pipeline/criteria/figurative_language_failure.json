@@ -1,11 +1,32 @@
 {
   "classification": "figurative_language_failure",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to recognize when language is figurative rather than literal — to identify metaphor, simile, personification, imagery, hyperbole, symbolism, and idiom in a passage — and to construct the meaning the figurative language conveys. The student is not labeling the device type as an end goal; the student is recovering the meaning the author achieves by not saying it literally.",
+  "mustHave": [
+    "At least one clear instance of figurative language — metaphor, simile, personification, sensory imagery, hyperbole, symbolism, or idiom — observable on the page",
+    "Figurative language whose meaning is recoverable within the passage — the reader can point to the figurative phrase AND state what literal meaning it conveys, without requiring outside knowledge",
+    "A passage where the figurative language does real meaning-work — carries the core idea, mood, characterization, or theme rather than serving as decoration",
+    "At least 2-3 candidate phrases a reader could evaluate — one clearly figurative, others potentially literal or less figurative, enabling discrimination items"
+  ],
+  "mustNotHave": [
+    "Passages with no discernible figurative language — pure factual or purely literal prose",
+    "Passages where figurative language is present but trivial — decorative comparisons that do no meaning-work",
+    "Figurative language whose meaning depends on specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have (e.g., biblical allusions, mythological references without on-page context, political metaphors tied to specific events)",
+    "Passages where the figurative language is so deeply embedded in extended metaphor or allegory that a single paragraph cannot unlock it — requires whole-book context",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where figurative language is what a character says rather than what the author constructs",
+    "Nonfiction biographical or memoir prose about real people's lives; figurative language practice requires authorial fiction where the figurative choices are deliberate craft",
+    "Archaic or heavily poetic prose whose figurative density obscures rather than teaches — more challenging than a 9th grader can reasonably parse",
+    "Dead metaphors and clichés so conventional they have lost their figurative force (e.g., 'time flies,' 'break the ice')"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Figurative language is clearly marked and its meaning is direct. A simile with 'like' or 'as,' an obvious personification, a sensory image whose meaning is transparent. Student identifies the device and its meaning on first pass.",
+    "tier2": "Figurative language requires the reader to recognize the non-literal move first, then construct the meaning. A metaphor without signal words, personification that relies on verb choice, imagery whose mood must be inferred. Student must slow down and unpack.",
+    "tier3": "Figurative language is woven across multiple sentences or works through subtle device stacking — a metaphor elaborated across three sentences, symbolism that emerges only when the reader connects details, hyperbole whose effect depends on juxtaposition with the literal. Requires re-reading and synthesis."
+  },
+  "canonicalVocabulary": [
+    "figurative", "literal", "metaphor", "simile", "personification",
+    "imagery", "symbolism", "symbol", "hyperbole", "idiom",
+    "comparison", "like", "as", "represents", "stands for",
+    "sensory", "visual", "auditory", "tactile",
+    "connotation", "denotation", "suggests", "implies", "evokes"
+  ]
 }
