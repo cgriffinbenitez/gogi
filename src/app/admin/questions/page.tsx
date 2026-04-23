@@ -1,11 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { GogiNav } from '@/components/nav/GogiNav';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { C, FONTS, STANDARDS } from '@/lib/constants/design';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const PAGE_SIZE = 20;
+
+const CLASSIFICATIONS: Record<string, string> = {
+  inferencing:                      'Inferencing',
+  evidence_retrieval_failure:       'Evidence Retrieval',
+  topic_vs_theme_confusion:         'Topic vs Theme',
+  structure_purpose_disconnect:     'Structure / Purpose',
+  comprehension_integration_failure:'Comprehension Integration',
+  figurative_language_failure:      'Figurative Language',
+  tone_misreading:                  'Tone Misreading',
+  mood_misreading:                  'Mood Misreading',
+  vocabulary_gap:                   'Vocabulary Gap',
+  morphology_gap:                   'Morphology Gap',
+  syntax_barrier:                   'Syntax Barrier',
+  schema_strategy_missing:          'Schema Strategy',
+  no_metacognitive_strategy:        'No Metacognitive Strategy',
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -30,6 +50,9 @@ interface QuestionRow {
   flagged: boolean | null;
   rationale: string | null;
   difficulty_level: number | null;
+  created_at: string | null;
+  pipeline_source: string | null;
+  source_classification: string | null;
 }
 
 interface StandardRow {
@@ -242,6 +265,30 @@ function QuestionCard({
         >
           {standardCode}
         </span>
+
+        {/* Source badge */}
+        {q.pipeline_source === 'v3_promoted' && (
+          <span
+            style={{
+              background: '#F0FDF4',
+              color: '#15803D',
+              border: '1px solid #86EFAC',
+              borderRadius: 4,
+              padding: '2px 7px',
+              fontSize: 10,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+            }}
+          >
+            v3
+          </span>
+        )}
+
+        {/* Classification badge for v3 questions */}
+        {q.source_classification && (
+          <ClassBadge cls={q.source_classification} />
+        )}
 
         {/* Title / author */}
         <span style={{ fontSize: 12, color: C.gray }}>
@@ -643,6 +690,18 @@ export default function AdminQuestionsPage() {
   const [standards, setStandards] = useState<StandardRow[]>([]);
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
 
+  // ── Filter state ───────────────────────────────────────────────────────────
+
+  const [filterSource,         setFilterSource]         = useState<'v3_promoted' | 'legacy' | 'all'>('v3_promoted');
+  const [filterStatus,         setFilterStatus]         = useState<'needs_review' | 'approved' | 'flagged' | 'all'>('needs_review');
+  const [filterClassification, setFilterClassification] = useState('all');
+  const [filterTier,           setFilterTier]           = useState('all');
+  const [filterAuthor,         setFilterAuthor]         = useState('all');
+  const [filterTitle,          setFilterTitle]          = useState('all');
+  const [searchText,           setSearchText]           = useState('');
+  const [sortBy,               setSortBy]               = useState<'newest' | 'oldest' | 'author' | 'tier_asc' | 'tier_desc'>('newest');
+  const [currentPage,          setCurrentPage]          = useState(1);
+
   // Redirect effect — never call router.push() in the render body
   useEffect(() => {
     if (authLoading) return;
@@ -671,9 +730,10 @@ export default function AdminQuestionsPage() {
               'id, standard_id, content, title, author, pub_year, cognitive_skill_targeted, ' +
               'option_a_text, option_b_text, option_c_text, option_d_text, ' +
               'option_a_class, option_b_class, option_c_class, option_d_class, ' +
-              'correct_option, approved, flagged, rationale, difficulty_level',
+              'correct_option, approved, flagged, rationale, difficulty_level, ' +
+              'created_at, pipeline_source, source_classification',
             )
-            .order('difficulty_level', { ascending: true }),
+            .order('created_at', { ascending: false }),
         ]);
 
         if (stdsErr) { setErrorMsg('Could not load standards: ' + stdsErr.message); setLoadState('error'); return; }
@@ -691,6 +751,11 @@ export default function AdminQuestionsPage() {
 
     load();
   }, [user, role, authLoading]);
+
+  // Reset to page 1 whenever any filter/sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterSource, filterStatus, filterClassification, filterTier, filterAuthor, filterTitle, searchText, sortBy]);
 
   // ── Mutate helpers ────────────────────────────────────────────────────────────
 
@@ -787,24 +852,94 @@ export default function AdminQuestionsPage() {
     }
   }
 
+  // ── Derived filter options ─────────────────────────────────────────────────
+
+  const authorOptions = useMemo(() =>
+    Array.from(new Set(questions.map((q) => q.author).filter(Boolean) as string[])).sort()
+  , [questions]);
+
+  const titleOptions = useMemo(() =>
+    Array.from(new Set(questions.map((q) => q.title).filter(Boolean) as string[])).sort()
+  , [questions]);
+
+  // ── Filtered + sorted questions ────────────────────────────────────────────
+
+  const filteredQuestions = useMemo(() => {
+    let r = questions;
+
+    if (filterSource !== 'all')
+      r = r.filter((q) => (q.pipeline_source ?? 'legacy') === filterSource);
+
+    if (filterStatus === 'needs_review')
+      r = r.filter((q) => !q.approved && !q.flagged);
+    else if (filterStatus === 'approved')
+      r = r.filter((q) => q.approved === true);
+    else if (filterStatus === 'flagged')
+      r = r.filter((q) => q.flagged === true);
+
+    if (filterClassification !== 'all')
+      r = r.filter((q) => q.source_classification === filterClassification);
+
+    if (filterTier !== 'all')
+      r = r.filter((q) => q.difficulty_level === Number(filterTier));
+
+    if (filterAuthor !== 'all')
+      r = r.filter((q) => q.author === filterAuthor);
+
+    if (filterTitle !== 'all')
+      r = r.filter((q) => q.title === filterTitle);
+
+    if (searchText.trim()) {
+      const lc = searchText.toLowerCase();
+      r = r.filter((q) => q.content?.toLowerCase().includes(lc));
+    }
+
+    return [...r].sort((a, b) => {
+      if (sortBy === 'newest')   return (b.created_at ?? '').localeCompare(a.created_at ?? '');
+      if (sortBy === 'oldest')   return (a.created_at ?? '').localeCompare(b.created_at ?? '');
+      if (sortBy === 'author')   return (a.author ?? '').localeCompare(b.author ?? '');
+      if (sortBy === 'tier_asc') return (a.difficulty_level ?? 0) - (b.difficulty_level ?? 0);
+      if (sortBy === 'tier_desc')return (b.difficulty_level ?? 0) - (a.difficulty_level ?? 0);
+      return 0;
+    });
+  }, [questions, filterSource, filterStatus, filterClassification, filterTier, filterAuthor, filterTitle, searchText, sortBy]);
+
+  // ── Pagination ─────────────────────────────────────────────────────────────
+
+  const totalPages        = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));
+  const paginatedQuestions = filteredQuestions.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
   // ── Derived counts ─────────────────────────────────────────────────────────
 
-  const unapprovedCount = questions.filter((q) => !q.approved).length;
+  const v3NeedsReview = questions.filter(
+    (q) => (q.pipeline_source ?? 'legacy') === 'v3_promoted' && !q.approved && !q.flagged
+  ).length;
 
-  // Group questions by standard_id
-  const grouped = standards.map((std) => ({
-    standard: std,
-    questions: questions.filter((q) => q.standard_id === std.id),
-  })).filter((g) => g.questions.length > 0);
+  // Standard lookup map
+  const standardById = useMemo(() => {
+    const m: Record<string, StandardRow> = {};
+    for (const s of standards) m[s.id] = s;
+    return m;
+  }, [standards]);
 
-  // Also show questions whose standard isn't in our pilot list (orphans)
-  const knownStandardIds = new Set(standards.map((s) => s.id));
-  const orphans = questions.filter((q) => !knownStandardIds.has(q.standard_id));
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function resetFilters() {
+    setFilterSource('v3_promoted');
+    setFilterStatus('needs_review');
+    setFilterClassification('all');
+    setFilterTier('all');
+    setFilterAuthor('all');
+    setFilterTitle('all');
+    setSearchText('');
+    setSortBy('newest');
+  }
 
   // ── Views ──────────────────────────────────────────────────────────────────
 
-  // Render-time auth guard — fires AFTER all hooks, safe for React
-  // Blocks the UI while auth is loading so the redirect below never fires on null role
   if (authLoading) {
     return (
       <div style={{ minHeight: '100vh', background: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
@@ -813,7 +948,6 @@ export default function AdminQuestionsPage() {
     );
   }
 
-  // Don't render anything while the redirect effect is running
   if (!user || role !== 'teacher') return null;
 
   if (loadState === 'loading') {
@@ -837,6 +971,18 @@ export default function AdminQuestionsPage() {
     );
   }
 
+  const selectStyle: React.CSSProperties = {
+    border: `1px solid ${C.border}`,
+    borderRadius: 6,
+    padding: '6px 8px',
+    fontSize: 12,
+    color: C.dark,
+    background: C.white,
+    fontFamily: FONTS.ui,
+    cursor: 'pointer',
+    outline: 'none',
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONTS.ui }}>
       <GogiNav subtitle="Question Bank — Admin Review" showLogout />
@@ -849,7 +995,7 @@ export default function AdminQuestionsPage() {
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            marginBottom: 24,
+            marginBottom: 16,
             flexWrap: 'wrap',
           }}
         >
@@ -865,7 +1011,7 @@ export default function AdminQuestionsPage() {
             Question Bank
           </h1>
 
-          {unapprovedCount > 0 && (
+          {v3NeedsReview > 0 && (
             <span
               style={{
                 background: C.amberLight,
@@ -877,11 +1023,11 @@ export default function AdminQuestionsPage() {
                 fontWeight: 700,
               }}
             >
-              {unapprovedCount} UNAPPROVED
+              {v3NeedsReview} V3 NEEDS REVIEW
             </span>
           )}
 
-          {unapprovedCount === 0 && questions.length > 0 && (
+          {v3NeedsReview === 0 && questions.filter((q) => (q.pipeline_source ?? 'legacy') === 'v3_promoted').length > 0 && (
             <span
               style={{
                 background: C.greenLight,
@@ -893,12 +1039,12 @@ export default function AdminQuestionsPage() {
                 fontWeight: 700,
               }}
             >
-              ALL APPROVED
+              V3 ALL REVIEWED
             </span>
           )}
 
           <span style={{ marginLeft: 'auto', fontSize: 12, color: C.gray }}>
-            {questions.length} total question{questions.length !== 1 ? 's' : ''} across {grouped.length} standard{grouped.length !== 1 ? 's' : ''}
+            {questions.length} total · {filteredQuestions.length} matching
           </span>
         </div>
 
@@ -911,7 +1057,7 @@ export default function AdminQuestionsPage() {
             padding: '10px 14px',
             fontSize: 12,
             color: C.blue,
-            marginBottom: 24,
+            marginBottom: 16,
             lineHeight: 1.5,
           }}
         >
@@ -920,6 +1066,174 @@ export default function AdminQuestionsPage() {
           Editing a question removes approval and requires re-approval.
         </div>
 
+        {/* ── FILTER BAR ──────────────────────────────────────────────────────── */}
+        <div
+          style={{
+            background: C.white,
+            border: `1px solid ${C.border}`,
+            borderRadius: 8,
+            padding: '14px 16px',
+            marginBottom: 20,
+          }}
+        >
+          {/* Row 1: Source toggle + Status tabs */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+
+            {/* Source toggle */}
+            <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: `1px solid ${C.border}` }}>
+              {(['v3_promoted', 'legacy', 'all'] as const).map((src) => (
+                <button
+                  key={src}
+                  onClick={() => setFilterSource(src)}
+                  style={{
+                    padding: '5px 12px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontFamily: FONTS.ui,
+                    border: 'none',
+                    borderRight: src !== 'all' ? `1px solid ${C.border}` : 'none',
+                    cursor: 'pointer',
+                    background: filterSource === src ? C.navy : C.white,
+                    color: filterSource === src ? C.white : C.gray,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  {src === 'v3_promoted' ? 'v3' : src === 'legacy' ? 'Legacy' : 'All'}
+                </button>
+              ))}
+            </div>
+
+            {/* Status tabs */}
+            <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: `1px solid ${C.border}` }}>
+              {([
+                { value: 'needs_review', label: 'Needs Review' },
+                { value: 'approved',     label: 'Approved' },
+                { value: 'flagged',      label: 'Flagged' },
+                { value: 'all',          label: 'All' },
+              ] as const).map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setFilterStatus(tab.value)}
+                  style={{
+                    padding: '5px 12px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontFamily: FONTS.ui,
+                    border: 'none',
+                    borderRight: tab.value !== 'all' ? `1px solid ${C.border}` : 'none',
+                    cursor: 'pointer',
+                    background: filterStatus === tab.value
+                      ? (tab.value === 'approved' ? C.green : tab.value === 'flagged' ? C.red : C.navy)
+                      : C.white,
+                    color: filterStatus === tab.value ? C.white : C.gray,
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Classification + Tier + Author + Title dropdowns + Sort */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+            <select
+              value={filterClassification}
+              onChange={(e) => setFilterClassification(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="all">All Classifications</option>
+              {Object.entries(CLASSIFICATIONS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+
+            <select
+              value={filterTier}
+              onChange={(e) => setFilterTier(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="all">All Tiers</option>
+              {[1, 2, 3, 4].map((t) => (
+                <option key={t} value={t}>Tier {t}</option>
+              ))}
+            </select>
+
+            <select
+              value={filterAuthor}
+              onChange={(e) => setFilterAuthor(e.target.value)}
+              style={selectStyle}
+            >
+              <option value="all">All Authors</option>
+              {authorOptions.map((a) => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+
+            <select
+              value={filterTitle}
+              onChange={(e) => setFilterTitle(e.target.value)}
+              style={{ ...selectStyle, maxWidth: 200 }}
+            >
+              <option value="all">All Titles</option>
+              {titleOptions.map((t) => (
+                <option key={t} value={t}>{t.length > 40 ? t.slice(0, 40) + '…' : t}</option>
+              ))}
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              style={selectStyle}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="author">Author A–Z</option>
+              <option value="tier_asc">Tier low → high</option>
+              <option value="tier_desc">Tier high → low</option>
+            </select>
+          </div>
+
+          {/* Row 3: Search + reset */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search question text…"
+              style={{
+                flex: 1,
+                border: `1px solid ${C.border}`,
+                borderRadius: 6,
+                padding: '6px 10px',
+                fontSize: 12,
+                color: C.dark,
+                fontFamily: FONTS.ui,
+                outline: 'none',
+              }}
+            />
+            <button
+              onClick={resetFilters}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: C.blue,
+                fontSize: 12,
+                cursor: 'pointer',
+                fontFamily: FONTS.ui,
+                textDecoration: 'underline',
+                whiteSpace: 'nowrap',
+                padding: 0,
+              }}
+            >
+              Reset filters
+            </button>
+          </div>
+        </div>
+
+        {/* ── EMPTY STATE ─────────────────────────────────────────────────────── */}
         {questions.length === 0 && (
           <div
             style={{
@@ -935,97 +1249,108 @@ export default function AdminQuestionsPage() {
             <p style={{ margin: '0 0 8px' }}>No questions found in the database.</p>
             <p style={{ margin: 0, fontSize: 12 }}>
               Run <code style={{ background: C.light, padding: '1px 5px', borderRadius: 3 }}>
-                npx tsx scripts/generateQuestions.ts
-              </code> to generate OMC questions from your passages.
+                npx tsx scripts/promotePassagesToQuestions.ts
+              </code> to generate OMC questions from your v3 passages.
             </p>
           </div>
         )}
 
-        {/* ── QUESTIONS GROUPED BY STANDARD ──────────────────────────────────── */}
-        {grouped.map(({ standard, questions: stdQs }) => {
-          const meta = STANDARDS[standard.code as keyof typeof STANDARDS];
-          const unapproved = stdQs.filter((q) => !q.approved).length;
+        {questions.length > 0 && filteredQuestions.length === 0 && (
+          <div
+            style={{
+              background: C.white,
+              border: `1px solid ${C.border}`,
+              borderRadius: 8,
+              padding: 24,
+              textAlign: 'center',
+              color: C.gray,
+              fontSize: 14,
+            }}
+          >
+            No questions match the current filters.{' '}
+            <button
+              onClick={resetFilters}
+              style={{ background: 'none', border: 'none', color: C.blue, fontSize: 14, cursor: 'pointer', fontFamily: FONTS.ui, textDecoration: 'underline', padding: 0 }}
+            >
+              Reset filters
+            </button>
+          </div>
+        )}
 
+        {/* ── QUESTION LIST ───────────────────────────────────────────────────── */}
+        {paginatedQuestions.map((q) => {
+          const std = standardById[q.standard_id];
+          const meta = std ? STANDARDS[std.code as keyof typeof STANDARDS] : undefined;
+          const standardCode = std?.code ?? q.standard_id.slice(0, 8) + '…';
           return (
-            <div key={standard.id} style={{ marginBottom: 32 }}>
-              {/* Standard header */}
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  marginBottom: 12,
-                  paddingBottom: 8,
-                  borderBottom: `2px solid ${C.navy}`,
-                }}
-              >
-                <span
-                  style={{
-                    background: C.navy,
-                    color: C.white,
-                    borderRadius: 5,
-                    padding: '3px 10px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    letterSpacing: 0.5,
-                  }}
-                >
-                  {standard.code}
-                </span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>
-                  {meta?.title ?? standard.title}
-                </span>
-                <span style={{ fontSize: 12, color: C.gray, marginLeft: 'auto' }}>
-                  {stdQs.length} question{stdQs.length !== 1 ? 's' : ''}
-                  {unapproved > 0 && (
-                    <span style={{ color: C.amber, marginLeft: 6 }}>
-                      · {unapproved} unapproved
-                    </span>
-                  )}
-                </span>
-              </div>
-
-              {stdQs.map((q) => (
-                <QuestionCard
-                  key={q.id}
-                  q={q}
-                  standardCode={standard.code}
-                  onApprove={handleApprove}
-                  onFlag={handleFlag}
-                  onSaveEdit={handleSaveEdit}
-                />
-              ))}
-            </div>
+            <QuestionCard
+              key={q.id}
+              q={q}
+              standardCode={standardCode}
+              onApprove={handleApprove}
+              onFlag={handleFlag}
+              onSaveEdit={handleSaveEdit}
+            />
           );
         })}
 
-        {/* ── ORPHANED QUESTIONS (no matching standard) ───────────────────────── */}
-        {orphans.length > 0 && (
-          <div style={{ marginBottom: 32 }}>
-            <div
+        {/* ── PAGINATION ──────────────────────────────────────────────────────── */}
+        {filteredQuestions.length > PAGE_SIZE && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 20,
+              padding: '12px 16px',
+              background: C.white,
+              border: `1px solid ${C.border}`,
+              borderRadius: 8,
+              fontFamily: FONTS.ui,
+            }}
+          >
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                marginBottom: 12,
-                paddingBottom: 8,
-                borderBottom: `2px solid ${C.gray}`,
+                background: currentPage === 1 ? C.light : C.navy,
+                color: currentPage === 1 ? C.gray : C.white,
+                border: 'none',
+                borderRadius: 6,
+                padding: '7px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                fontFamily: FONTS.ui,
               }}
             >
-              <span style={{ fontSize: 14, fontWeight: 700, color: C.gray }}>
-                Other / Unmatched Standards ({orphans.length})
-              </span>
+              ← Previous
+            </button>
+
+            <div style={{ fontSize: 12, color: C.gray, textAlign: 'center' }}>
+              <div>Page {currentPage} of {totalPages}</div>
+              <div style={{ marginTop: 2 }}>
+                showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredQuestions.length)} of {filteredQuestions.length}
+              </div>
             </div>
-            {orphans.map((q) => (
-              <QuestionCard
-                key={q.id}
-                q={q}
-                standardCode={q.standard_id.slice(0, 8) + '…'}
-                onApprove={handleApprove}
-                onFlag={handleFlag}
-                onSaveEdit={handleSaveEdit}
-              />
-            ))}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              style={{
+                background: currentPage === totalPages ? C.light : C.navy,
+                color: currentPage === totalPages ? C.gray : C.white,
+                border: 'none',
+                borderRadius: 6,
+                padding: '7px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                fontFamily: FONTS.ui,
+              }}
+            >
+              Next →
+            </button>
           </div>
         )}
       </div>

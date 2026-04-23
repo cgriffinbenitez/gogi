@@ -375,7 +375,7 @@ async function main() {
       'dominant_concept', 'plausible_distractors', 'craft_features',
       'discrimination_item_type', 'tier_rationale',
     ].join(', '))
-    .eq('approval_status', 'approved')
+    .in('approval_status', ['approved', 'pending_review'])
     .in('pipeline_version', ['v3', 'v4'])
     .or('question_generated.is.null,question_generated.eq.false')
     .order('created_at', { ascending: true })
@@ -521,6 +521,8 @@ async function main() {
         rationale:                parsed.rationale,
         approved:                 false,
         flagged:                  false,
+        pipeline_source:          'v3_promoted',
+        source_classification:    p.classification,
       }])
       .select('id')
       .single();
