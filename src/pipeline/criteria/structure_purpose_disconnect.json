@@ -1,11 +1,31 @@
 {
   "classification": "structure_purpose_disconnect",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to identify how an author's plot structure choices — the order of events, pacing, placement of key moments, repetition, juxtaposition of scenes, shifts in time or perspective, foreshadowing, strategic openings and closings — work to create meaning in a passage. The student is not identifying WHAT happens; the student is identifying HOW the author structured what happens, and what that structural choice accomplishes.",
+  "mustHave": [
+    "A discernible plot structure move — the passage demonstrates at least one of: deliberate ordering (chronological inversion, delayed reveal, climactic placement), pacing (compression, expansion, stall), repetition or pattern of events, juxtaposition of contrasting scenes, shift (time, perspective, setting), foreshadowing, strategic opening or closing",
+    "The structural choice is observable on the page — a reader can point to where the move happens and what it orders, juxtaposes, or shifts between",
+    "A clear effect of the structural choice — a careful reader can state what the structural move accomplishes in the passage (e.g., 'the flashback placed mid-scene makes the present action feel inevitable')",
+    "A passage that stands alone as a structural unit — the plot move and its effect are discoverable within the passage without whole-book context"
+  ],
+  "mustNotHave": [
+    "Passages that are purely narrative without an identifiable plot structure move — pure description, pure dialogue, pure uninterrupted scene without structural variation",
+    "Structural choices that require whole-book context to interpret — the move must land within the passage itself",
+    "Passages where multiple competing structural interpretations are equally valid — no clear dominant plot move",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the structure is conversation flow rather than authorial plot craft",
+    "Nonfiction biographical or memoir prose about real people's lives; plot structure analysis requires authorial fiction where narrative ordering is a deliberate craft choice",
+    "Archaic or heavily poetic prose that obscures the structural move behind unfamiliar syntax",
+    "Passages where the structural choice's effect requires specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have",
+    "Extremely short passages (under 2 paragraphs) that lack room for a structural move to emerge"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "Structural move is unmistakable. A sharp contrast, an obvious repetition, a clear shift, a pointed foreshadowing moment. Student can name the move and its effect on first reading.",
+    "tier2": "Structural move requires noticing that two things are being put in relation (juxtaposed, contrasted, echoed across a gap). Student must slow down to see the pattern, then articulate what the author achieves with it.",
+    "tier3": "Structural move is built through subtle placement — a detail early that echoes later, a shift that only lands after the full passage, an opening that reframes the ending. Student must hold the structural pattern in mind across the passage and construct what it accomplishes."
+  },
+  "canonicalVocabulary": [
+    "structure", "organization", "order", "sequence", "plot", "pacing",
+    "pattern", "repetition", "juxtaposition", "contrast", "shift", "transition",
+    "placement", "emphasis", "opening", "closing", "climax", "frame",
+    "parallel", "echo", "foreshadow", "flashback", "effect", "reveal"
+  ]
 }

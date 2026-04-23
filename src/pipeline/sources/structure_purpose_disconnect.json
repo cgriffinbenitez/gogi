@@ -1,4 +1,29 @@
 {
-  "gutendexSearchTerms": ["short stories"],
-  "priorityAuthors": ["O. Henry", "Ambrose Bierce"]
+  "gutendexSearchTerms": [
+    "novels",
+    "short stories",
+    "literary fiction",
+    "gothic fiction"
+  ],
+  "priorityAuthors": [
+    "Charles Dickens",
+    "Nathaniel Hawthorne",
+    "Edith Wharton",
+    "Jane Austen",
+    "Herman Melville",
+    "Joseph Conrad",
+    "Thomas Hardy",
+    "George Eliot",
+    "Mark Twain",
+    "Henry James",
+    "Willa Cather",
+    "Kate Chopin",
+    "Sarah Orne Jewett",
+    "Stephen Crane",
+    "Guy de Maupassant",
+    "Anton Chekhov",
+    "O. Henry",
+    "Oscar Wilde",
+    "Sinclair Lewis"
+  ]
 }
