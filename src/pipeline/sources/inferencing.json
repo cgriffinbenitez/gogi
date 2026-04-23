@@ -1,4 +1,32 @@
 {
-  "gutendexSearchTerms": ["short stories", "mystery"],
-  "priorityAuthors": ["Arthur Conan Doyle", "O. Henry", "Kate Chopin"]
+  "gutendexSearchTerms": [
+    "novels",
+    "short stories",
+    "literary fiction",
+    "realist fiction",
+    "gothic fiction"
+  ],
+  "priorityAuthors": [
+    "Jane Austen",
+    "Nathaniel Hawthorne",
+    "Edith Wharton",
+    "Willa Cather",
+    "Kate Chopin",
+    "Mark Twain",
+    "Oscar Wilde",
+    "Charles Dickens",
+    "George Eliot",
+    "Thomas Hardy",
+    "Joseph Conrad",
+    "Henry James",
+    "Herman Melville",
+    "Stephen Crane",
+    "Sarah Orne Jewett",
+    "O. Henry",
+    "Anton Chekhov",
+    "Guy de Maupassant",
+    "Edgar Allan Poe",
+    "Charlotte Perkins Gilman",
+    "Sinclair Lewis"
+  ]
 }
