@@ -1,11 +1,31 @@
 {
   "classification": "no_metacognitive_strategy",
-  "targetSkill": "",
-  "mustHave": [],
-  "mustNotHave": [],
+  "targetSkill": "Teach the student to monitor their own comprehension while reading — to notice when meaning breaks down — and to deploy a specific strategy (annotation, re-read, identify the confusion, ask a question, apply SOAPSTone) to recover understanding. The student is not passively reading and hoping; the student is actively tracking comprehension and intervening when it fails.",
+  "mustHave": [
+    "A passage that rewards strategic reading — active noticing, annotation, re-reading of specific sentences, or deliberate self-questioning produces measurably better comprehension than passive first-pass reading",
+    "Discrete comprehension-breakdown points in the passage — identifiable sentences or transitions where a passive reader will lose meaning but a strategic reader can catch and recover",
+    "Observable signals that cue strategy deployment — a hard sentence, a pronoun reference, a time shift, a tonal shift, a new character introduction — something that should prompt a metacognitive move",
+    "A passage complex enough to teach strategy but not so complex that strategy cannot rescue comprehension"
+  ],
+  "mustNotHave": [
+    "Passages so simple that no strategy is needed — passive reading suffices",
+    "Passages so complex that strategy cannot rescue comprehension — metacognition alone is insufficient, other primitives are blocking (vocabulary, syntax, schema)",
+    "Passages where the strategic move required is a single domain skill (just inferencing, just tone identification) rather than the general metacognitive monitoring this primitive targets",
+    "Paragraphs dominated by dialogue (60%+ quotation marks) where the metacognitive work is character-level rather than reader-level",
+    "Nonfiction biographical or memoir prose about real people's lives",
+    "Archaic or heavily poetic prose whose strategic demand is inseparable from syntactic parsing",
+    "Passages requiring specific historical, political, religious, or cultural knowledge a 9th grader is unlikely to have"
+  ],
   "tierSignals": {
-    "tier1": "",
-    "tier2": "",
-    "tier3": ""
-  }
+    "tier1": "One clear comprehension-breakdown point per passage — an ambiguous pronoun, a time shift, a confusing sentence. Student deploys one strategy (annotate, re-read, clarify) and recovers meaning. Strategic monitoring is focused and bounded.",
+    "tier2": "Two or three breakdown points across the passage, requiring sustained strategic monitoring. Student must track where meaning is fragile and deploy different strategies per situation — re-read for this one, clarify for that one, annotate for the third.",
+    "tier3": "Breakdown points are subtle and continuous — the passage requires metacognitive vigilance throughout, not just at marked difficulty spikes. Student must maintain an internal comprehension monitor and deploy strategies proactively rather than reactively."
+  },
+  "canonicalVocabulary": [
+    "strategy", "monitor", "track", "notice", "aware", "conscious",
+    "annotate", "question", "reread", "pause", "clarify", "check",
+    "understand", "confused", "unclear", "lost", "recover",
+    "before reading", "during reading", "after reading",
+    "SOAPSTone", "predict", "summarize", "visualize"
+  ]
 }
