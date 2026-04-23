@@ -7,24 +7,27 @@
     "realist fiction"
   ],
   "priorityAuthors": [
-    "Nathaniel Hawthorne",
     "Edith Wharton",
+    "George Eliot",
+    "Jane Austen",
+    "Kate Chopin",
+    "Willa Cather",
+    "Sarah Orne Jewett",
+    "Charlotte Perkins Gilman",
+    "Mary Shelley",
+    "Charlotte Brontë",
+    "Katherine Mansfield",
+    "Nathaniel Hawthorne",
     "Henry James",
     "Joseph Conrad",
     "Herman Melville",
-    "George Eliot",
     "Thomas Hardy",
-    "Jane Austen",
     "Charles Dickens",
-    "Kate Chopin",
-    "Willa Cather",
-    "Stephen Crane",
     "Anton Chekhov",
     "Guy de Maupassant",
-    "Sarah Orne Jewett",
-    "Charlotte Perkins Gilman",
-    "Edgar Allan Poe",
     "Oscar Wilde",
-    "Sinclair Lewis"
+    "Charles W. Chesnutt",
+    "Jean Toomer",
+    "Paul Laurence Dunbar"
   ]
 }
