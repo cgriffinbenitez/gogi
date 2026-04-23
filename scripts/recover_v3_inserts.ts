@@ -8,12 +8,19 @@
  * Reads a completed pipeline CSV, finds all rows with status='error', re-tags
  * each passage, and inserts into intervention_passages.
  *
- * Usage:
+ * Usage (capped — top N with source diversity):
  *   npx tsx scripts/recover_v3_inserts.ts \
  *     --csv docs/pipeline/runs/2026-04-22_tone_misreading_v3_run.csv \
  *     --classification tone_misreading \
  *     --max 25 \
  *     [--per-source-cap 5] \
+ *     [--dry-run]
+ *
+ * Usage (write all — preserve full library, approval_status = pending_review):
+ *   npx tsx scripts/recover_v3_inserts.ts \
+ *     --csv docs/pipeline/runs/2026-04-22_tone_misreading_v3_run.csv \
+ *     --classification tone_misreading \
+ *     --write-all-passed \
  *     [--dry-run]
  */
 
@@ -43,9 +50,10 @@ const classification = getArg(args, '--classification');
 const maxArg         = getArg(args, '--max');
 const perSourceArg   = getArg(args, '--per-source-cap');
 const dryRun         = args.includes('--dry-run');
+const writeAllPassed = args.includes('--write-all-passed');
 
 if (!csvPath || !classification) {
-  console.error('Usage: npx tsx scripts/recover_v3_inserts.ts --csv <path> --classification <name> --max <n> [--per-source-cap <n>] [--dry-run]');
+  console.error('Usage: npx tsx scripts/recover_v3_inserts.ts --csv <path> --classification <name> [--max <n>] [--per-source-cap <n>] [--write-all-passed] [--dry-run]');
   process.exit(1);
 }
 
@@ -54,8 +62,8 @@ if (!fs.existsSync(csvPath)) {
   process.exit(1);
 }
 
-const max          = maxArg         ? parseInt(maxArg, 10)         : 25;
-const perSourceCap = perSourceArg   ? parseInt(perSourceArg, 10)   : Math.ceil(max / 3);
+const max          = writeAllPassed ? Infinity            : (maxArg       ? parseInt(maxArg, 10)       : 25);
+const perSourceCap = writeAllPassed ? Infinity            : (perSourceArg ? parseInt(perSourceArg, 10) : Math.ceil((maxArg ? parseInt(maxArg, 10) : 25) / 3));
 
 // ─── Load criteria ────────────────────────────────────────────────────────────
 
@@ -86,11 +94,15 @@ const records = parse(raw, { columns: true, skip_empty_lines: true }) as CSVReco
 // Only recover 'error' rows — these were tagged but failed to write
 const errorRows = records.filter(r => r.status === 'error');
 
+const modeLabel = writeAllPassed
+  ? 'write-all-passed (approval_status=pending_review, no cap)'
+  : `max: ${max}  |  per-source-cap: ${perSourceCap}`;
+
 console.log(`\n═══════════════════════════════════════════════════════`);
 console.log(`  v3 Insert Recovery  |  ${classification}`);
 console.log(`  CSV: ${csvPath}`);
 console.log(`  Error rows found: ${errorRows.length}`);
-console.log(`  max: ${max}  |  per-source-cap: ${perSourceCap}  |  dry-run: ${dryRun}`);
+console.log(`  mode: ${modeLabel}  |  dry-run: ${dryRun}`);
 console.log(`═══════════════════════════════════════════════════════\n`);
 
 if (errorRows.length === 0) {
@@ -119,7 +131,8 @@ async function main() {
 
   const writtenPerSource: Record<string, number> = {};
 
-  // Sort: prefer lower tier numbers first, then by source (round-robin-ish)
+  // Sort: prefer lower tier numbers first, then by source
+  // In write-all-passed mode order doesn't affect what gets written, only logging order
   const sorted = [...errorRows].sort((a, b) => {
     const tierA = parseInt(a.tier || '4', 10);
     const tierB = parseInt(b.tier || '4', 10);
@@ -130,7 +143,7 @@ async function main() {
   for (const row of sorted) {
     if (inserted >= max) break;
 
-    // Per-source cap
+    // Per-source cap (bypassed in --write-all-passed mode)
     const sourceCount = writtenPerSource[row.title] ?? 0;
     if (sourceCount >= perSourceCap) {
       skippedCap++;
@@ -175,6 +188,8 @@ async function main() {
       continue;
     }
 
+    // approval_status: pending_review for all inserts
+    // (migration backfills existing v2 rows to 'approved' separately)
     const dbRow = {
       classification,
       paragraph_text:           para.text,
@@ -199,10 +214,13 @@ async function main() {
       intervention_tier:        tagResult.intervention_tier,
       tier_rationale:           tagResult.tier_rationale,
       q5_flag_5e_compatible:    false, // not preserved in CSV — safe default
+      approval_status:          'pending_review',
     };
 
+    const insertedLabel = max === Infinity ? String(inserted + 1) : `${inserted + 1}/${max}`;
+
     if (dryRun) {
-      console.log(`  [dry-run] would insert T${tagResult.intervention_tier} [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`);
+      console.log(`  [dry-run] would insert T${tagResult.intervention_tier} approval=pending_review [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`);
       inserted++;
       writtenPerSource[row.title] = sourceCount + 1;
       continue;
@@ -214,7 +232,7 @@ async function main() {
       inserted++;
       writtenPerSource[row.title] = sourceCount + 1;
       console.log(
-        `  [inserted] ${inserted}/${max} T${tagResult.intervention_tier}` +
+        `  [inserted] ${insertedLabel} T${tagResult.intervention_tier} approval=pending_review` +
         ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
       );
     } else if (writeResult.status === 'duplicate') {
@@ -229,7 +247,8 @@ async function main() {
   console.log(`
 ═══════════════════════════════════════════════════════
   Recovery complete — ${classification}
-  Inserted:          ${inserted}
+  Mode:              ${writeAllPassed ? 'write-all-passed' : 'capped'}
+  Inserted:          ${inserted}  (approval_status = pending_review)
   Tag failed:        ${tagFailed}
   Target not found:  ${tagNotDetected}
   Duplicates:        ${duplicates}

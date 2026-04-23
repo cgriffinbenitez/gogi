@@ -393,6 +393,7 @@ ${frontMatterLines || '    (none stripped)'}
       intervention_tier:        tagResult.intervention_tier,
       tier_rationale:           tagResult.tier_rationale,
       q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
+      approval_status:          'pending_review' as const,
     };
 
     const writeResult = await writePassageV3(row);

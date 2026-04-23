@@ -162,6 +162,7 @@ export interface PassageRowV3 {
   intervention_tier: number;
   tier_rationale: string;
   q5_flag_5e_compatible: boolean;
+  approval_status: 'pending_review' | 'approved' | 'rejected';
 }
 
 export type WriteStatus = 'inserted' | 'duplicate' | 'error';
