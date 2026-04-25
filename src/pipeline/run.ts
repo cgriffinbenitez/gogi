@@ -26,6 +26,9 @@ import { appendCSV, initCSV, isDuplicateV3, writePassageV3 } from './stages/writ
 
 const PIPELINE_VERSION: 'v4' = 'v4';
 
+// Per-book filter API call cap — prevents omnibus volume runaway cost
+const PER_BOOK_FILTER_CAP = 1000;
+
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
 const VALID_CLASSIFICATIONS = [
@@ -50,6 +53,7 @@ Options:
   --per-source-cap   Max insertions per source title (default: ceil(max/3)).
   --write-all-passed Write every filter-passed passage as pending_review.
                      Bypasses --max and --per-source-cap. Dedup still enforced.
+  --max-books        Max books to fetch per run (default: 5).
   --dry-run          Run stages 1-3 (no DB write, no tagging).
   --help             Show this help.
 
@@ -92,12 +96,18 @@ function parseArgs(argv: string[]): PipelineOptions | null {
     ? parseInt(args[perSourceCapIdx + 1], 10)
     : undefined;
 
+  const maxBooksIdx = args.indexOf('--max-books');
+  const maxBooks = maxBooksIdx !== -1 && args[maxBooksIdx + 1]
+    ? parseInt(args[maxBooksIdx + 1], 10)
+    : 5;
+
   const dryRun        = args.includes('--dry-run');
   const writeAllPassed = args.includes('--write-all-passed');
 
   return {
     classification,
     max: isNaN(max) ? 15 : max,
+    maxBooks: isNaN(maxBooks) ? 5 : maxBooks,
     dryRun,
     writeAllPassed,
     perSourceCapOverride: perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
@@ -149,7 +159,21 @@ async function main() {
   const opts = parseArgs(process.argv);
   if (!opts) { process.exit(1); }
 
-  const { classification, max, dryRun, writeAllPassed, perSourceCapOverride } = opts;
+  const { classification, max, maxBooks, dryRun, writeAllPassed, perSourceCapOverride } = opts;
+
+  // ── Process lock (prevents parallel pipeline instances) ───────────────────
+  const LOCK_FILE = '/tmp/gogi-pipeline.lock';
+  if (fs.existsSync(LOCK_FILE)) {
+    const existingPid = fs.readFileSync(LOCK_FILE, 'utf8').trim();
+    console.error(`\nPipeline already running (PID ${existingPid}). Refusing to start.`);
+    console.error(`If the previous run crashed, remove the lock: rm ${LOCK_FILE}\n`);
+    process.exit(1);
+  }
+  fs.writeFileSync(LOCK_FILE, String(process.pid));
+  function releaseLock() { try { fs.unlinkSync(LOCK_FILE); } catch {} }
+  process.on('exit', releaseLock);
+  process.on('SIGINT',  () => { releaseLock(); process.exit(130); });
+  process.on('SIGTERM', () => { releaseLock(); process.exit(143); });
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error('Error: ANTHROPIC_API_KEY is not set.');
@@ -162,7 +186,7 @@ async function main() {
 
   console.log(`\n═══════════════════════════════════════════════════════`);
   console.log(`  GOGI Pipeline ${PIPELINE_VERSION}  |  ${classification}`);
-  console.log(`  max: ${writeAllPassed ? '∞ (write-all-passed)' : max}  |  dry-run: ${dryRun}`);
+  console.log(`  max: ${writeAllPassed ? '∞ (write-all-passed)' : max}  |  max-books: ${maxBooks}  |  dry-run: ${dryRun}`);
   console.log(`═══════════════════════════════════════════════════════`);
   console.log(`  [mode] write-all-passed: ${writeAllPassed ? 'ON' : 'OFF (default cap)'}`);
   console.log(`═══════════════════════════════════════════════════════\n`);
@@ -178,10 +202,9 @@ async function main() {
 
   // Per-source cap (write phase) and per-tier-per-book cap (pool build)
   const perSourceCap         = perSourceCapOverride ?? Math.ceil(max / 3);
-  // Pool build: stop per tier per book after this many suitables
   const poolCapPerBookPerTier = Math.max(2, Math.ceil(max / 8));
 
-  // Counters
+  // Run-level counters (persist across all books)
   let fetched              = 0;
   let filtered             = 0;
   let tagged               = 0;
@@ -195,38 +218,57 @@ async function main() {
   const frontMatterPerBook: Array<{ title: string; chars: number }> = [];
 
   // ── Stage 1: Fetch ───────────────────────────────────────────────────────────
-  const books = await fetchBooksForClassification(sources, 20);
+  const books = await fetchBooksForClassification(sources, maxBooks);
   fetched = books.length;
   console.log();
 
-  // ── Phase 1: Extract + Filter all books → build suitable pool ────────────────
-  const suitablePool: SuitableParagraph[] = [];
-  const poolPerSourceTier: Record<string, number> = {};
+  // ── Per-book pool + write state (persists across books for cap tracking) ────
+  const suitablePool:          SuitableParagraph[]      = []; // full-run accumulator for dry-run report
+  const poolPerSourceTier:     Record<string, number>   = {};
+  const writtenPerSource:      Record<string, number>   = {};
+  const writtenPerAuthorGroup: number[]                 = (sources.authorGroupCaps ?? []).map(() => 0);
 
   const TIER_KEYS: TierKey[] = ['T1', 'T2', 'T3', 'T4'];
-
   let bookIndex = 0;
 
+  // ── Per-book: filter → immediately tag + write (FIX 1) ─────────────────────
   for (const book of books) {
     bookIndex++;
     resetFilterCacheStats();
+    let bookFilterCalls = 0;
 
     const { strippedBook, charsSkipped } = stripBookFrontMatter(book);
     frontMatterTotal += charsSkipped;
     frontMatterPerBook.push({ title: book.title, chars: charsSkipped });
 
-    const tierUnits = extractPassageUnits(strippedBook);
+    const tierUnits  = extractPassageUnits(strippedBook);
     let bookSuitable = 0;
+    const bookPool:  SuitableParagraph[] = [];
 
+    // Phase 1: filter this book
     for (const tierKey of TIER_KEYS) {
       const units = tierUnits[tierKey];
       let tierSuitable = 0;
+      let budgetExceeded = false;
 
       for (const unit of units) {
         if (!writeAllPassed && tierSuitable >= poolCapPerBookPerTier) break;
 
+        // FIX 3: per-book filter API budget cap
+        if (bookFilterCalls >= PER_BOOK_FILTER_CAP) {
+          if (!budgetExceeded) {
+            console.warn(
+              `  [budget] Filter cap (${PER_BOOK_FILTER_CAP} calls) reached for` +
+              ` "${book.title.slice(0, 50)}" — skipping remaining passages in this book`,
+            );
+            budgetExceeded = true;
+          }
+          break;
+        }
+
         const filterResult = await filterParagraph(unit, criteria);
         filtered++;
+        bookFilterCalls++;
 
         const csvBase = {
           classification,
@@ -247,12 +289,14 @@ async function main() {
         };
 
         if (filterResult.suitable) {
-          suitablePool.push({
+          const suitable: SuitableParagraph = {
             ...unit,
             filterReasoning: filterResult.reasoning,
             filterResult,
             tierKey,
-          });
+          };
+          bookPool.push(suitable);
+          suitablePool.push(suitable); // keep for dry-run report
           const key = `${unit.sourceTitle}:${tierKey}`;
           poolPerSourceTier[key] = (poolPerSourceTier[key] ?? 0) + 1;
           tierSuitable++;
@@ -271,23 +315,160 @@ async function main() {
     console.log(
       `[Stage 2-3] "${book.title.slice(0, 50)}"` +
       `  front-matter: ${charsSkipped.toLocaleString()} chars stripped` +
-      `  suitable: ${bookSuitable}` +
+      `  suitable: ${bookSuitable}  filter-calls: ${bookFilterCalls}` +
       `  (T1:${tierUnits.T1.length} T2:${tierUnits.T2.length} T3:${tierUnits.T3.length} T4:${tierUnits.T4.length} candidate units)`,
     );
 
     // Per-book cache hit rate (filter stage)
-    const fs = getFilterCacheStats();
-    const totalFilterInput = fs.input + fs.cacheRead + fs.cacheCreation;
+    const fStats = getFilterCacheStats();
+    const totalFilterInput = fStats.input + fStats.cacheRead + fStats.cacheCreation;
     const hitRate = totalFilterInput > 0
-      ? ((fs.cacheRead / totalFilterInput) * 100).toFixed(1)
+      ? ((fStats.cacheRead / totalFilterInput) * 100).toFixed(1)
       : '0.0';
     console.log(
       `  [cache] Book ${bookIndex} filter hit rate: ${hitRate}%` +
-      ` (${fs.cacheRead.toLocaleString()} cached / ${totalFilterInput.toLocaleString()} total input tokens)`,
+      ` (${fStats.cacheRead.toLocaleString()} cached / ${totalFilterInput.toLocaleString()} total input tokens)`,
     );
-  }
 
-  // ── Dry-run: report pool and exit ────────────────────────────────────────────
+    // FIX 1: Phase 2 inline — tag + write this book's pool immediately
+    if (!dryRun && bookPool.length > 0) {
+      console.log(
+        `\n  [Stage 4-5] Tagging and writing ${bookPool.length} suitable` +
+        ` passage(s) from "${book.title.slice(0, 50)}"...`,
+      );
+
+      const poolToWrite = [...bookPool];
+
+      while (poolToWrite.length > 0) {
+        let para: SuitableParagraph;
+
+        if (writeAllPassed) {
+          para = poolToWrite.shift()!;
+        } else {
+          if (inserted >= max) break;
+
+          const eligible = poolToWrite.filter(p => {
+            if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
+            const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
+            if (groupIdx !== -1) {
+              const groupCap = sources.authorGroupCaps![groupIdx].maxInserted;
+              if (writtenPerAuthorGroup[groupIdx] >= groupCap) return false;
+            }
+            return true;
+          });
+          if (eligible.length === 0) break;
+
+          eligible.sort((a, b) => {
+            const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
+            if (sourceDiff !== 0) return sourceDiff;
+            return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
+          });
+          para = eligible[0];
+          poolToWrite.splice(poolToWrite.indexOf(para), 1);
+        }
+
+        const csvBase = {
+          classification,
+          gutenberg_id:     para.gutenbergId,
+          title:            para.sourceTitle,
+          author:           para.sourceAuthor,
+          paragraph_text:   para.text,
+          word_count:       para.wordCount,
+          paragraph_count:  para.paragraphCount,
+          suitable:         true,
+          reasoning:        para.filterReasoning,
+          canonical_answer: '',
+          distractors:      '',
+          keyword_flags:    '',
+          difficulty_tier:  '' as const,
+          pipeline_version: PIPELINE_VERSION,
+        };
+
+        // Duplicate check
+        const dup = await isDuplicateV3(para.gutenbergId, para.hash, 0);
+        if (dup) {
+          appendCSV(csvPath, { ...csvBase, status: 'duplicate' });
+          duplicates++;
+          continue;
+        }
+
+        // Tag
+        const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
+        const tagResult = await tagParagraph(para, criteria, q5Patterns);
+
+        if (!tagResult) {
+          appendCSV(csvPath, { ...csvBase, status: 'tagging_failed' });
+          skipped++;
+          continue;
+        }
+        if ('targetNotDetected' in tagResult) {
+          console.log(`  [Stage 4] TARGET_NOT_DETECTED: ${tagResult.reason}`);
+          appendCSV(csvPath, { ...csvBase, status: 'tag_not_detected' });
+          tagRejected++;
+          continue;
+        }
+        tagged++;
+
+        // Write v3 row
+        const row = {
+          classification,
+          paragraph_text:           para.text,
+          word_count:               para.wordCount,
+          paragraph_count:          para.paragraphCount,
+          source:                   'gutenberg',
+          source_title:             para.sourceTitle,
+          source_author:            para.sourceAuthor,
+          source_year:              para.sourceYear,
+          source_gutenberg_id:      para.gutenbergId,
+          approved:                 false,
+          paragraph_hash:           para.hash,
+          pipeline_version:         PIPELINE_VERSION,
+          target_signal:            tagResult.target_signal,
+          item_patterns_supported:  tagResult.item_patterns_supported,
+          supporting_evidence:      tagResult.supporting_evidence,
+          non_supporting_evidence:  tagResult.non_supporting_evidence,
+          dominant_concept:         tagResult.dominant_concept ?? null,
+          plausible_distractors:    tagResult.plausible_distractors ?? null,
+          craft_features:           tagResult.craft_features ?? null,
+          discrimination_item_type: tagResult.discrimination_item_type,
+          intervention_tier:        tagResult.intervention_tier,
+          tier_rationale:           tagResult.tier_rationale,
+          q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
+          approval_status:          'pending_review' as const,
+        };
+
+        const writeResult = await writePassageV3(row);
+        appendCSV(csvPath, {
+          ...csvBase,
+          tier:   tagResult.intervention_tier,
+          status: writeResult.status,
+        });
+
+        if (writeResult.status === 'inserted') {
+          inserted++;
+          writtenPerSource[para.sourceTitle] = (writtenPerSource[para.sourceTitle] ?? 0) + 1;
+          const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
+          if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
+          tierCounts[para.tierKey]++;
+
+          const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
+          console.log(
+            `  [Stage 5] inserted ${insertedLabel} [T${tagResult.intervention_tier}]` +
+            ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
+          );
+        } else if (writeResult.status === 'duplicate') {
+          duplicates++;
+        } else {
+          console.warn(`  [Stage 5] write error: ${writeResult.error}`);
+          skipped++;
+        }
+      }
+
+      console.log(); // blank line between books
+    }
+  } // end book loop
+
+  // ── Dry-run: report accumulated pool (all books filtered) and exit ───────────
   if (dryRun) {
     const poolBySource = Object.entries(poolPerSourceTier)
       .sort((a, b) => b[1] - a[1])
@@ -321,139 +502,6 @@ ${frontMatterLines || '    (none stripped)'}
     return;
   }
 
-  // ── Phase 2: Tag + write from pool ───────────────────────────────────────────
-  const writtenPerSource:     Record<string, number> = {};
-  const writtenPerAuthorGroup: number[] = (sources.authorGroupCaps ?? []).map(() => 0);
-
-  while (suitablePool.length > 0) {
-    let para: SuitableParagraph;
-
-    if (writeAllPassed) {
-      // write-all-passed: drain pool in order, no cap gates
-      para = suitablePool.shift()!;
-    } else {
-      // default: enforce --max and --per-source-cap via round-robin
-      if (inserted >= max) break;
-
-      const eligible = suitablePool.filter(p => {
-        if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
-        const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
-        if (groupIdx !== -1) {
-          const groupCap = sources.authorGroupCaps![groupIdx].maxInserted;
-          if (writtenPerAuthorGroup[groupIdx] >= groupCap) return false;
-        }
-        return true;
-      });
-      if (eligible.length === 0) break;
-
-      // Round-robin: prefer source with fewest written, then prefer lower tiers first
-      eligible.sort((a, b) => {
-        const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
-        if (sourceDiff !== 0) return sourceDiff;
-        // T1 < T2 < T3 < T4 within same source count
-        return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
-      });
-      para = eligible[0];
-      suitablePool.splice(suitablePool.indexOf(para), 1);
-    }
-
-    const csvBase = {
-      classification,
-      gutenberg_id:     para.gutenbergId,
-      title:            para.sourceTitle,
-      author:           para.sourceAuthor,
-      paragraph_text:   para.text,
-      word_count:       para.wordCount,
-      paragraph_count:  para.paragraphCount,
-      suitable:         true,
-      reasoning:        para.filterReasoning,
-      canonical_answer: '',
-      distractors:      '',
-      keyword_flags:    '',
-      difficulty_tier:  '' as const,
-      pipeline_version: PIPELINE_VERSION,
-    };
-
-    // Duplicate check (tier-aware)
-    const dup = await isDuplicateV3(para.gutenbergId, para.hash, 0); // tier from tag
-    if (dup) {
-      appendCSV(csvPath, { ...csvBase, status: 'duplicate' });
-      duplicates++;
-      continue;
-    }
-
-    // Tag (pass Q5 patterns so prompt has context)
-    const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
-    const tagResult = await tagParagraph(para, criteria, q5Patterns);
-
-    if (!tagResult) {
-      appendCSV(csvPath, { ...csvBase, status: 'tagging_failed' });
-      skipped++;
-      continue;
-    }
-    if ('targetNotDetected' in tagResult) {
-      console.log(`  [Stage 4] TARGET_NOT_DETECTED: ${tagResult.reason}`);
-      appendCSV(csvPath, { ...csvBase, status: 'tag_not_detected' });
-      tagRejected++;
-      continue;
-    }
-    tagged++;
-
-    // Write v3 row
-    const row = {
-      classification,
-      paragraph_text:           para.text,
-      word_count:               para.wordCount,
-      paragraph_count:          para.paragraphCount,
-      source:                   'gutenberg',
-      source_title:             para.sourceTitle,
-      source_author:            para.sourceAuthor,
-      source_year:              para.sourceYear,
-      source_gutenberg_id:      para.gutenbergId,
-      approved:                 false,
-      paragraph_hash:           para.hash,
-      pipeline_version:         PIPELINE_VERSION,
-      target_signal:            tagResult.target_signal,
-      item_patterns_supported:  tagResult.item_patterns_supported,
-      supporting_evidence:      tagResult.supporting_evidence,
-      non_supporting_evidence:  tagResult.non_supporting_evidence,
-      dominant_concept:         tagResult.dominant_concept ?? null,
-      plausible_distractors:    tagResult.plausible_distractors ?? null,
-      craft_features:           tagResult.craft_features ?? null,
-      discrimination_item_type: tagResult.discrimination_item_type,
-      intervention_tier:        tagResult.intervention_tier,
-      tier_rationale:           tagResult.tier_rationale,
-      q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
-      approval_status:          'pending_review' as const,
-    };
-
-    const writeResult = await writePassageV3(row);
-    appendCSV(csvPath, {
-      ...csvBase,
-      tier:             tagResult.intervention_tier,
-      status:           writeResult.status,
-    });
-
-    if (writeResult.status === 'inserted') {
-      inserted++;
-      writtenPerSource[para.sourceTitle] = (writtenPerSource[para.sourceTitle] ?? 0) + 1;
-      const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
-      if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
-      tierCounts[para.tierKey]++;
-
-      const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
-      console.log(
-        `  [Stage 5] inserted ${insertedLabel} [T${tagResult.intervention_tier}]` +
-        ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
-      );
-    } else if (writeResult.status === 'duplicate') {
-      duplicates++;
-    } else {
-      console.warn(`  [Stage 5] write error: ${writeResult.error}`);
-      skipped++;
-    }
-  }
-
   // ── Summary ──────────────────────────────────────────────────────────────────
   const writtenBySource = Object.entries(writtenPerSource)
     .sort((a, b) => b[1] - a[1])
@@ -474,6 +522,7 @@ ${frontMatterLines || '    (none stripped)'}
   Pipeline ${PIPELINE_VERSION} complete — ${classification}
   Mode:                    ${writeAllPassed ? 'write-all-passed (no cap)' : 'default (capped)'}
   Books fetched:           ${fetched}
+  Max books:               ${maxBooks}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
   Claude tag calls:        ${tagged}
@@ -505,15 +554,9 @@ ${frontMatterLines || '    (none stripped)'}
 
   // ── Run-end cache report ─────────────────────────────────────────────────────
   const tagStats = getTagCacheStats();
-  const filterStats = getFilterCacheStats(); // cumulative from last book (Phase 1 complete)
-  // Re-accumulate filter totals across all books using tag snapshot as reference
-  // (filter stats were reset per-book; tag stats cover the full Phase 2 run)
-  // For the run-end report, compute combined totals from the tag stage only
-  // (filter per-book totals were already logged above; here we report tag + guidance).
-  const totalCacheRead = tagStats.cacheRead;
+  const totalCacheRead     = tagStats.cacheRead;
   const totalCacheCreation = tagStats.cacheCreation;
-  const totalInput = tagStats.input;
-  // Savings: cache reads cost $0.30/MTok vs $3.00/MTok standard → $2.70 saved per MTok cached
+  const totalInput         = tagStats.input;
   const savingsUsd = (totalCacheRead / 1_000_000) * 2.70;
   console.log(
     `  [cache] Tag stage — Total cache hits: ${totalCacheRead.toLocaleString()} tokens` +

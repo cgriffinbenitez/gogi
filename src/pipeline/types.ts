@@ -194,6 +194,7 @@ export interface CSVRow {
 export interface PipelineOptions {
   classification: string;
   max: number;
+  maxBooks: number;
   dryRun: boolean;
   writeAllPassed: boolean;
   perSourceCapOverride?: number;
