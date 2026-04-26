@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "short stories",
@@ -17,7 +20,7 @@
     "Mary Wilkins Freeman",
     "Katherine Mansfield",
     "Sui Sin Far",
-    "Zitkala-Ša",
+    "Zitkala-\u0160a",
     "Nathaniel Hawthorne",
     "Thomas Hardy",
     "Henry James",

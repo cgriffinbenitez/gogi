@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "short stories",
@@ -12,8 +15,8 @@
     "Willa Cather",
     "Kate Chopin",
     "Sarah Orne Jewett",
-    "Charlotte Brontë",
-    "Emily Brontë",
+    "Charlotte Bront\u00eb",
+    "Emily Bront\u00eb",
     "Mary Shelley",
     "Elizabeth Gaskell",
     "Charles Dickens",

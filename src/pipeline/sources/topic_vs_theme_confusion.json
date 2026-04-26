@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "short stories",
@@ -13,7 +16,7 @@
     "Charlotte Perkins Gilman",
     "Jane Austen",
     "Sarah Orne Jewett",
-    "Charlotte Brontë",
+    "Charlotte Bront\u00eb",
     "Mary Wilkins Freeman",
     "Frances Harper",
     "Sui Sin Far",

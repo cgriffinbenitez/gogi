@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "short stories",
     "gothic fiction",

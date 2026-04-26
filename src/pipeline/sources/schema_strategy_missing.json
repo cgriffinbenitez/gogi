@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "short stories",
@@ -15,7 +18,7 @@
     "George Eliot",
     "Elizabeth Gaskell",
     "Mary Wilkins Freeman",
-    "Zitkala-Ša",
+    "Zitkala-\u0160a",
     "S. Alice Callahan",
     "L.M. Montgomery",
     "Jack London",

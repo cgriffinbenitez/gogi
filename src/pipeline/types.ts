@@ -17,6 +17,9 @@ export interface CriteriaConfig {
 export interface SourceConfig {
   gutendexSearchTerms: string[];
   priorityAuthors: string[];
+  maxApprovedPerAuthor?: number;   // diversity cap: max pending_review+approved rows per author per classification
+  maxApprovedPerBook?: number;     // diversity cap: max pending_review+approved rows per Gutenberg book per classification
+  maxApprovedPerRun?: number;      // diversity cap: max inserts in a single pipeline run
   /** Optional combined author caps — e.g. cap Austen+Dickens at 3 inserted total. */
   authorGroupCaps?: Array<{
     authors: string[];    // display-name format ("Jane Austen") — matched loosely

@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "short stories",
@@ -13,8 +16,8 @@
     "Sarah Orne Jewett",
     "Charlotte Perkins Gilman",
     "Mary Shelley",
-    "Charlotte Brontë",
-    "Emily Brontë",
+    "Charlotte Bront\u00eb",
+    "Emily Bront\u00eb",
     "Katherine Mansfield",
     "Sui Sin Far",
     "Nathaniel Hawthorne",

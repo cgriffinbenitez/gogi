@@ -22,7 +22,7 @@ import { fetchBooksForClassification } from './stages/fetch';
 import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
 import { filterParagraph, getFilterCacheStats, resetFilterCacheStats } from './stages/filter';
 import { tagParagraph, getTagCacheStats } from './stages/tag';
-import { appendCSV, initCSV, isDuplicateV3, writePassageV3 } from './stages/write';
+import { appendCSV, initCSV, isDuplicateV3, writePassageV3, fetchDiversityCounts } from './stages/write';
 
 const PIPELINE_VERSION: 'v4' = 'v4';
 
@@ -217,8 +217,35 @@ async function main() {
   const tierCounts: Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
   const frontMatterPerBook: Array<{ title: string; chars: number }> = [];
 
+  // ── Diversity counts (one query — reused by pre-fetch check and Phase 2 caps) ─
+  const { authorCounts: divAuthorCounts, bookCounts: divBookCounts } = dryRun
+    ? { authorCounts: new Map<string, number>(), bookCounts: new Map<number, number>() }
+    : await fetchDiversityCounts(classification);
+
+  // ── Stage 0: Pre-fetch author saturation check ────────────────────────────────
+  let fetchSources = sources;
+  {
+    const maxPerAuthor = sources.maxApprovedPerAuthor ?? 10;
+    const filteredAuthors = sources.priorityAuthors.filter(displayName => {
+      const existing = [...divAuthorCounts.entries()]
+        .filter(([gutendexName]) => authorMatchesDisplayName(gutendexName, displayName))
+        .reduce((sum, [, n]) => sum + n, 0);
+      if (existing >= maxPerAuthor) {
+        console.log(
+          `  [diversity] already saturated, skipping: "${displayName}"` +
+          ` (${existing}/${maxPerAuthor} in library)`,
+        );
+        return false;
+      }
+      return true;
+    });
+    if (filteredAuthors.length < sources.priorityAuthors.length) {
+      fetchSources = { ...sources, priorityAuthors: filteredAuthors };
+    }
+  }
+
   // ── Stage 1: Fetch ───────────────────────────────────────────────────────────
-  const books = await fetchBooksForClassification(sources, maxBooks);
+  const books = await fetchBooksForClassification(fetchSources, maxBooks);
   fetched = books.length;
   console.log();
 
@@ -340,10 +367,18 @@ async function main() {
       const poolToWrite = [...bookPool];
 
       while (poolToWrite.length > 0) {
+        // Diversity: run cap (checked before selecting next passage)
+        if (inserted >= (sources.maxApprovedPerRun ?? 80)) {
+          console.log(
+            `  [diversity] run cap reached (${sources.maxApprovedPerRun ?? 80}) — stopping Phase 2`,
+          );
+          break;
+        }
+
         let para: SuitableParagraph;
 
         if (writeAllPassed) {
-          para = poolToWrite.shift()!;
+          para = poolToWrite.shift()!
         } else {
           if (inserted >= max) break;
 
@@ -383,6 +418,30 @@ async function main() {
           difficulty_tier:  '' as const,
           pipeline_version: PIPELINE_VERSION,
         };
+
+        // Diversity: author cap (in-memory)
+        const authorExisting = divAuthorCounts.get(para.sourceAuthor) ?? 0;
+        if (authorExisting >= (sources.maxApprovedPerAuthor ?? 10)) {
+          console.log(
+            `  [diversity] author cap reached: "${para.sourceAuthor}"` +
+            ` has ${authorExisting} passages (cap: ${sources.maxApprovedPerAuthor ?? 10})`,
+          );
+          appendCSV(csvPath, { ...csvBase, status: 'diversity_author_cap' });
+          skipped++;
+          continue;
+        }
+
+        // Diversity: book cap (in-memory)
+        const bookExisting = divBookCounts.get(para.gutenbergId) ?? 0;
+        if (bookExisting >= (sources.maxApprovedPerBook ?? 6)) {
+          console.log(
+            `  [diversity] book cap reached: book ${para.gutenbergId}` +
+            ` has ${bookExisting} passages (cap: ${sources.maxApprovedPerBook ?? 6})`,
+          );
+          appendCSV(csvPath, { ...csvBase, status: 'diversity_book_cap' });
+          skipped++;
+          continue;
+        }
 
         // Duplicate check
         const dup = await isDuplicateV3(para.gutenbergId, para.hash, 0);
@@ -450,6 +509,10 @@ async function main() {
           const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
           if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
           tierCounts[para.tierKey]++;
+
+          // Update in-memory diversity counts so subsequent passages see current state
+          divAuthorCounts.set(para.sourceAuthor, (divAuthorCounts.get(para.sourceAuthor) ?? 0) + 1);
+          divBookCounts.set(para.gutenbergId,    (divBookCounts.get(para.gutenbergId)    ?? 0) + 1);
 
           const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
           console.log(

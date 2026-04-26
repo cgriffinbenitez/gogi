@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "literary fiction",
@@ -15,7 +18,7 @@
     "Sarah Orne Jewett",
     "Charlotte Perkins Gilman",
     "Mary Shelley",
-    "Charlotte Brontë",
+    "Charlotte Bront\u00eb",
     "Katherine Mansfield",
     "Nathaniel Hawthorne",
     "Henry James",

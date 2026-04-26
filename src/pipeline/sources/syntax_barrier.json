@@ -1,4 +1,7 @@
 {
+  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerBook": 6,
+  "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
     "novels",
     "literary fiction",
@@ -9,11 +12,11 @@
     "George Eliot",
     "Jane Austen",
     "Edith Wharton",
-    "Charlotte Brontë",
-    "Emily Brontë",
+    "Charlotte Bront\u00eb",
+    "Emily Bront\u00eb",
     "Mary Shelley",
     "Elizabeth Gaskell",
-    "Anne Brontë",
+    "Anne Bront\u00eb",
     "Frances Hodgson Burnett",
     "Mary Wilkins Freeman",
     "Charles Dickens",

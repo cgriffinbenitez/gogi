@@ -79,6 +79,33 @@ export async function writePassageV3(row: PassageRowV3): Promise<WriteResult> {
   return { status: 'inserted' };
 }
 
+// ── Diversity counts (one query — shared by pre-fetch check and Phase 2 caps) ─
+
+export async function fetchDiversityCounts(
+  classification: string,
+): Promise<{ authorCounts: Map<string, number>; bookCounts: Map<number, number> }> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from('intervention_passages')
+    .select('source_author, source_gutenberg_id')
+    .eq('classification', classification)
+    .in('approval_status', ['pending_review', 'approved']);
+
+  const authorCounts = new Map<string, number>();
+  const bookCounts   = new Map<number, number>();
+  if (error || !data) return { authorCounts, bookCounts };
+
+  for (const row of data) {
+    if (row.source_author) {
+      authorCounts.set(row.source_author, (authorCounts.get(row.source_author) ?? 0) + 1);
+    }
+    if (row.source_gutenberg_id != null) {
+      bookCounts.set(row.source_gutenberg_id, (bookCounts.get(row.source_gutenberg_id) ?? 0) + 1);
+    }
+  }
+  return { authorCounts, bookCounts };
+}
+
 // ─── CSV ──────────────────────────────────────────────────────────────────────
 
 function escapeCSV(val: string | number | null | undefined): string {
