@@ -73,8 +73,8 @@ export function stripBookFrontMatter(
   };
 }
 
-const MIN_WORDS = 40;
-const MAX_WORDS = 120;
+const MIN_WORDS = 150;
+const MAX_WORDS = 350;
 const MAX_DIALOGUE_RATIO = 0.35; // skip if >35% of chars are inside quotation marks
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -261,12 +261,14 @@ export function extractParagraphs(
 
 // ─── v3: Multi-tier passage unit extraction ───────────────────────────────────
 
-// Tier word-count windows
+// Tier word-count windows — all must stay within the absolute 150-350 cap.
+// T1 < T2 < T3 < T4 in target length to preserve cognitive differentiation,
+// but no tier may produce a passage outside [MIN_WORDS, MAX_WORDS].
 const TIER_BOUNDS: Record<TierKey, { min: number; max: number }> = {
-  T1: { min: 40,  max: 150 },
-  T2: { min: 100, max: 300 },
-  T3: { min: 200, max: 500 },
-  T4: { min: 400, max: 800 },
+  T1: { min: 150, max: 210 },
+  T2: { min: 175, max: 260 },
+  T3: { min: 225, max: 310 },
+  T4: { min: 275, max: 350 },
 };
 
 // Paragraph span sizes per tier
@@ -324,6 +326,15 @@ export function extractPassageUnits(
         const hash = sha256Short(joined);
         if (seenHashes.has(hash)) continue;
         seenHashes.add(hash);
+
+        // Terminal safety guard — catches any future TIER_BOUNDS drift that
+        // would let a passage outside the absolute cap reach the DB.
+        if (wc < MIN_WORDS || wc > MAX_WORDS) {
+          throw new Error(
+            `extract safety guard: passage wordCount=${wc} outside absolute cap ` +
+            `[${MIN_WORDS}, ${MAX_WORDS}] (tier=${tierKey}, paragraphs=${spanLen})`,
+          );
+        }
 
         result[tierKey].push({
           text:           joined,
