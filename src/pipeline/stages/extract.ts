@@ -190,6 +190,43 @@ function cleanParagraph(text: string): string {
     .trim();
 }
 
+/**
+ * Returns true if candidate text substantially overlaps with any already-accepted
+ * passage from the same source book.
+ *
+ * Overlap is detected two ways:
+ *   1. Candidate's opening 100 chars appear inside a seen passage  (candidate is
+ *      a sub-window or right-shift of an accepted passage).
+ *   2. A seen passage's opening 100 chars appear inside the candidate  (candidate
+ *      is a super-window or left-shift of an accepted passage).
+ *
+ * 100-char anchor ≈ 15-20 words — long enough to be unambiguous, short enough
+ * to fire on adjacent sliding-window chunks (the typical White Fang / Buck-
+ * stealing pattern).  Passages shorter than 50 chars are skipped (can't anchor).
+ *
+ * Scope: same-source-book only.  Callers pass a per-book accumulator.
+ */
+function isContentDuplicate(
+  candidate: string,
+  seenTexts: string[],
+): { isDuplicate: boolean; matchedAgainst?: string } {
+  const anchor = candidate.trim().slice(0, 100);
+  if (anchor.length < 50) return { isDuplicate: false };
+
+  for (const seen of seenTexts) {
+    // Check 1: candidate's opening appears inside the seen passage
+    if (seen.includes(anchor)) {
+      return { isDuplicate: true, matchedAgainst: seen.slice(0, 100) };
+    }
+    // Check 2: seen passage's opening appears inside the candidate
+    const seenAnchor = seen.trim().slice(0, 100);
+    if (seenAnchor.length >= 50 && candidate.includes(seenAnchor)) {
+      return { isDuplicate: true, matchedAgainst: seenAnchor };
+    }
+  }
+  return { isDuplicate: false };
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export function extractParagraphs(
@@ -201,13 +238,18 @@ export function extractParagraphs(
   const raw = normalizedText.split(/\n{2,}/);
   const results: Array<Paragraph & { skippedReason?: string; paragraphCount: number }> = [];
 
+  const acceptedTexts:      string[] = [];
+  let   accepted            = 0;
+  let   rejectedForLength   = 0;
+  let   rejectedForOverlap  = 0;
+
   for (const block of raw) {
     let text = normalizeWhitespace(block.replace(/\n/g, ' '));
     if (!text) continue;
     if (isSectionHeader(text)) continue;
 
     const wc = wordCount(text);
-    if (wc < MIN_WORDS || wc > MAX_WORDS) continue;
+    if (wc < MIN_WORDS || wc > MAX_WORDS) { rejectedForLength++; continue; }
 
     // Clean before completeness check
     text = cleanParagraph(text);
@@ -244,6 +286,20 @@ export function extractParagraphs(
       continue;
     }
 
+    // Content-overlap dedup — same-source-book scope
+    const dupCheck = isContentDuplicate(text, acceptedTexts);
+    if (dupCheck.isDuplicate) {
+      console.log(
+        `[dedup] rejecting overlap from "${book.title}"\n` +
+        `  candidate : ${text.slice(0, 60)}…\n` +
+        `  matched   : ${dupCheck.matchedAgainst?.slice(0, 60)}…`,
+      );
+      rejectedForOverlap++;
+      continue;
+    }
+
+    acceptedTexts.push(text);
+    accepted++;
     results.push({
       text,
       wordCount:      wordCount(text),
@@ -255,6 +311,12 @@ export function extractParagraphs(
       paragraphCount: 1,
     });
   }
+
+  console.log(
+    `[extract] "${book.title}" — ${accepted} accepted, ` +
+    `${rejectedForLength} rejected for length, ` +
+    `${rejectedForOverlap} rejected for content overlap`,
+  );
 
   return results;
 }
@@ -303,6 +365,13 @@ export function extractPassageUnits(
 
   const result: Record<TierKey, PassageUnit[]> = { T1: [], T2: [], T3: [], T4: [] };
 
+  // Shared across all tiers — prevents overlapping windows from the same source
+  // location reaching the DB regardless of which tier they qualify for.
+  const acceptedTextsThisBook: string[] = [];
+  let   accepted            = 0;
+  let   rejectedForLength   = 0;
+  let   rejectedForOverlap  = 0;
+
   for (const tierKey of (['T1', 'T2', 'T3', 'T4'] as TierKey[])) {
     const { min, max } = TIER_BOUNDS[tierKey];
     const seenHashes = new Set<string>();
@@ -318,7 +387,7 @@ export function extractPassageUnits(
 
         const joined = span.join('\n\n');
         const wc = wordCount(joined);
-        if (wc < min || wc > max) continue;
+        if (wc < min || wc > max) { rejectedForLength++; continue; }
 
         // Skip if dialogue-heavy (check joined unit)
         if (isDialogueHeavy(joined)) continue;
@@ -336,6 +405,20 @@ export function extractPassageUnits(
           );
         }
 
+        // Content-overlap dedup — same-source-book scope, shared across all tiers
+        const dupCheck = isContentDuplicate(joined, acceptedTextsThisBook);
+        if (dupCheck.isDuplicate) {
+          console.log(
+            `[dedup] rejecting overlap from "${book.title}" (${tierKey}, ${spanLen}p)\n` +
+            `  candidate : ${joined.slice(0, 60)}…\n` +
+            `  matched   : ${dupCheck.matchedAgainst?.slice(0, 60)}…`,
+          );
+          rejectedForOverlap++;
+          continue;
+        }
+
+        acceptedTextsThisBook.push(joined);
+        accepted++;
         result[tierKey].push({
           text:           joined,
           wordCount:      wc,
@@ -349,6 +432,12 @@ export function extractPassageUnits(
       }
     }
   }
+
+  console.log(
+    `[extract] "${book.title}" — ${accepted} accepted, ` +
+    `${rejectedForLength} rejected for length, ` +
+    `${rejectedForOverlap} rejected for content overlap`,
+  );
 
   return result;
 }
