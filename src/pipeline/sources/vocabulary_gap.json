@@ -32,5 +32,6 @@
     "Guy de Maupassant",
     "Charles W. Chesnutt",
     "Rabindranath Tagore"
-  ]
+  ],
+  "tierTargets": { "T1": 30, "T2": 35, "T3": 30, "T4": 20 }
 }

@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOGI — All 13 Intervention Screens</title>
+<style>
+:root {
+  --c-navy:#1F4E79; --c-blue:#2E75B6; --c-blue-light:#E6F1FB; --c-blue-mid:#B5D4F4;
+  --c-green:#3B6D11; --c-green-light:#C6EFCE; --c-green-border:#9FE1CB;
+  --c-amber:#BA7517; --c-amber-light:#FAEEDA;
+  --c-red:#A32D2D; --c-red-light:#FCEBEB;
+  --c-gray:#888780; --c-dark:#2C2C2A; --c-light:#F2F2F2;
+  --c-border:#CCCCCC; --c-white:#FFFFFF; --c-yellow:#FFF3A3;
+  --font-ui:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-passage:Georgia,'Times New Roman',serif;
+  --radius-md:10px; --radius-lg:14px;
+  --shadow-card:0 1px 2px rgba(0,0,0,0.04),0 1px 3px rgba(0,0,0,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--c-light);color:var(--c-dark);font-family:var(--font-ui);font-size:14px;line-height:1.5;}
+
+/* Top nav */
+.topnav{background:var(--c-navy);color:var(--c-white);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.14);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.brand-name{font-size:16px;font-weight:700;letter-spacing:-0.3px;}
+.brand-tag{font-size:11px;color:rgba(255,255,255,0.6);margin-left:8px;font-weight:400;}
+.topnav-user{font-size:12px;color:rgba(255,255,255,0.78);}
+
+/* Pattern selector bar */
+.selector-bar{background:var(--c-white);border-bottom:1px solid var(--c-border);padding:12px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.selector-bar label{font-size:11px;color:var(--c-gray);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;}
+.selector-bar select{font-family:var(--font-ui);font-size:13px;padding:7px 12px;border:1px solid var(--c-border);border-radius:var(--radius-md);background:var(--c-white);color:var(--c-dark);cursor:pointer;min-width:380px;}
+.selector-bar .nav-btn{background:var(--c-navy);color:var(--c-white);border:none;padding:7px 12px;border-radius:var(--radius-md);font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;}
+.selector-bar .nav-btn:hover{background:#163C60;}
+.selector-bar .nav-btn:disabled{opacity:0.4;cursor:default;}
+.selector-bar .counter{font-size:11px;color:var(--c-gray);font-family:ui-monospace,'SF Mono',Menlo,monospace;}
+
+/* Page */
+.page{max-width:860px;margin:0 auto;padding:22px 24px 60px;}
+
+/* Route indicator */
+.route-line{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;font-size:11px;flex-wrap:wrap;gap:8px;}
+.route-code{color:var(--c-gray);font-family:ui-monospace,'SF Mono',Menlo,monospace;}
+.route-code b{color:var(--c-navy);font-weight:600;}
+.gap-badge{color:var(--c-gray);}
+.gap-badge b{color:var(--c-dark);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-weight:600;}
+
+/* Card */
+.card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:22px 26px;margin-bottom:14px;}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;}
+.card-code{font-size:11px;color:var(--c-gray);font-weight:500;margin-bottom:3px;letter-spacing:0.04em;}
+.card-name{font-size:17px;font-weight:700;color:var(--c-dark);letter-spacing:-0.3px;}
+.card-pills{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:700;letter-spacing:0.04em;border:1px solid transparent;white-space:nowrap;}
+.pill-layer-1{background:var(--c-amber-light);border-color:var(--c-amber);color:var(--c-amber);}
+.pill-layer-2{background:var(--c-blue-light);border-color:var(--c-blue);color:var(--c-blue);}
+.pill-layer-3{background:var(--c-green-light);border-color:var(--c-green);color:var(--c-green);}
+.pill-status{background:var(--c-amber-light);border-color:var(--c-amber);color:var(--c-amber);}
+
+/* Mini-lesson layout */
+.lesson-stage{font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;}
+.lesson-title{font-size:22px;font-weight:700;color:var(--c-dark);letter-spacing:-0.4px;margin:0 0 12px;}
+.lesson-body{font-size:14.5px;line-height:1.65;color:var(--c-dark);margin:0 0 14px;}
+.lesson-body i{font-style:normal;color:var(--c-navy);font-weight:600;}
+.strategy-name{display:inline-block;background:var(--c-navy);color:var(--c-white);padding:6px 14px;border-radius:9999px;font-size:12px;font-weight:700;letter-spacing:0.02em;margin:4px 0 14px;}
+
+/* Passage */
+.passage{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 20px;margin-bottom:16px;font-family:var(--font-passage);font-size:14.5px;line-height:1.75;color:var(--c-dark);max-height:280px;overflow-y:auto;}
+.passage-title{font-family:var(--font-ui);font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;}
+.passage p{margin:0 0 10px;}
+.passage p:last-child{margin-bottom:0;}
+.passage em{font-style:italic;}
+
+.prompt{font-size:14.5px;line-height:1.55;color:var(--c-dark);margin-bottom:16px;font-weight:500;}
+.prompt i{font-style:normal;color:var(--c-navy);font-weight:600;}
+
+/* Gogi bubble */
+.gogi{display:flex;align-items:flex-start;gap:12px;background:var(--c-blue-light);border:1px solid var(--c-blue-mid);border-radius:var(--radius-lg);padding:14px 16px;margin-top:14px;}
+.gogi.engaged-wrap{background:var(--c-blue-light);}
+.gogi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--c-white);font-weight:700;font-size:14px;flex-shrink:0;}
+.gogi-av.neutral{background:var(--c-navy);box-shadow:0 0 0 3px var(--c-blue-mid);}
+.gogi-av.engaged{background:var(--c-blue);box-shadow:0 0 0 3px var(--c-blue-mid);}
+.gogi-av.celebrate{background:var(--c-green);box-shadow:0 0 0 3px var(--c-green-border);}
+.gogi-body{flex:1;}
+.gogi-name{font-size:11px;font-weight:700;letter-spacing:0.04em;color:var(--c-navy);margin-bottom:4px;}
+.gogi.celebrate-wrap .gogi-name{color:var(--c-green);}
+.gogi-say{font-size:13.5px;line-height:1.6;color:var(--c-dark);margin:0;}
+.gogi-say i{color:var(--c-navy);font-style:normal;font-weight:600;}
+
+/* Buttons */
+.btn{background:var(--c-navy);color:var(--c-white);border:none;padding:10px 18px;border-radius:var(--radius-md);font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer;letter-spacing:-0.1px;transition:background 120ms;}
+.btn:hover{background:#163C60;}
+.btn:disabled{opacity:0.4;cursor:default;}
+.btn-green{background:var(--c-green);}
+.btn-green:hover{background:#2A5008;}
+.btn-ghost{background:transparent;color:var(--c-gray);border:1px solid var(--c-border);padding:7px 14px;border-radius:var(--radius-md);font-size:12px;cursor:pointer;font-family:inherit;margin-top:10px;}
+.btn-ghost:hover{background:var(--c-light);color:var(--c-dark);}
+.action-row{display:flex;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--c-border);}
+
+/* ============ DIAGRAM 1: Says → Means (2 boxes w/ arrow) ============ */
+.diag-arrows{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:18px 20px;}
+.diag-arrows .box{background:var(--c-white);border:1.5px solid var(--c-border);border-radius:var(--radius-md);padding:14px 16px;min-height:70px;display:flex;flex-direction:column;justify-content:center;}
+.diag-arrows .box.filled{background:var(--c-blue-light);border-color:var(--c-blue);}
+.diag-arrows .lbl{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--c-gray);text-transform:uppercase;margin-bottom:6px;}
+.diag-arrows .box.filled .lbl{color:var(--c-blue);}
+.diag-arrows .content{font-family:var(--font-passage);font-size:14px;line-height:1.45;color:var(--c-dark);}
+.diag-arrows .box.filled .content{color:var(--c-navy);font-weight:600;}
+.diag-arrows .arrow{text-align:center;color:var(--c-navy);}
+.diag-arrows .arrow-text{font-size:10px;color:var(--c-gray);font-family:var(--font-passage);font-style:italic;margin-bottom:4px;}
+.diag-arrows .arrow-shape{font-size:22px;color:var(--c-navy);font-weight:700;}
+@media (max-width:560px){.diag-arrows{grid-template-columns:1fr;}.diag-arrows .arrow{transform:rotate(90deg);}}
+
+/* ============ DIAGRAM 2: Predict → Verify (two columns) ============ */
+.diag-predict{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.diag-predict h4{margin:0 0 8px;font-size:10px;letter-spacing:0.12em;color:var(--c-gray);text-transform:uppercase;font-weight:700;}
+.predict-tile{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:9px 12px;font-size:12.5px;margin-bottom:6px;cursor:pointer;}
+.predict-tile.picked{background:var(--c-blue-light);border-color:var(--c-blue);color:var(--c-navy);font-weight:600;}
+.predict-tile .mark{font-size:10px;font-weight:700;margin-right:6px;padding:2px 6px;border-radius:4px;}
+.predict-tile.verified-yes .mark{background:var(--c-green-light);color:var(--c-green);}
+.predict-tile.verified-no .mark{background:var(--c-red-light);color:var(--c-red);}
+@media (max-width:560px){.diag-predict{grid-template-columns:1fr;}}
+
+/* ============ DIAGRAM 3: Frayer (4 quadrants) ============ */
+.diag-frayer{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;position:relative;background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:6px;}
+.fq{background:var(--c-white);border:1.5px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;min-height:90px;cursor:pointer;transition:all 150ms;}
+.fq:hover{border-color:var(--c-blue);}
+.fq.active{border-color:var(--c-blue);background:var(--c-blue-light);}
+.fq-lab{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--c-gray);font-weight:700;margin-bottom:8px;}
+.fq.active .fq-lab{color:var(--c-blue);}
+.fq.filled .fq-lab{color:var(--c-navy);}
+.fq-content{font-family:var(--font-passage);font-size:12.5px;line-height:1.4;color:var(--c-dark);}
+.fq.filled{background:var(--c-blue-light);border-color:var(--c-blue);}
+.fq-word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--c-navy);color:var(--c-white);font-family:var(--font-passage);font-size:16px;font-weight:700;padding:6px 16px;border-radius:9999px;box-shadow:0 2px 8px rgba(31,78,121,0.3);letter-spacing:1px;}
+@media (max-width:560px){.diag-frayer{grid-template-columns:1fr;grid-template-rows:auto;}.fq-word{position:static;transform:none;display:inline-block;margin:8px auto;}}
+
+/* ============ DIAGRAM 4: Split → Meaning (morpheme) ============ */
+.diag-split{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:20px 18px;text-align:center;}
+.split-word{display:inline-flex;gap:4px;align-items:center;font-family:var(--font-passage);font-size:24px;font-weight:400;color:var(--c-navy);margin-bottom:16px;}
+.split-word .seg{padding:6px 12px;background:var(--c-white);border:1.5px solid var(--c-blue);border-radius:8px;}
+.split-word .dash{color:var(--c-gray);font-size:18px;}
+.split-meanings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.split-meaning{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:10px 12px;font-size:12px;color:var(--c-dark);min-height:60px;display:flex;flex-direction:column;justify-content:center;}
+.split-meaning.filled{background:var(--c-blue-light);border-color:var(--c-blue);color:var(--c-navy);font-weight:600;}
+.split-meaning .mini{font-size:9px;color:var(--c-gray);letter-spacing:0.1em;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+
+/* ============ DIAGRAM 5: Strip to Core (sentence segments) ============ */
+.diag-strip{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:20px 22px;font-family:var(--font-passage);font-size:16.5px;line-height:2;color:var(--c-dark);}
+.sseg{display:inline;padding:3px 6px;border-radius:4px;cursor:pointer;border:1px solid transparent;transition:all 120ms;margin-right:2px;}
+.sseg.core{color:var(--c-green);font-weight:700;background:var(--c-green-light);border-color:var(--c-green);cursor:default;}
+.sseg:hover:not(.core){background:var(--c-blue-light);color:var(--c-blue);}
+.sseg.stripped{text-decoration:line-through;opacity:0.35;background:transparent;}
+
+/* ============ DIAGRAM 6: Real or Trick (figurative tag) ============ */
+.diag-tag{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px 16px;display:flex;flex-direction:column;gap:6px;}
+.tag-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:10px 14px;}
+.tag-phrase{font-family:var(--font-passage);font-size:13.5px;color:var(--c-dark);line-height:1.5;}
+.tag-btns{display:flex;gap:4px;}
+.tag-btn{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:700;cursor:pointer;border:1px solid var(--c-border);background:var(--c-white);color:var(--c-gray);text-transform:uppercase;letter-spacing:0.05em;}
+.tag-btn.on-real{background:var(--c-green-light);border-color:var(--c-green);color:var(--c-green);}
+.tag-btn.on-trick{background:var(--c-amber-light);border-color:var(--c-amber);color:var(--c-amber);}
+
+/* ============ DIAGRAM 7: Mood Grid (2D) ============ */
+.diag-mood{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px 18px;display:flex;justify-content:center;}
+.mood-grid{position:relative;width:260px;height:260px;background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+.mood-cell{border:1px solid var(--c-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--c-gray);font-weight:600;text-align:center;padding:8px;transition:all 120ms;}
+.mood-cell:hover{background:var(--c-blue-light);color:var(--c-blue);}
+.mood-cell.picked{background:var(--c-blue-light);color:var(--c-navy);font-weight:700;}
+.mood-cell.modeled{background:var(--c-blue-light);color:var(--c-navy);font-weight:700;}
+.mood-marker{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--c-navy);box-shadow:0 0 0 4px var(--c-blue-mid);pointer-events:none;transform:translate(-50%,-50%);}
+.mood-axis-x{position:absolute;bottom:-20px;left:0;right:0;display:flex;justify-content:space-between;font-size:10px;color:var(--c-gray);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.mood-axis-y{position:absolute;top:0;bottom:0;left:-54px;display:flex;flex-direction:column;justify-content:space-between;font-size:10px;color:var(--c-gray);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;align-items:flex-end;}
+.mood-wrap{position:relative;padding:0 0 24px 60px;}
+
+/* ============ DIAGRAM 8: Tone Wheel ============ */
+.diag-wheel{display:flex;justify-content:center;padding:10px 0 4px;background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);}
+.wheel{width:280px;height:280px;}
+.wheel path{cursor:pointer;transition:opacity 0.2s;}
+.wheel path:hover{opacity:0.82;}
+.wheel text{pointer-events:none;font-family:var(--font-ui);font-weight:600;font-size:12px;}
+
+/* ============ DIAGRAM 9: Track the Pair (character map) ============ */
+.diag-pair{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:22px 18px;display:flex;align-items:center;justify-content:center;gap:14px;}
+.char-circle{width:84px;height:84px;border-radius:50%;background:var(--c-white);border:2px solid var(--c-blue);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;flex-shrink:0;}
+.char-name{font-family:var(--font-passage);font-size:14px;font-weight:700;color:var(--c-navy);}
+.char-sub{font-size:9.5px;color:var(--c-gray);}
+.pair-line{flex:1;min-width:60px;text-align:center;position:relative;}
+.pair-line::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:var(--c-blue-mid);z-index:0;}
+.pair-label{position:relative;display:inline-block;background:var(--c-blue-light);border:1.5px solid var(--c-blue);color:var(--c-navy);padding:6px 12px;border-radius:9999px;font-size:11.5px;font-weight:600;z-index:1;}
+.pair-label.empty{background:var(--c-white);border-style:dashed;border-color:var(--c-border);color:var(--c-gray);font-weight:500;}
+
+/* ============ DIAGRAM 10: Topic vs Theme (bins) ============ */
+.diag-bins{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px;}
+.bin{background:var(--c-white);border:1.5px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;min-height:130px;}
+.bin.topic{border-color:var(--c-amber);}
+.bin.theme{border-color:var(--c-green);}
+.bin-label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:4px;}
+.bin.topic .bin-label{color:var(--c-amber);}
+.bin.theme .bin-label{color:var(--c-green);}
+.bin-sub{font-size:10.5px;color:var(--c-gray);margin-bottom:10px;font-style:italic;}
+.bin-card{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;margin-bottom:6px;cursor:pointer;line-height:1.45;}
+.bin.topic .bin-card{background:var(--c-amber-light);border-color:var(--c-amber);color:#7A4D0E;}
+.bin.theme .bin-card{background:var(--c-green-light);border-color:var(--c-green);color:#254509;}
+.bin-bank-title{font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:12px 0 6px;}
+.bin-bank{display:flex;flex-direction:column;gap:6px;}
+.bin-chip{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;line-height:1.45;color:var(--c-dark);cursor:pointer;transition:all 120ms;}
+.bin-chip:hover{background:var(--c-light);}
+.bin-chip.used{opacity:0.35;pointer-events:none;}
+
+/* ============ DIAGRAM 11: Find the Proof ============ */
+.diag-proof{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:16px 18px;}
+.proof-claim{background:var(--c-amber-light);border:1.5px solid var(--c-amber);color:#7A4D0E;border-radius:var(--radius-md);padding:10px 14px;font-size:13px;margin-bottom:10px;font-weight:600;}
+.proof-claim .mini{font-size:10px;color:var(--c-amber);letter-spacing:0.12em;text-transform:uppercase;font-weight:700;margin-bottom:4px;display:block;}
+.proof-arrow{text-align:center;color:var(--c-gray);font-size:18px;padding:4px 0;}
+.proof-passage{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;font-family:var(--font-passage);font-size:13.5px;line-height:1.8;}
+.proof-sent{display:inline;padding:2px 4px;border-radius:3px;cursor:pointer;border:1px solid transparent;margin-right:2px;}
+.proof-sent:hover{background:var(--c-blue-light);}
+.proof-sent.picked{background:var(--c-green-light);border-color:var(--c-green);color:var(--c-green);font-weight:600;}
+.proof-sent.wrong-pick{background:var(--c-red-light);border-color:var(--c-red);color:var(--c-red);}
+
+/* ============ DIAGRAM 12: Claim → Evidence → Warrant (stacked) ============ */
+.diag-cew{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px 16px;}
+.cew-box{background:var(--c-white);border:1.5px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:6px;min-height:50px;}
+.cew-box.filled{background:var(--c-blue-light);border-color:var(--c-blue);}
+.cew-lab{font-size:10px;color:var(--c-gray);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:6px;}
+.cew-box.filled .cew-lab{color:var(--c-blue);}
+.cew-content{font-family:var(--font-passage);font-size:13px;line-height:1.5;color:var(--c-dark);}
+.cew-box.filled .cew-content{color:var(--c-navy);font-weight:600;}
+.cew-arrow{text-align:center;color:var(--c-navy);font-size:14px;padding:2px 0;}
+
+/* ============ DIAGRAM 13: Lens → Sentence (SOAPSTone) ============ */
+.diag-soap{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px 16px;}
+.lens-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.lens{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:7px 12px;font-size:11px;font-weight:700;color:var(--c-dark);cursor:pointer;text-align:center;min-width:34px;}
+.lens:hover{background:var(--c-blue-light);border-color:var(--c-blue);color:var(--c-blue);}
+.lens.active{background:var(--c-blue);border-color:var(--c-blue);color:var(--c-white);box-shadow:0 2px 6px rgba(46,117,182,0.3);}
+.lens-full{font-size:9px;color:var(--c-gray);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;display:block;margin-top:2px;}
+.lens.active .lens-full{color:rgba(255,255,255,0.85);}
+.soap-passage{background:var(--c-white);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:12px 14px;font-family:var(--font-passage);font-size:13.5px;line-height:1.8;}
+.soap-sent{display:inline;padding:2px 4px;border-radius:3px;cursor:pointer;border:1px solid transparent;margin-right:2px;}
+.soap-sent:hover{background:var(--c-blue-light);}
+.soap-sent.tagged{background:var(--c-blue-light);border-color:var(--c-blue);color:var(--c-blue);font-weight:600;}
+.soap-sent.tagged::after{content:attr(data-tag);font-family:var(--font-ui);font-size:10px;color:var(--c-white);background:var(--c-blue);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle;font-weight:700;}
+.soap-sent.tagged-right{background:var(--c-green-light);border-color:var(--c-green);color:var(--c-green);}
+.soap-sent.tagged-right::after{background:var(--c-green);}
+
+/* Chip pattern (shared for many) */
+.chip-bank{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{background:var(--c-white);border:1px solid var(--c-border);border-radius:9999px;padding:7px 14px;font-size:12.5px;cursor:pointer;color:var(--c-dark);transition:all 120ms ease-out;font-family:var(--font-ui);}
+.chip:hover{border-color:var(--c-blue);background:var(--c-blue-light);color:var(--c-blue);}
+.chip.used{opacity:0.4;pointer-events:none;}
+
+/* Blanks (for patterns that use fill-in) */
+.stem{background:var(--c-light);border:1px solid var(--c-border);border-radius:var(--radius-md);padding:14px 18px;font-family:var(--font-passage);font-size:14.5px;line-height:2;margin-bottom:14px;color:var(--c-dark);}
+.stem-labels{display:flex;justify-content:space-between;font-family:var(--font-ui);font-size:10px;color:var(--c-gray);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:6px;}
+.blank{display:inline-block;min-width:150px;padding:3px 12px 2px;margin:0 4px;border-bottom:2px dashed var(--c-border);color:var(--c-gray);cursor:pointer;text-align:center;font-family:var(--font-ui);font-size:13.5px;}
+.blank.filled{background:var(--c-blue-light);border-bottom:2px solid var(--c-blue);border-radius:5px 5px 0 0;color:var(--c-blue);font-weight:600;}
+
+@media (max-width:720px){
+  .page{padding:16px 14px 40px;}
+  .card{padding:18px 18px;}
+  .selector-bar{padding:10px 14px;}
+  .selector-bar select{min-width:240px;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="brand">
+    <div class="brand-mark">G</div>
+    <div><span class="brand-name">GOGI</span><span class="brand-tag">All 13 Intervention Screens</span></div>
+  </div>
+  <div class="topnav-user">Design review — pilot prep</div>
+</div>
+
+<div class="selector-bar">
+  <label>Intervention:</label>
+  <select id="selector"></select>
+  <button class="nav-btn" id="prev">← Prev</button>
+  <button class="nav-btn" id="next">Next →</button>
+  <span class="counter" id="counter"></span>
+</div>
+
+<div class="page">
+  <div id="root"></div>
+</div>
+
+<script>
+// ============================================================================
+// PATTERN REGISTRY — all 13, following locked three-part template
+// ============================================================================
+const PATTERNS = {
+
+  // 1 ===========================================================
+  inferencing_literal: {
+    classification:'inferencing_literal',
+    route:'/teach/inferencing?mode=literal',
+    layer:3,
+    moveName:'The Says → Means move',
+    moveShort:'Says → Means',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'After Twenty Years — O. Henry',
+    partOneBody:`Sometimes the author tells you something flat-out. Sometimes they don't — they leave clues and make you figure it out. That second part has a name: <i>inference</i>. You use what the text <i>says</i> to decide what it <i>means</i>.`,
+    partOneBottom:`Every inferencing question you hit is this same move. Find what the text <i>says</i>. Decide what it <i>means</i>. Your brain fills the arrow between them — that's the reading work.`,
+    diagram:{ type:'arrows', leftLabel:'Says', leftText:'What the text literally wrote.', arrowText:'that makes me think…', rightLabel:'Means', rightText:"What the text hints at but never comes out and says." },
+    modelDiagram:{ left:'walked away and sent another officer', right:'still cared about his old friend' },
+    modelPassage:`<p>Bob read the note under the streetlamp. His hand began to tremble.</p>
+<p><em>"Bob: I was at the appointed place on time. When you struck the match, I saw it was the face of the man wanted in Chicago. Somehow I couldn't do it myself, so I went around and got a plain-clothes man to do the job. — JIMMY."</em></p>`,
+    modelThinkAloud:`Watch me work this one. The text <i>says</i> Jimmy walked away and sent another officer to do the arrest — straight out. Here's where my brain starts working. A cop walking away from an arrest is strange. His job is to make the arrest. But he didn't. If they'd been best friends for twenty years, walking away starts to <i>mean</i> something. He still cared about Bob — enough that he couldn't be the one to do it. The text never wrote that last part. I did. That's inferencing.`,
+    guidePassage:`<p>"It sounds romantic," said the policeman. "Rather a long time between meets, though, it seems to me. Haven't you heard from your friend since you left?"</p>
+<p>"Well, yes, for a time we corresponded," said the other. "But after a year or two we lost track of each other. You see, the West is a pretty big proposition, and I kept hustling around over it pretty lively. But I know Jimmy will meet me here if he's alive, for he always was the truest, stanchest old chap in the world. He'll never forget. I came a thousand miles to stand in this door tonight, and it's worth it if my old partner turns up."</p>`,
+    guidePrompt:`Different moment in the same story. Bob is talking to the "cop" (who is actually Jimmy in disguise). What does Bob's speech <i>say</i>, and what does it <i>mean</i>?`,
+    guideType:'chip-stem',
+    guideStem:{ leftLbl:'Says (what Bob says about Jimmy)', rightLbl:'Means (what Bob feels about Jimmy)' },
+    guideChips:['came a thousand miles to keep the meeting','treasures the friendship deeply','hates Jimmy now','forgot about Jimmy','never wrote to Jimmy again','is rich and successful'],
+    guideCorrect:['came a thousand miles to keep the meeting','treasures the friendship deeply'],
+    guideRightGogi:`Yes — same move. <i>Came a thousand miles</i> — the text flat-out says it. <i>Treasures the friendship deeply</i> — the text never uses that word, but the whole speech points there. And now the ending hits harder: Bob treasured Jimmy this much, and Jimmy couldn't arrest him personally because of it. Both sides of the friendship, same move.`,
+    guideWrongGogi:`Not quite. The left should be something Bob's speech <i>literally says</i> he did. The right should be what that tells us about his <i>feelings</i>. Read the speech again — what action does he mention, and what does it reveal?`
+  },
+
+  // 2 ===========================================================
+  inferencing_schema: {
+    classification:'inferencing_schema',
+    route:'/teach/inferencing?mode=schema',
+    layer:1,
+    moveName:'The Predict → Verify move',
+    moveShort:'Predict → Verify',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'Pre-Reading',
+    passageTitle:'The Gift of the Magi — O. Henry',
+    partOneBody:`Your brain already knows things. Before you read, you can use what you know about the world to <i>predict</i> what might happen. Then you read and <i>verify</i> — did your prediction match?`,
+    partOneBottom:`The predicting is the real work. Good readers are guessing the whole time they read — then checking. You're not cheating; you're thinking.`,
+    diagram:{ type:'predict', leftLabel:'Predict', rightLabel:'Verify' },
+    modelPassage:`<p>One dollar and eighty-seven cents. That was all Della had. Three times she counted it. One dollar and eighty-seven cents. And the next day would be Christmas. Pennies saved one and two at a time by bulldozing the grocer and the vegetable man until one's cheeks burned with the silent imputation of parsimony. Della had two possessions in which she took a mighty pride — one was Jim's gold watch that had been his father's, and the other was Della's beautiful long hair.</p>`,
+    modelThinkAloud:`Before I even finish reading, my brain starts predicting. I know this is a story about Christmas and a poor woman. What do I know about the world? Poor people can't buy expensive gifts. Christmas makes people desperate to give. She has two prized possessions — a watch that's Jim's, and her own hair. One of those is sellable. So I predict: <i>Della will sell her hair to buy Jim a Christmas gift.</i> Now when I read the next paragraph — boom, there it is. My prediction was close, and because I predicted it, I understand why she does it.`,
+    modelPredictions:[
+      { text:"Della will sell her hair to buy Jim a gift", verified:'yes' },
+      { text:"Jim will get angry about the hair", verified:'no' },
+      { text:"Someone will get hurt", verified:'no' },
+      { text:"Jim will also make a sacrifice", verified:'yes' }
+    ],
+    guidePassage:`<p>Out of the car and down the street, Della stopped in front of a sign that read "Mme. Sofronie. Hair Goods of All Kinds." One flight up Della ran, and collected herself, panting. "Will you buy my hair?" asked Della.</p>
+<p>"I buy hair," said Madame. "Take yer hat off and let's have a sight at the looks of it." Down rippled the brown cascade. "Twenty dollars," said Madame, lifting the mass with a practised hand.</p>`,
+    guidePrompt:`Now you try. Before reading what Della does with the money, <i>predict</i>. Pick the two predictions you think the story will verify.`,
+    guideType:'predict-pick',
+    guidePredictions:[
+      { id:'p1', text:'Della buys Jim a gift related to his watch', verified:true },
+      { id:'p2', text:'Della buys herself new clothes', verified:false },
+      { id:'p3', text:'Della spends the twenty dollars quickly', verified:true },
+      { id:'p4', text:"Della regrets selling her hair", verified:false }
+    ],
+    guideTargets:['p1','p3'],
+    guideRightGogi:`Good predictions. <i>Della buys Jim something for his watch</i> — turns out to be a platinum chain. <i>Della spends it quickly</i> — she's been saving pennies and now she has twenty dollars, of course she moves fast. Your brain used what you know about love and urgency to guess what the story was going to do next. That's reading before you read.`,
+    guideWrongGogi:`A couple of those don't fit. Think about what you know about Della so far. Is she the kind of person who'd buy herself clothes with this money? Is she the kind of person who regrets a sacrifice she made for someone she loves? Use what the story has already shown you.`
+  },
+
+  // 3 ===========================================================
+  vocabulary_gap: {
+    classification:'vocabulary_gap',
+    route:'/teach/vocabulary',
+    layer:2,
+    moveName:'The Word → Frayer move',
+    moveShort:'Word → Frayer',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'During Reading',
+    passageTitle:'The Gift of the Magi — O. Henry',
+    partOneBody:`A word isn't really yours until you can hold it from four sides. What it <i>means</i>. What it's <i>always</i> like. <i>Examples</i> of it. And things that look like it but <i>aren't</i> — non-examples. That's the four-quadrant move.`,
+    partOneBottom:`When you meet a word you only half-know, fill all four quadrants and you own it for life.`,
+    diagram:{ type:'frayer', word:'YOURWORD' },
+    modelWord:'sacrifice',
+    modelPassage:`<p>There was clearly nothing to do but flop down on the shabby little couch and howl. So Della did it. Suddenly she whirled from the window and stood before the glass. Her eyes were shining brilliantly, but her face had lost its color within twenty seconds. Rapidly she pulled down her hair and let it fall to its full length.</p>
+<p>Now, there were two possessions of the James Dillingham Youngs in which they both took a mighty pride. One was Jim's gold watch that had been his father's and his grandfather's. The other was Della's hair.</p>`,
+    modelThinkAloud:`Watch me own the word <i>sacrifice</i>. Definition: giving up something valuable for someone you love more. Characteristics: you have to <i>choose</i> it — an accident isn't a sacrifice. Examples in this story: Della is about to cut off the hair she's most proud of, to buy Jim a present. Non-examples: someone losing their wallet on the bus — that's a loss, not a sacrifice. Now when I hit the word <i>sacrifice</i> anywhere else, in any book, I have all four quadrants ready.`,
+    modelFrayer:{
+      def:'Giving up something valuable for someone you love more',
+      ch:'Requires a choice — not accidental',
+      ex:'Della cutting her hair to buy a gift for Jim',
+      ne:'Losing your wallet on the bus'
+    },
+    guidePassage:`<p>At 7 o'clock the coffee was made and the frying-pan was on the back of the stove hot and ready to cook the chops. Jim was never late. Della doubled the fob chain in her hand and sat on the corner of the table near the door that he always entered. Then she heard his step on the stair away down on the first flight, and she turned white for just a moment. She had a habit of saying little silent prayers about the simplest everyday things, and now she whispered: "Please God, make him think I am still pretty."</p>`,
+    guidePrompt:`Different moment in the same story. This time own the word <i>devotion</i>. Tap a quadrant and fill it in.`,
+    guideType:'frayer-fill',
+    guideWord:'devotion',
+    guideQuads:[
+      { id:'def', lab:'Definition' },
+      { id:'ch', lab:'Characteristics' },
+      { id:'ex', lab:'Examples' },
+      { id:'ne', lab:'Non-examples' }
+    ],
+    guideChips:[
+      { id:'c1', text:'Deep loyalty and love toward someone', home:'def' },
+      { id:'c2', text:'Lasts even in hard or scary moments', home:'ch' },
+      { id:'c3', text:'Della praying Jim still finds her pretty', home:'ex' },
+      { id:'c4', text:'Sending a text you forget about', home:'ne' },
+      { id:'c5', text:'A crush that fades in a week', home:'ne' },
+      { id:'c6', text:'Shown through action, not just words', home:'ch' }
+    ],
+    guideRightGogi:`You just owned <i>devotion</i>. See how it's not the same as "like" or "crush"? Devotion is steady and shows up in what a person does when things are hard. Della whispering a prayer at her own door is devotion right there in the text.`,
+    guideWrongGogi:`A couple of those are in the wrong quadrant. A non-example isn't just anything random — it's something that looks like devotion but isn't (no depth, no loyalty, no lasting part). Read your placements again.`
+  },
+
+  // 4 ===========================================================
+  morphology_gap: {
+    classification:'morphology_gap',
+    route:'/teach/morphology',
+    layer:2,
+    moveName:'The Split → Meaning move',
+    moveShort:'Split → Meaning',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'During Reading',
+    passageTitle:'The Furnished Room — O. Henry',
+    partOneBody:`Big words are just smaller words stuck together. <i>Split</i> the word into its parts — the front (prefix), the middle (root), and the back (suffix). Each piece has its own <i>meaning</i>. Glue those meanings back together and the big word is suddenly yours.`,
+    partOneBottom:`You don't need a dictionary. You already know pieces. Split, find the meanings, rebuild.`,
+    diagram:{ type:'split', segs:['pre','root','suf'], meanings:['','',''] },
+    modelWord:'unmerciful',
+    modelThinkAloud:`Watch me split <i>unmerciful</i>. Three pieces: UN- at the front, MERCI in the middle, -FUL at the end. UN- means "not" — I know that from <i>unhappy</i>, <i>unfair</i>. MERCI is the root — it means mercy, kindness. -FUL means "full of" — like <i>joyful</i> means full of joy. Glue it back: "not full of mercy." Unmerciful = merciless. I just read a big word without ever seeing it before.`,
+    modelSplit:{ segs:['un','merci','ful'], meanings:['not','mercy','full of'] },
+    guideWord:'unfurnished',
+    guidePrompt:`Another word from the same story. Split <i>unfurnished</i> into its parts, then drop the meanings.`,
+    guideType:'split-fill',
+    guideSegs:['un','furnish','ed'],
+    guideMeaningChips:[
+      { id:'m1', text:'not', home:'un' },
+      { id:'m2', text:'to set up with furniture', home:'furnish' },
+      { id:'m3', text:'past tense / done', home:'ed' },
+      { id:'m4', text:'over / above' },
+      { id:'m5', text:'before' },
+      { id:'m6', text:'same as' }
+    ],
+    guideRightGogi:`Now glue the meanings back: "not / set up with furniture / done." An <i>unfurnished</i> room is one that has NOT been set up with furniture. You just unlocked a word with no dictionary — that's the whole move.`,
+    guideWrongGogi:`Check each piece. UN- shows up in words like "unhappy" — what does it do? -ED shows up on "walked" or "jumped" — what does it do? Try again.`
+  },
+
+  // 5 ===========================================================
+  syntax_barrier: {
+    classification:'syntax_barrier',
+    route:'/teach/syntax',
+    layer:2,
+    moveName:'The Strip to Core move',
+    moveShort:'Strip to Core',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'During Reading',
+    passageTitle:'The Furnished Room — O. Henry',
+    partOneBody:`Long sentences look scary. They're not — they're just a short sentence with extra decorations. <i>Strip</i> the extras. What's left is the <i>core</i>: who did what. Once you see the core, the decorations make sense.`,
+    partOneBottom:`Every long sentence has a short sentence hiding inside. Your job is to find it.`,
+    diagram:{ type:'strip', demo:'[ subject ] [ verb ] [ object ] ← with extras stripped away' },
+    modelSentence:'Upon the worn carpet, where hundreds had walked, the young man, tired and defeated, placed his heavy suitcase.',
+    modelThinkAloud:`Watch me strip this. "Upon the worn carpet" — that's a WHERE, not the main action. Cross it. "Where hundreds had walked" — that describes the carpet. Extra. Cross it. "Tired and defeated" — that describes the young man. Extra. Cross it. "Heavy" — describes the suitcase. Extra. What's left? <i>The young man placed his suitcase.</i> That's the core. Now I read the decorations back in and I get the full picture.`,
+    modelSegs:[
+      { text:'Upon the worn carpet,', role:'mod' },
+      { text:'where hundreds had walked,', role:'mod' },
+      { text:'the young man,', role:'core' },
+      { text:'tired and defeated,', role:'mod' },
+      { text:'placed', role:'core' },
+      { text:'his', role:'core' },
+      { text:'heavy', role:'mod' },
+      { text:'suitcase.', role:'core' }
+    ],
+    guidePrompt:`Different sentence from the same story. Tap the modifiers to strike them out. Leave the subject-verb core alone.`,
+    guideType:'strip-interactive',
+    guideSegs:[
+      { id:'a', text:'Within the hour,', role:'mod' },
+      { id:'b', text:'drifting from some room below,', role:'mod' },
+      { id:'c', text:'a scent', role:'core' },
+      { id:'d', text:'of mignonette,', role:'mod' },
+      { id:'e', text:'her favorite flower,', role:'mod' },
+      { id:'f', text:'reached', role:'core' },
+      { id:'g', text:'his', role:'core' },
+      { id:'h', text:'bewildered', role:'mod' },
+      { id:'i', text:'nostrils.', role:'core' }
+    ],
+    guideRightGogi:`What's left is the core: <i>a scent reached his nostrils</i>. Everything you stripped was the author decorating — <i>when</i>, <i>from where</i>, <i>what kind of scent</i>, <i>whose flower</i>, <i>how he felt</i>. Now you can add them back in one at a time and the long sentence is easy.`,
+    guideWrongGogi:`A couple are off. Ask each piece: "if I remove this, does the sentence still say something complete?" If yes — it's a modifier. Strip it.`
+  },
+
+  // 6 ===========================================================
+  figurative_language_failure: {
+    classification:'figurative_language_failure',
+    route:'/teach/figurative',
+    layer:2,
+    moveName:'The Real or Trick move',
+    moveShort:'Real or Trick?',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'During Reading',
+    passageTitle:'The Furnished Room — O. Henry',
+    partOneBody:`Some sentences mean exactly what they say. <i>Real.</i> Some sentences are the author pulling a trick — a metaphor, a simile, personification. <i>Trick.</i> The question to ask every time: "Could this <i>literally</i> be true?"`,
+    partOneBottom:`If it can literally be true, it's real. If it can't, the author is showing you something another way. That's figurative language.`,
+    diagram:{ type:'tag' },
+    modelPhrases:[
+      { text:'The carpet lay like a lawn of matted, worn-out weeds.', answer:'trick', why:'Simile — "like." A carpet isn\'t a lawn.' },
+      { text:'He carried a worn leather suitcase.', answer:'real', why:'Could literally be true.' },
+      { text:'The house was a tomb of broken dreams.', answer:'trick', why:'Metaphor. A house isn\'t a literal tomb.' }
+    ],
+    modelThinkAloud:`Watch me tag these. "The carpet lay like a lawn of matted weeds." Could a carpet literally be a lawn? No. The word <i>like</i> is the tell — that's a simile. TRICK. "He carried a worn leather suitcase." Could someone literally carry a worn suitcase? Yes. REAL. "The house was a tomb of broken dreams." Could a house literally be a tomb? No — houses aren't graves. TRICK. One question, three tags.`,
+    guidePassage:`<p>The room was in a mood — a sort of sullen gloom that hung about the place like a wet cloak. Faded roses on the wallpaper watched him with tired eyes. A mirror above the dresser caught his reflection clearly in the dim light, showing a young man not yet thirty.</p>`,
+    guidePrompt:`Different paragraph of the same story. Tag each phrase — Real or Trick?`,
+    guideType:'tag-interactive',
+    guidePhrases:[
+      { id:'t1', text:'The room was in a mood.', answer:'trick' },
+      { id:'t2', text:'A sullen gloom hung about the place like a wet cloak.', answer:'trick' },
+      { id:'t3', text:'Faded roses on the wallpaper watched him with tired eyes.', answer:'trick' },
+      { id:'t4', text:'A mirror above the dresser caught his reflection.', answer:'real' }
+    ],
+    guideRightGogi:`Three tricks, one real. <i>Rooms don't have moods</i> (personification). <i>Gloom isn't a cloak</i> (simile). <i>Roses on wallpaper don't have eyes</i> (personification). But a mirror literally catches a reflection — that's what mirrors do. That's the move.`,
+    guideWrongGogi:`Ask the one question: could this literally be true? Can roses on wallpaper actually have eyes? Can a gloom actually be a cloak? Try again.`
+  },
+
+  // 7 ===========================================================
+  mood_misreading: {
+    classification:'mood_misreading',
+    route:'/teach/mood',
+    layer:3,
+    moveName:'The Plot the Mood move',
+    moveShort:'Plot the Mood',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'The Furnished Room — O. Henry',
+    partOneBody:`Every passage has a mood — the feeling the words give you. Two questions get you there: Is it <i>dark</i> or <i>bright</i>? Is it <i>tense</i> or <i>calm</i>? Plot those two answers on a grid and you have the mood.`,
+    partOneBottom:`Same story can shift moods between paragraphs. Your job is to read what's on the page — word choices, images, action — and plot where the author put you.`,
+    diagram:{ type:'mood' },
+    modelPassage:`<p>Restless, shifting, fugacious as time itself is a certain vast bulk of the population of the red brick district of the lower West Side. Homeless, they have a hundred homes. They flit from furnished room to furnished room, transients forever — transients in abode, transients in heart and mind. They sing "Home, Sweet Home" in ragtime; they carry their <em>lares et penates</em> in a bandbox; their vine is entwined about a picture hat; a rubber plant is their fig tree.</p>`,
+    modelThinkAloud:`Plot this paragraph. Dark or bright? Dark — "homeless," "transients," "lower West Side," "restless." Tense or calm? Not urgent-tense but uneasy — drifting, never settled, no real home. So I plot: dark-leaning, calm-leaning but hollow. Lower-left area. That's the mood — heavy, unsettled, sad without being loud.`,
+    modelMoodPick:'dark-calm',
+    guidePassage:`<p>He sprang up and turned on the gas. He sprang to the wall, pulled out a drawer, and laid bare an old mattress covered with a dust of dead roaches. At the hall closet he paused with his hand on the knob. Then he went in and turned the gas on full. He lay down upon the bed and did not move. And the gas sighed and hummed and the mattress crackled softly as he shifted his weight.</p>`,
+    guidePrompt:`Different moment in the same story. Where does the mood of <i>this</i> paragraph land on the grid?`,
+    guideType:'mood-pick',
+    guideTarget:'dark-tense',
+    guideRightGogi:`Dark and tense — yes. Word choices tell you: "sprang," "laid bare," "dead roaches," "gas on full." The author built tension with short sentences and violent verbs. This is the story's darkest moment. You read the mood change.`,
+    guideWrongGogi:`Look at the verbs: <i>sprang</i>, <i>turned the gas on full</i>. Look at the images: <i>dead roaches</i>. Does this feel bright? Does this feel calm? Try again.`
+  },
+
+  // 8 ===========================================================
+  tone_misreading: {
+    classification:'tone_misreading',
+    route:'/teach/tone',
+    layer:3,
+    moveName:'The Read the Voice move',
+    moveShort:'Read the Voice',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'The Cop and the Anthem — O. Henry',
+    partOneBody:`Mood is how the story feels. <i>Tone</i> is how the narrator feels <i>about</i> the story. The narrator has a voice — warm, bitter, sardonic, earnest, playful, solemn. Read the voice on the page, not the plot.`,
+    partOneBottom:`Tone is an attitude. Your job is to catch the narrator's attitude and name it.`,
+    diagram:{ type:'wheel' },
+    modelPassage:`<p>On his bench in Madison Square Soapy moved uneasily. When wild geese honk high of nights, and when women without sealskin coats grow kind to their husbands, and when Soapy moves uneasily on his bench in the park, you may know that winter is near at hand.</p>
+<p>A dead leaf fell in Soapy's lap. That was Jack Frost's card. Jack is kind to the regular denizens of Madison Square, and gives fair warning of his annual call. At the corners of four streets he hands his pasteboard to the North Wind, footman of the mansion of All Outdoors, so that the inhabitants thereof may make ready.</p>`,
+    modelThinkAloud:`Read the voice. The narrator is talking about a homeless man getting ready for winter — serious topic. But the <i>voice</i> is doing something odd. "Wild geese honk high of nights" — poetic. "Women without sealskin coats grow kind to their husbands" — that's a cold observation about how rich/poor work in marriages. "Jack Frost's card" — personifying winter like it's dropping off a business card. This narrator is amused by something that should be tragic. Cool, detached, a little mocking. That tone has a name: <i>sardonic</i>. Cold amusement watching human absurdity.`,
+    modelTone:'sardonic',
+    guidePassage:`<p>Defeated, Soapy stood outside an old church. Sweet music drifted from within — a hymn he had known long ago when his mother was alive. A sudden and wonderful change came over Soapy. He would pull himself out of the mire. He would find work in the morning. He would be somebody in the world.</p>
+<p>A hand fell on his shoulder. It was a policeman. "What are you doing hanging around here?" he said. "Nothing," said Soapy. "Then come along," said the policeman. Three months on the Island, the magistrate ruled.</p>`,
+    guidePrompt:`Different moment in the same story. The narrator could have chosen any tone here. Read the voice. What tone does the narrator use for Soapy's arrest?`,
+    guideType:'tone-pick',
+    guideTarget:'sardonic',
+    guideRightGogi:`Sardonic — yes. The narrator just watched Soapy decide to reform and then get arrested <i>at that exact moment</i>. The narrator doesn't say "how sad." Doesn't say "how wrong." Just reports it flat, letting the cosmic joke land on its own. That voice — cold amusement at a perfect reversal — is sardonic.`,
+    guideWrongGogi:`Listen to the voice, not the event. Is the narrator <i>crying</i>? Is the narrator <i>excited</i>? No — the narrator is watching this happen and letting the irony land. What kind of voice does that?`
+  },
+
+  // 9 ===========================================================
+  inferencing_wm: {
+    classification:'inferencing_wm',
+    route:'/teach/inferencing?mode=wm',
+    layer:3,
+    moveName:'The Track the Pair move',
+    moveShort:'Track the Pair',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'The Gift of the Magi — O. Henry',
+    partOneBody:`When a story has two people who matter, your brain can lose one while focusing on the other. Don't try to hold both in your head. <i>Track the pair</i> on paper: two characters, one label for the relationship. That way when the story moves, you don't drop anyone.`,
+    partOneBottom:`The label you pick is an inference. What does what they do tell you about how they feel about each other?`,
+    diagram:{ type:'pair' },
+    modelPair:{ a:'Della', aSub:'the wife', b:'Jim', bSub:'the husband', label:'love each other enough to sacrifice' },
+    modelPassage:`<p>Jim drew a package from his overcoat pocket and threw it upon the table. "Don't make any mistake, Dell," he said, "about me. I don't think there's anything in the way of a haircut or a shave or a shampoo that could make me like my girl any less. But if you'll unwrap that package you may see why you had me going for a while."</p>
+<p>White fingers and nimble tore at the string and paper. And then an ecstatic scream of joy; and then, alas! a quick feminine change to hysterical tears and wails — for there lay The Combs — the set of combs that Della had worshipped long in a Broadway window.</p>`,
+    modelThinkAloud:`Track these two. Della is the wife — the one I just watched cut off her hair. Jim is the husband — he just walked in and gave her the combs she'd always wanted. What's the relationship line between them? Della sold her hair for Jim's gift. Jim (I'll find out in a second) sold his watch for Della's gift. They each gave up what they treasured most for the other one. That's the label: <i>love each other enough to sacrifice.</i> I'll hold that label as I read the rest.`,
+    guidePassage:`<p>Jim sat down on the couch and put his hands under the back of his head and smiled. "Dell," said he, "let's put our Christmas presents away and keep 'em a while. They're too nice to use just at present. I sold the watch to get the money to buy your combs. And now suppose you put the chops on, Dell."</p>`,
+    guidePrompt:`Different moment in the same story. Jim just told Della he sold his watch. You know what Della already did. What's the label for the pair now?`,
+    guideType:'pair-label',
+    guidePairA:{ name:'Della', sub:'the wife' },
+    guidePairB:{ name:'Jim', sub:'the husband' },
+    guideLabelChips:[
+      { id:'l1', text:'both sacrificed what they treasured most' },
+      { id:'l2', text:"one cares more than the other" },
+      { id:'l3', text:'are angry at each other' },
+      { id:'l4', text:"don't really love each other" },
+      { id:'l5', text:'made a mistake they both regret' }
+    ],
+    guideTarget:'l1',
+    guideRightGogi:`That's the pair tracked. Della sold her hair for his chain. Jim sold his watch for her combs. The label <i>both sacrificed what they treasured most</i> is what makes the whole story work. Neither one can use what the other gave them — but that's what proves the love.`,
+    guideWrongGogi:`Look at what each of them actually did. Della cut and sold her hair. Jim sold his watch. Both gave up their most prized thing for the other. What label fits that?`
+  },
+
+  // 10 ===========================================================
+  topic_vs_theme_confusion: {
+    classification:'topic_vs_theme_confusion',
+    route:'/teach/theme-builder',
+    layer:3,
+    moveName:'The Topic ≠ Theme move',
+    moveShort:'Topic ≠ Theme',
+    standardCode:'ELA.9.R.1.2',
+    standardLabel:'After Reading',
+    passageTitle:'The Gift of the Magi — O. Henry',
+    partOneBody:`A <i>topic</i> is what the story is about on the surface — usually just a word or phrase. A <i>theme</i> is a full sentence that says what the story <i>means</i> about life. Topic: "Christmas." Theme: "True love requires sacrifice."`,
+    partOneBottom:`Topic is a noun. Theme is a claim. If you can't make a sentence out of it, it's a topic.`,
+    diagram:{ type:'bins' },
+    modelPassage:`<p>The magi, as you know, were wise men — wonderfully wise men — who brought gifts to the Babe in the manger. They invented the art of giving Christmas presents. Being wise, their gifts were no doubt wise ones. And here I have lamely related to you the uneventful chronicle of two foolish children in a flat who most unwisely sacrificed for each other the greatest treasures of their house. But in a last word to the wise of these days let it be said that of all who give gifts these two were the wisest.</p>`,
+    modelThinkAloud:`Watch me sort. "Christmas" — just a noun. No full thought. That's a <i>topic</i>. "Sacrifice" — also a noun. <i>Topic</i>. "True love is worth any sacrifice" — full sentence, says what the story <i>means</i>. That's a <i>theme</i>. "The wisest givers give from the heart, not the wallet" — full sentence. <i>Theme</i>. Topic = what it's about. Theme = what it's saying.`,
+    modelTopics:['Christmas','Gift-giving','Sacrifice'],
+    modelThemes:['True love is worth any sacrifice','The wisest givers give from the heart, not the wallet'],
+    guidePassage:`<p>Della finished her cry and attended to her cheeks with the powder rag. She stood by the window and looked out dully at a gray cat walking a gray fence in a gray backyard. Tomorrow would be Christmas Day, and she had only $1.87 with which to buy Jim a present.</p>`,
+    guidePrompt:`Different moment in the same story. Sort each card into Topic or Theme.`,
+    guideType:'bin-sort',
+    guideCards:[
+      { id:'c1', text:'Poverty', bin:'topic' },
+      { id:'c2', text:'Love is shown in what we give up, not in what we spend', bin:'theme' },
+      { id:'c3', text:'Marriage', bin:'topic' },
+      { id:'c4', text:'The poor can love more richly than the rich', bin:'theme' }
+    ],
+    guideRightGogi:`Clean sort. <i>Poverty</i> and <i>marriage</i> are just nouns — topics. The other two are full claims that say what the story is really <i>about</i> beyond the plot. That's the whole move. Topic names what's on the page. Theme names what it all means.`,
+    guideWrongGogi:`Ask each card: can I make a complete sentence out of this, or is it just a word? If it's just a word — topic. If it's a full claim about life — theme.`
+  },
+
+  // 11 ===========================================================
+  evidence_retrieval_failure: {
+    classification:'evidence_retrieval_failure',
+    route:'/teach/evidence',
+    layer:3,
+    moveName:'The Find the Proof move',
+    moveShort:'Find the Proof',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'After Twenty Years — O. Henry',
+    partOneBody:`A claim is a statement about the story. <i>Evidence</i> is the exact sentence in the text that proves it. Good readers don't argue from memory — they point at the page.`,
+    partOneBottom:`Find the proof. Say the claim. Point to the sentence. Done.`,
+    diagram:{ type:'proof' },
+    modelClaim:"Jimmy recognized Bob as a wanted criminal.",
+    modelPassage:`<p>The stranger handed him a folded note. Bob read it under the streetlamp. His hand began to tremble. <em>"Bob: I was at the appointed place on time. When you struck the match, I saw it was the face of the man wanted in Chicago. Somehow I couldn't do it myself, so I went around and got a plain-clothes man to do the job. — JIMMY."</em></p>`,
+    modelThinkAloud:`The claim is: Jimmy recognized Bob as a wanted criminal. Where's the proof? I'm looking for the exact sentence that shows it happened. Scanning… "When you struck the match, I saw it was the face of the man wanted in Chicago." That's it. That's the sentence. I don't have to argue. I just point.`,
+    modelPickedSentence:1,
+    guidePassage:`<p>The man in the door struck a match and lit his cigar. The light showed a pale, square-jawed face with keen eyes, and a little white scar near his right eyebrow. His scarfpin was a large diamond, oddly set. "Twenty years ago tonight," said the man, "I dined here at 'Big Joe' Brady's with Jimmy Wells, my best chum, and the finest chap in the world. He and I were raised here in New York, just like two brothers, together. I was eighteen and Jimmy was twenty."</p>`,
+    guideClaim:"Bob has a distinctive white scar near his eyebrow.",
+    guidePrompt:`Different moment in the same story. A new claim. Tap the sentence in the passage that proves it.`,
+    guideType:'proof-pick',
+    guideSentences:[
+      { id:'s1', text:'The man in the door struck a match and lit his cigar.' },
+      { id:'s2', text:'The light showed a pale, square-jawed face with keen eyes, and a little white scar near his right eyebrow.' },
+      { id:'s3', text:'His scarfpin was a large diamond, oddly set.' },
+      { id:'s4', text:'"Twenty years ago tonight," said the man, "I dined here at \\'Big Joe\\' Brady\\'s with Jimmy Wells, my best chum, and the finest chap in the world."' }
+    ],
+    guideTarget:'s2',
+    guideRightGogi:`That sentence. You pointed at the exact line that proves it — <i>"a little white scar near his right eyebrow."</i> The claim says "distinctive white scar near his eyebrow." The sentence says the same thing in its own words. That's proof.`,
+    guideWrongGogi:`The claim is about a <i>scar</i>. Scan the passage for a sentence that actually says "scar." Point at the proof, not the context.`
+  },
+
+  // 12 ===========================================================
+  comprehension_integration_failure: {
+    classification:'comprehension_integration_failure',
+    route:'/teach/synthesis',
+    layer:3,
+    moveName:'The Claim → Evidence → Warrant move',
+    moveShort:'Claim → Evidence → Warrant',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'After Reading',
+    passageTitle:'The Cop and the Anthem — O. Henry',
+    partOneBody:`A full reading has three parts working together. The <i>claim</i> is what you're saying. The <i>evidence</i> is the text that backs it up. The <i>warrant</i> is the logic that connects them — the "because" that explains why the evidence proves the claim.`,
+    partOneBottom:`Most readers can find a claim and grab some text. The warrant is what separates a real argument from a guess. Always name the connection.`,
+    diagram:{ type:'cew' },
+    modelClaim:"Soapy's arrest is ironic.",
+    modelPassage:`<p>A sudden and wonderful change came over Soapy. He would pull himself out of the mire. He would be somebody in the world. A hand fell on his shoulder. It was a policeman. "What are you doing hanging around here?" he said. "Nothing," said Soapy. "Then come along," said the policeman. Three months on the Island, the magistrate ruled.</p>`,
+    modelThinkAloud:`Build the three-part argument. <i>Claim:</i> Soapy's arrest is ironic. <i>Evidence:</i> he gets arrested right at the moment he decides to reform — "A hand fell on his shoulder" comes immediately after "he would be somebody in the world." <i>Warrant:</i> irony means getting the opposite of what you expected. Soapy spent all day trying to be arrested and kept failing. The second he stops wanting it, he gets it. That's why the evidence proves the claim.`,
+    modelCEW:{
+      claim:"Soapy's arrest is ironic.",
+      evidence:"He gets arrested the moment he decides to reform.",
+      warrant:"Irony is getting the opposite of what you expected — and that timing is exactly the opposite."
+    },
+    guidePassage:`<p>Soapy, with a good score of acting behind him, caressed the waiter's sleeve familiarly. "You needn't make a fuss," he said. "Call a cop and be quick about it."</p>
+<p>"No cop for youse," said the waiter, with a voice like butter cakes and an eye like the cherry in a Manhattan cocktail. "Hey, Con!" Soapy was neatly upset on the callous pavement.</p>`,
+    guideClaim:"Soapy wants to be arrested.",
+    guidePrompt:`Different moment in the same story. The claim is given. Tap the evidence from the passage, then tap the warrant that connects it.`,
+    guideType:'cew-build',
+    guideEvidenceChips:[
+      { id:'e1', text:'He says "Call a cop and be quick about it."', correct:true },
+      { id:'e2', text:'The waiter has a voice like butter cakes.', correct:false },
+      { id:'e3', text:'Soapy is upset on the pavement.', correct:false }
+    ],
+    guideWarrantChips:[
+      { id:'w1', text:'Asking for a cop is the same as asking to be arrested.', correct:true },
+      { id:'w2', text:'The waiter was annoyed by Soapy.', correct:false },
+      { id:'w3', text:'Pavements are hard and cold.', correct:false }
+    ],
+    guideRightGogi:`Full argument built. <i>Claim</i> — Soapy wants to be arrested. <i>Evidence</i> — he asks for a cop by name. <i>Warrant</i> — asking for a cop IS asking to be arrested. That's what makes it a real reading, not just a guess. Claim, evidence, warrant, every time.`,
+    guideWrongGogi:`Pick the evidence that directly shows Soapy wanting to be arrested — that's a specific action or quote. Then pick the warrant that explains why that action means "wanting to be arrested."`
+  },
+
+  // 13 ===========================================================
+  no_metacognitive_strategy: {
+    classification:'no_metacognitive_strategy',
+    route:'/teach/strategy',
+    layer:1,
+    moveName:'The Lens → Sentence move',
+    moveShort:'Lens → Sentence',
+    standardCode:'ELA.9.R.1.1',
+    standardLabel:'Pre-Reading',
+    passageTitle:'The Cop and the Anthem — O. Henry',
+    partOneBody:`Good readers don't just read. They read <i>through lenses</i>. SOAPSTone gives you six lenses to put on a passage: <i>Subject</i>, <i>Occasion</i>, <i>Audience</i>, <i>Purpose</i>, <i>Speaker</i>, <i>Tone</i>. Pick a lens, then tap the sentence that answers through that lens.`,
+    partOneBottom:`Same passage, different lens, different thing you notice. That's metacognition — thinking about your thinking.`,
+    diagram:{ type:'soap' },
+    modelPassage:`<p>On his bench in Madison Square Soapy moved uneasily. Winter was near. The Island — three months of assured food and bed — beckoned. Therefore he moved to accomplish his desire.</p>`,
+    modelThinkAloud:`Watch me put on two lenses. <i>Subject lens</i>: what's this literally about? "On his bench in Madison Square Soapy moved uneasily." That sentence tells me the subject — a homeless man preparing for winter. Tag it S. <i>Tone lens</i>: what's the narrator's attitude? "Winter was near." Three words. Flat, matter-of-fact, no emotion. That dry voice tells me the tone. Tag that sentence T. Two lenses, two sentences, two different things noticed.`,
+    modelTags:[
+      { sentIdx:0, lens:'S' },
+      { sentIdx:1, lens:'T' }
+    ],
+    guidePassage:`<p>There was the Island over there. It rose up from the cold, gray river like a bad tooth. Soapy's proudly independent soul, however, preferred the Arm of the Law to charity. Therefore it was better to be the guest of the law.</p>`,
+    guidePrompt:`Different paragraph in the same story. Pick a lens, then tap the sentence that best answers through that lens.`,
+    guideType:'soap-interactive',
+    guideLenses:[
+      { id:'S', label:'S', full:'Subject', sentIdx:0 },
+      { id:'T', label:'T', full:'Tone', sentIdx:1 },
+      { id:'P', label:'P', full:'Purpose', sentIdx:2 }
+    ],
+    guideSentences:[
+      { idx:0, text:'There was the Island over there.' },
+      { idx:1, text:'It rose up from the cold, gray river like a bad tooth.' },
+      { idx:2, text:"Soapy's proudly independent soul, however, preferred the Arm of the Law to charity." },
+      { idx:3, text:'Therefore it was better to be the guest of the law.' }
+    ],
+    guideRightGogi:`That's metacognition working. Different lenses show different things — the Subject tells you what's there, Tone tells you the narrator's attitude, Purpose tells you why the author included the sentence. Same paragraph, three ways of seeing.`,
+    guideWrongGogi:`Pick a lens and look for the sentence that <i>directly</i> answers through it. Subject lens = what's this about literally. Tone lens = the narrator's attitude. Purpose lens = why this sentence is here.`
+  }
+};
+
+const ORDER = [
+  'inferencing_literal',
+  'inferencing_schema',
+  'vocabulary_gap',
+  'morphology_gap',
+  'syntax_barrier',
+  'figurative_language_failure',
+  'mood_misreading',
+  'tone_misreading',
+  'inferencing_wm',
+  'topic_vs_theme_confusion',
+  'evidence_retrieval_failure',
+  'comprehension_integration_failure',
+  'no_metacognitive_strategy'
+];
+
+const LABEL = {
+  inferencing_literal:'1. inferencing_literal — Says → Means',
+  inferencing_schema:'2. inferencing_schema — Predict → Verify',
+  vocabulary_gap:'3. vocabulary_gap — Word → Frayer',
+  morphology_gap:'4. morphology_gap — Split → Meaning',
+  syntax_barrier:'5. syntax_barrier — Strip to Core',
+  figurative_language_failure:'6. figurative_language_failure — Real or Trick?',
+  mood_misreading:'7. mood_misreading — Plot the Mood',
+  tone_misreading:'8. tone_misreading — Read the Voice',
+  inferencing_wm:'9. inferencing_wm — Track the Pair',
+  topic_vs_theme_confusion:'10. topic_vs_theme_confusion — Topic ≠ Theme',
+  evidence_retrieval_failure:'11. evidence_retrieval_failure — Find the Proof',
+  comprehension_integration_failure:'12. comprehension_integration_failure — Claim → Evidence → Warrant',
+  no_metacognitive_strategy:'13. no_metacognitive_strategy — Lens → Sentence'
+};
+
+// Build selector
+const selector = document.getElementById('selector');
+ORDER.forEach(k => { const opt = document.createElement('option'); opt.value = k; opt.textContent = LABEL[k]; selector.appendChild(opt); });
+
+let current = 'inferencing_literal';
+let ls = {}; // local interactive state per pattern
+ORDER.forEach(k => { ls[k] = {}; });
+
+// ============================================================================
+// SHARED HELPERS
+// ============================================================================
+function cardHeader(p, title){
+  const layerLabel = { 1:'L1 · PRE-READING', 2:'L2 · DURING READING', 3:'L3 · AFTER READING' }[p.layer];
+  const layerCls = `pill-layer-${p.layer}`;
+  return `
+    <div class="card-header">
+      <div>
+        <div class="card-code">${p.standardCode} · ${p.standardLabel}</div>
+        <div class="card-name">${title}</div>
+      </div>
+      <div class="card-pills">
+        <span class="pill ${layerCls}">${layerLabel}</span>
+        <span class="pill pill-status">In Intervention</span>
+      </div>
+    </div>
+  `;
+}
+function gogiBubble(state, msg){
+  const wrapCls = state === 'celebrate' ? 'celebrate-wrap' : '';
+  return `<div class="gogi ${wrapCls}"><div class="gogi-av ${state}">G</div><div class="gogi-body"><div class="gogi-name">Gogi</div><p class="gogi-say">${msg}</p></div></div>`;
+}
+
+// ============================================================================
+// PART 1 DIAGRAMS (one per pattern)
+// ============================================================================
+function renderPartOneDiagram(p){
+  switch(p.diagram.type){
+    case 'arrows':
+      return `<div class="diag-arrows">
+        <div class="box"><div class="lbl">${p.diagram.leftLabel}</div><div class="content">${p.diagram.leftText}</div></div>
+        <div class="arrow"><div class="arrow-text">${p.diagram.arrowText}</div><div class="arrow-shape">→</div></div>
+        <div class="box"><div class="lbl">${p.diagram.rightLabel}</div><div class="content">${p.diagram.rightText}</div></div>
+      </div>`;
+    case 'predict':
+      return `<div class="diag-predict">
+        <div><h4>${p.diagram.leftLabel}</h4>
+          <div class="predict-tile">• possible outcome #1</div>
+          <div class="predict-tile">• possible outcome #2</div>
+          <div class="predict-tile">• possible outcome #3</div>
+        </div>
+        <div><h4>${p.diagram.rightLabel}</h4>
+          <div class="predict-tile"><span class="mark">?</span>did this happen?</div>
+          <div class="predict-tile"><span class="mark">?</span>did this happen?</div>
+          <div class="predict-tile"><span class="mark">?</span>did this happen?</div>
+        </div>
+      </div>`;
+    case 'frayer':
+      return `<div class="diag-frayer">
+        <div class="fq"><div class="fq-lab">Definition</div></div>
+        <div class="fq"><div class="fq-lab">Characteristics</div></div>
+        <div class="fq"><div class="fq-lab">Examples</div></div>
+        <div class="fq"><div class="fq-lab">Non-examples</div></div>
+        <div class="fq-word">YOUR WORD</div>
+      </div>`;
+    case 'split':
+      return `<div class="diag-split">
+        <div class="split-word">
+          <span class="seg">pre-</span><span class="dash">+</span><span class="seg">root</span><span class="dash">+</span><span class="seg">-suf</span>
+        </div>
+        <div class="split-meanings">
+          <div class="split-meaning"><div class="mini">Prefix</div>meaning</div>
+          <div class="split-meaning"><div class="mini">Root</div>meaning</div>
+          <div class="split-meaning"><div class="mini">Suffix</div>meaning</div>
+        </div>
+      </div>`;
+    case 'strip':
+      return `<div class="diag-strip" style="text-align:center;">
+        <span class="sseg stripped">[extra]</span>
+        <span class="sseg core">the subject</span>
+        <span class="sseg core">did</span>
+        <span class="sseg core">something.</span>
+        <span class="sseg stripped">[extra]</span>
+      </div>`;
+    case 'tag':
+      return `<div class="diag-tag">
+        <div class="tag-row"><div class="tag-phrase">A phrase that means what it says.</div><div class="tag-btns"><div class="tag-btn on-real">Real</div></div></div>
+        <div class="tag-row"><div class="tag-phrase">A phrase that's pulling a trick.</div><div class="tag-btns"><div class="tag-btn on-trick">Trick</div></div></div>
+      </div>`;
+    case 'mood':
+      return `<div class="diag-mood"><div class="mood-wrap"><div class="mood-grid">
+        <div class="mood-cell">DARK<br>TENSE</div>
+        <div class="mood-cell">BRIGHT<br>TENSE</div>
+        <div class="mood-cell">DARK<br>CALM</div>
+        <div class="mood-cell">BRIGHT<br>CALM</div>
+      </div>
+      <div class="mood-axis-y"><span>TENSE</span><span>CALM</span></div>
+      <div class="mood-axis-x"><span>DARK</span><span>BRIGHT</span></div>
+      </div></div>`;
+    case 'wheel':
+      return renderWheel(null, null, true);
+    case 'pair':
+      return `<div class="diag-pair">
+        <div class="char-circle"><div class="char-name">Person A</div></div>
+        <div class="pair-line"><div class="pair-label empty">relationship?</div></div>
+        <div class="char-circle"><div class="char-name">Person B</div></div>
+      </div>`;
+    case 'bins':
+      return `<div class="diag-bins">
+        <div class="bin topic"><div class="bin-label">Topic</div><div class="bin-sub">a word or phrase</div><div class="bin-card">Christmas</div><div class="bin-card">sacrifice</div></div>
+        <div class="bin theme"><div class="bin-label">Theme</div><div class="bin-sub">a full claim about life</div><div class="bin-card">Love is shown in what we give up.</div></div>
+      </div>`;
+    case 'proof':
+      return `<div class="diag-proof">
+        <div class="proof-claim"><span class="mini">Claim</span>What you're saying about the story.</div>
+        <div class="proof-arrow">↓</div>
+        <div class="proof-passage">
+          <span class="proof-sent">A sentence that doesn't prove it.</span>
+          <span class="proof-sent picked">The exact sentence that proves it.</span>
+          <span class="proof-sent">Another sentence.</span>
+        </div>
+      </div>`;
+    case 'cew':
+      return `<div class="diag-cew">
+        <div class="cew-box filled"><div class="cew-lab">Claim</div><div class="cew-content">What you're saying.</div></div>
+        <div class="cew-arrow">↓</div>
+        <div class="cew-box filled"><div class="cew-lab">Evidence</div><div class="cew-content">The exact text that backs it up.</div></div>
+        <div class="cew-arrow">↓</div>
+        <div class="cew-box filled"><div class="cew-lab">Warrant</div><div class="cew-content">The logic that connects them.</div></div>
+      </div>`;
+    case 'soap':
+      return `<div class="diag-soap">
+        <div class="lens-bar">
+          <div class="lens active">S<span class="lens-full">Subject</span></div>
+          <div class="lens">O<span class="lens-full">Occasion</span></div>
+          <div class="lens">A<span class="lens-full">Audience</span></div>
+          <div class="lens">P<span class="lens-full">Purpose</span></div>
+          <div class="lens">Sp<span class="lens-full">Speaker</span></div>
+          <div class="lens">T<span class="lens-full">Tone</span></div>
+        </div>
+        <div class="soap-passage">
+          <span class="soap-sent tagged" data-tag="S">Sentence tagged through the Subject lens.</span>
+          <span class="soap-sent">A sentence not yet tagged.</span>
+        </div>
+      </div>`;
+  }
+}
+
+// ============================================================================
+// PART 2 MODEL DIAGRAM (filled-in version, same shape)
+// ============================================================================
+function renderModelDiagram(p){
+  switch(p.diagram.type){
+    case 'arrows':
+      return `<div class="diag-arrows">
+        <div class="box filled"><div class="lbl">${p.diagram.leftLabel}</div><div class="content">${p.modelDiagram.left}</div></div>
+        <div class="arrow"><div class="arrow-text">${p.diagram.arrowText}</div><div class="arrow-shape">→</div></div>
+        <div class="box filled"><div class="lbl">${p.diagram.rightLabel}</div><div class="content">${p.modelDiagram.right}</div></div>
+      </div>`;
+    case 'predict':
+      return `<div class="diag-predict">
+        <div><h4>Predict</h4>
+          ${p.modelPredictions.map(t => `<div class="predict-tile picked">${t.text}</div>`).join('')}
+        </div>
+        <div><h4>Verify</h4>
+          ${p.modelPredictions.map(t => `<div class="predict-tile verified-${t.verified}"><span class="mark">${t.verified==='yes'?'✓ YES':'✗ NO'}</span>${t.text}</div>`).join('')}
+        </div>
+      </div>`;
+    case 'frayer':
+      return `<div class="diag-frayer">
+        <div class="fq filled"><div class="fq-lab">Definition</div><div class="fq-content">${p.modelFrayer.def}</div></div>
+        <div class="fq filled"><div class="fq-lab">Characteristics</div><div class="fq-content">${p.modelFrayer.ch}</div></div>
+        <div class="fq filled"><div class="fq-lab">Examples</div><div class="fq-content">${p.modelFrayer.ex}</div></div>
+        <div class="fq filled"><div class="fq-lab">Non-examples</div><div class="fq-content">${p.modelFrayer.ne}</div></div>
+        <div class="fq-word">${p.modelWord}</div>
+      </div>`;
+    case 'split':
+      return `<div class="diag-split">
+        <div class="split-word">
+          ${p.modelSplit.segs.map((s,i)=>`<span class="seg">${s}</span>${i<p.modelSplit.segs.length-1?'<span class="dash">+</span>':''}`).join('')}
+        </div>
+        <div class="split-meanings">
+          ${p.modelSplit.meanings.map((m,i)=>{
+            const mini = i===0?'Prefix':(i===p.modelSplit.meanings.length-1?'Suffix':'Root');
+            return `<div class="split-meaning filled"><div class="mini">${mini}</div>${m}</div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    case 'strip':
+      return `<div class="diag-strip">
+        ${p.modelSegs.map(s => `<span class="sseg ${s.role === 'mod' ? 'stripped' : 'core'}">${s.text}</span>`).join(' ')}
+      </div>`;
+    case 'tag':
+      return `<div class="diag-tag">
+        ${p.modelPhrases.map(ph => `<div class="tag-row"><div class="tag-phrase">${ph.text}</div><div class="tag-btns"><div class="tag-btn ${ph.answer==='real'?'on-real':'on-trick'}">${ph.answer}</div></div></div>`).join('')}
+      </div>`;
+    case 'mood':
+      return renderMoodGridModel(p);
+    case 'wheel':
+      return renderWheel(p.modelTone, p.modelTone, false);
+    case 'pair':
+      return `<div class="diag-pair">
+        <div class="char-circle"><div class="char-name">${p.modelPair.a}</div><div class="char-sub">${p.modelPair.aSub}</div></div>
+        <div class="pair-line"><div class="pair-label">${p.modelPair.label}</div></div>
+        <div class="char-circle"><div class="char-name">${p.modelPair.b}</div><div class="char-sub">${p.modelPair.bSub}</div></div>
+      </div>`;
+    case 'bins':
+      return `<div class="diag-bins">
+        <div class="bin topic"><div class="bin-label">Topic</div><div class="bin-sub">a word or phrase</div>
+          ${p.modelTopics.map(t => `<div class="bin-card">${t}</div>`).join('')}
+        </div>
+        <div class="bin theme"><div class="bin-label">Theme</div><div class="bin-sub">a full claim about life</div>
+          ${p.modelThemes.map(t => `<div class="bin-card">${t}</div>`).join('')}
+        </div>
+      </div>`;
+    case 'proof':
+      return renderProofModel(p);
+    case 'cew':
+      return `<div class="diag-cew">
+        <div class="cew-box filled"><div class="cew-lab">Claim</div><div class="cew-content">${p.modelCEW.claim}</div></div>
+        <div class="cew-arrow">↓</div>
+        <div class="cew-box filled"><div class="cew-lab">Evidence</div><div class="cew-content">${p.modelCEW.evidence}</div></div>
+        <div class="cew-arrow">↓</div>
+        <div class="cew-box filled"><div class="cew-lab">Warrant</div><div class="cew-content">${p.modelCEW.warrant}</div></div>
+      </div>`;
+    case 'soap':
+      return renderSoapModel(p);
+  }
+}
+
+function renderMoodGridModel(p){
+  const pos = {
+    'dark-tense':   { x:'25%', y:'25%' },
+    'dark-calm':    { x:'25%', y:'75%' },
+    'bright-tense': { x:'75%', y:'25%' },
+    'bright-calm':  { x:'75%', y:'75%' }
+  }[p.modelMoodPick];
+  return `<div class="diag-mood"><div class="mood-wrap"><div class="mood-grid">
+    <div class="mood-cell">DARK<br>TENSE</div>
+    <div class="mood-cell">BRIGHT<br>TENSE</div>
+    <div class="mood-cell modeled">DARK<br>CALM</div>
+    <div class="mood-cell">BRIGHT<br>CALM</div>
+    <div class="mood-marker" style="left:${pos.x};top:${pos.y};"></div>
+  </div>
+  <div class="mood-axis-y"><span>TENSE</span><span>CALM</span></div>
+  <div class="mood-axis-x"><span>DARK</span><span>BRIGHT</span></div>
+  </div></div>`;
+}
+
+function renderWheel(pickedTone, highlightTone, blank){
+  const tones = [
+    { id:'sardonic', label:'Sardonic', fill:'#DCD7F5', stroke:'#6d28d9' },
+    { id:'earnest',  label:'Earnest',  fill:'#C6EFCE', stroke:'#3B6D11' },
+    { id:'bitter',   label:'Bitter',   fill:'#FCEBEB', stroke:'#A32D2D' },
+    { id:'playful',  label:'Playful',  fill:'#FAEEDA', stroke:'#BA7517' },
+    { id:'solemn',   label:'Solemn',   fill:'#E8E8E4', stroke:'#888780' },
+    { id:'warm',     label:'Warm',     fill:'#E6F1FB', stroke:'#2E75B6' }
+  ];
+  const paths = [
+    'M 150 150 L 150 24 A 126 126 0 0 1 259.12 87 Z',
+    'M 150 150 L 259.12 87 A 126 126 0 0 1 259.12 213 Z',
+    'M 150 150 L 259.12 213 A 126 126 0 0 1 150 276 Z',
+    'M 150 150 L 150 276 A 126 126 0 0 1 40.88 213 Z',
+    'M 150 150 L 40.88 213 A 126 126 0 0 1 40.88 87 Z',
+    'M 150 150 L 40.88 87 A 126 126 0 0 1 150 24 Z'
+  ];
+  const lbl = [[192,82],[235,150],[192,218],[108,218],[65,150],[108,82]];
+  const onClick = blank ? '' : (pickedTone === undefined ? 'onclick="tonePick(\'__ID__\')"' : '');
+  let svg = '<div class="diag-wheel"><svg class="wheel" viewBox="0 0 300 300">';
+  tones.forEach((t,i) => {
+    const sel = highlightTone === t.id;
+    const dim = highlightTone && !sel;
+    const click = blank ? '' : `onclick="tonePick('${t.id}')"`;
+    svg += `<path d="${paths[i]}" fill="${t.fill}" stroke="${t.stroke}" stroke-width="${sel?2.5:1.5}" opacity="${dim?0.3:1}" ${click}/>`;
+  });
+  tones.forEach((t,i) => {
+    svg += `<text x="${lbl[i][0]}" y="${lbl[i][1]+4}" fill="${t.stroke}" text-anchor="middle">${t.label}</text>`;
+  });
+  svg += '</svg></div>';
+  return svg;
+}
+
+function renderProofModel(p){
+  const sents = p.modelPassage.match(/<em>[^<]+<\/em>|[A-Z][^.!?<]*[.!?]/g) || [];
+  return `<div class="diag-proof">
+    <div class="proof-claim"><span class="mini">Claim</span>${p.modelClaim}</div>
+    <div class="proof-arrow">↓</div>
+    <div class="proof-passage">
+      <span class="proof-sent">Bob read it under the streetlamp.</span>
+      <span class="proof-sent">His hand began to tremble.</span>
+      <span class="proof-sent picked">When you struck the match, I saw it was the face of the man wanted in Chicago.</span>
+      <span class="proof-sent">Somehow I couldn't do it myself, so I went around and got a plain-clothes man to do the job.</span>
+    </div>
+  </div>`;
+}
+
+function renderSoapModel(p){
+  return `<div class="diag-soap">
+    <div class="lens-bar">
+      <div class="lens">S<span class="lens-full">Subject</span></div>
+      <div class="lens">O<span class="lens-full">Occasion</span></div>
+      <div class="lens">A<span class="lens-full">Audience</span></div>
+      <div class="lens">P<span class="lens-full">Purpose</span></div>
+      <div class="lens">Sp<span class="lens-full">Speaker</span></div>
+      <div class="lens">T<span class="lens-full">Tone</span></div>
+    </div>
+    <div class="soap-passage">
+      <span class="soap-sent tagged-right" data-tag="S">On his bench in Madison Square Soapy moved uneasily.</span>
+      <span class="soap-sent tagged-right" data-tag="T">Winter was near.</span>
+      <span class="soap-sent">The Island — three months of assured food and bed — beckoned.</span>
+      <span class="soap-sent">Therefore he moved to accomplish his desire.</span>
+    </div>
+  </div>`;
+}
+
+// ============================================================================
+// PART 3 INTERACTIVE (per-pattern renderer + input handlers)
+// ============================================================================
+window.pickChipStem = (key, val) => {
+  const s = ls[key];
+  s.blanks = s.blanks || [null,null];
+  if(!s.blanks[0]) s.blanks[0] = val;
+  else if(!s.blanks[1]) s.blanks[1] = val;
+  render();
+};
+window.clearBlankStem = (key, idx) => {
+  const s = ls[key];
+  if(!s.blanks) return;
+  if(s.submitted) return;
+  s.blanks[idx] = null;
+  render();
+};
+window.submitChipStem = (key) => { ls[key].submitted = true; render(); };
+window.retryChipStem = (key) => { ls[key].blanks = [null,null]; ls[key].submitted = false; render(); };
+
+function renderPart3_chipStem(p){
+  const key = p.classification;
+  const s = ls[key];
+  const b0 = (s.blanks||[null,null])[0], b1 = (s.blanks||[null,null])[1];
+  const filled = b0 && b1;
+  const correct = filled && p.guideCorrect.includes(b0) && p.guideCorrect.includes(b1) && b0 !== b1;
+  const showGogi = !!s.submitted;
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="stem">
+      <div class="stem-labels"><span>${p.guideStem.leftLbl}</span><span>${p.guideStem.rightLbl}</span></div>
+      The text says <span class="blank ${b0?'filled':''}" onclick="clearBlankStem('${key}',0)">${b0||'&nbsp;'}</span>. That makes me think <span class="blank ${b1?'filled':''}" onclick="clearBlankStem('${key}',1)">${b1||'&nbsp;'}</span>.
+    </div>
+    <div class="chip-bank">
+      ${p.guideChips.map(c => {
+        const used = b0===c || b1===c;
+        return `<div class="chip ${used?'used':''}" onclick="pickChipStem('${key}','${c.replace(/'/g,"\\'")}')">${c}</div>`;
+      }).join('')}
+    </div>
+    ${showGogi ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!filled?'disabled':''} onclick="submitChipStem('${key}')">Check my work</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryChipStem('${key}')">Clear and try again</button>`)}
+    </div>`;
+}
+
+window.predictPick = (key, id) => {
+  const s = ls[key]; s.picks = s.picks || new Set();
+  if(s.submitted) return;
+  if(s.picks.has(id)) s.picks.delete(id); else { if(s.picks.size >= 2) return; s.picks.add(id); }
+  render();
+};
+window.submitPredict = key => { ls[key].submitted = true; render(); };
+window.retryPredict = key => { ls[key].picks = new Set(); ls[key].submitted = false; render(); };
+
+function renderPart3_predictPick(p){
+  const key = p.classification;
+  const s = ls[key];
+  const picks = s.picks || new Set();
+  const done = picks.size === 2;
+  const allRight = done && p.guideTargets.every(t => picks.has(t));
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment (pre-read)</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-predict">
+      <div><h4>Pick 2 predictions</h4>
+        ${p.guidePredictions.map(t => `<div class="predict-tile ${picks.has(t.id)?'picked':''} ${s.submitted && picks.has(t.id) ? (t.verified?'verified-yes':'verified-no') : ''}" onclick="predictPick('${key}','${t.id}')">${s.submitted && picks.has(t.id) ? `<span class="mark">${t.verified?'✓':'✗'}</span>` : ''}${t.text}</div>`).join('')}
+      </div>
+      <div><h4>Story outcome</h4>
+        <div class="predict-tile" style="cursor:default;">Della gets the twenty dollars and immediately runs out to find Jim's gift.</div>
+        <div class="predict-tile" style="cursor:default;">She finds a platinum chain for his watch — spending the full twenty dollars.</div>
+        <div class="predict-tile" style="cursor:default;">She's thrilled, not regretful — the loss of her hair was already her choice.</div>
+      </div>
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!done?'disabled':''} onclick="submitPredict('${key}')">Verify my predictions</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryPredict('${key}')">Try again</button>`)}
+    </div>`;
+}
+
+window.frayerActive = (key, id) => { ls[key].activeQ = id; render(); };
+window.frayerPlace = (key, id) => {
+  const s = ls[key]; s.placed = s.placed || {};
+  if(!s.activeQ || s.placed[id]) return;
+  s.placed[id] = s.activeQ;
+  render();
+};
+window.submitFrayer = key => { ls[key].submitted = true; render(); };
+window.retryFrayer = key => { ls[key].placed = {}; ls[key].activeQ = null; ls[key].submitted = false; render(); };
+
+function renderPart3_frayerFill(p){
+  const key = p.classification;
+  const s = ls[key];
+  const placed = s.placed || {};
+  const allPlaced = p.guideChips.every(c => placed[c.id]);
+  const allRight = allPlaced && p.guideChips.every(c => placed[c.id] === c.home);
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-frayer">
+      ${p.guideQuads.map(q => {
+        const mine = p.guideChips.filter(c => placed[c.id] === q.id);
+        const active = s.activeQ === q.id;
+        const filled = mine.length > 0;
+        return `<div class="fq ${active?'active':''} ${filled && !active?'filled':''}" onclick="frayerActive('${key}','${q.id}')">
+          <div class="fq-lab">${q.lab}</div>
+          ${mine.map(c => `<div class="fq-content" style="margin-bottom:4px;">• ${c.text}</div>`).join('')}
+        </div>`;
+      }).join('')}
+      <div class="fq-word">${p.guideWord}</div>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Chip bank</div>
+    <div class="chip-bank">
+      ${p.guideChips.map(c => `<div class="chip ${placed[c.id]?'used':''}" onclick="frayerPlace('${key}','${c.id}')">${c.text}</div>`).join('')}
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!allPlaced?'disabled':''} onclick="submitFrayer('${key}')">Check my Frayer</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryFrayer('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.splitPlace = (key, segId, meaningId) => {
+  const s = ls[key]; s.assign = s.assign || {};
+  if(s.submitted) return;
+  s.activeSeg = segId;
+  if(meaningId){ s.assign[segId] = meaningId; s.activeSeg = null; }
+  render();
+};
+window.splitActive = (key, segId) => { ls[key].activeSeg = segId; render(); };
+window.splitAssign = (key, meaningId) => {
+  const s = ls[key]; s.assign = s.assign || {};
+  if(!s.activeSeg || s.submitted) return;
+  s.assign[s.activeSeg] = meaningId; s.activeSeg = null;
+  render();
+};
+window.submitSplit = key => { ls[key].submitted = true; render(); };
+window.retrySplit = key => { ls[key].assign = {}; ls[key].activeSeg = null; ls[key].submitted = false; render(); };
+
+function renderPart3_splitFill(p){
+  const key = p.classification;
+  const s = ls[key];
+  const assign = s.assign || {};
+  const allAssigned = p.guideSegs.every(seg => assign[seg]);
+  const allRight = allAssigned && p.guideSegs.every(seg => {
+    const mId = assign[seg];
+    const chip = p.guideMeaningChips.find(c => c.id === mId);
+    return chip && chip.home === seg;
+  });
+  return `
+    <div class="prompt" style="margin-top:8px;">${p.guidePrompt}</div>
+    <div class="diag-split">
+      <div class="split-word">
+        ${p.guideSegs.map((seg,i) => `<span class="seg" style="${s.activeSeg===seg?'box-shadow:0 0 0 3px var(--c-blue-mid);':''}cursor:pointer;" onclick="splitActive('${key}','${seg}')">${seg}</span>${i<p.guideSegs.length-1?'<span class="dash">+</span>':''}`).join('')}
+      </div>
+      <div class="split-meanings">
+        ${p.guideSegs.map((seg,i) => {
+          const mId = assign[seg];
+          const chip = p.guideMeaningChips.find(c => c.id === mId);
+          const mini = i===0?'Prefix':(i===p.guideSegs.length-1?'Suffix':'Root');
+          return `<div class="split-meaning ${chip?'filled':''}"><div class="mini">${mini}: ${seg}</div>${chip?chip.text:'<em style="color:var(--c-gray);">tap a meaning below</em>'}</div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Meaning chips</div>
+    <div class="chip-bank">
+      ${p.guideMeaningChips.map(m => {
+        const used = Object.values(assign).includes(m.id);
+        return `<div class="chip ${used?'used':''}" onclick="splitAssign('${key}','${m.id}')">${m.text}</div>`;
+      }).join('')}
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!allAssigned?'disabled':''} onclick="submitSplit('${key}')">Check the meanings</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retrySplit('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.stripToggle = (key, id, role) => {
+  const s = ls[key]; s.stripped = s.stripped || new Set();
+  if(s.submitted || role==='core') return;
+  if(s.stripped.has(id)) s.stripped.delete(id); else s.stripped.add(id);
+  render();
+};
+window.submitStrip = key => { ls[key].submitted = true; render(); };
+window.retryStrip = key => { ls[key].stripped = new Set(); ls[key].submitted = false; render(); };
+
+function renderPart3_stripInteractive(p){
+  const key = p.classification;
+  const s = ls[key];
+  const stripped = s.stripped || new Set();
+  const anyStripped = stripped.size > 0;
+  const allRight = p.guideSegs.every(seg => (seg.role==='mod' && stripped.has(seg.id)) || (seg.role==='core' && !stripped.has(seg.id)));
+  return `
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-strip">
+      ${p.guideSegs.map(seg => {
+        let cls = 'sseg';
+        if(seg.role==='core') cls += ' core';
+        else if(stripped.has(seg.id)) cls += ' stripped';
+        return `<span class="${cls}" onclick="stripToggle('${key}','${seg.id}','${seg.role}')">${seg.text}</span>`;
+      }).join(' ')}
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!anyStripped?'disabled':''} onclick="submitStrip('${key}')">Check the strip</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryStrip('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.tagPhrase = (key, id, val) => {
+  const s = ls[key]; s.tags = s.tags || {};
+  if(s.submitted) return;
+  s.tags[id] = val;
+  render();
+};
+window.submitTag = key => { ls[key].submitted = true; render(); };
+window.retryTag = key => { ls[key].tags = {}; ls[key].submitted = false; render(); };
+
+function renderPart3_tagInteractive(p){
+  const key = p.classification;
+  const s = ls[key];
+  const tags = s.tags || {};
+  const allTagged = p.guidePhrases.every(ph => tags[ph.id]);
+  const allRight = allTagged && p.guidePhrases.every(ph => tags[ph.id] === ph.answer);
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different paragraph</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-tag">
+      ${p.guidePhrases.map(ph => `
+        <div class="tag-row">
+          <div class="tag-phrase">${ph.text}</div>
+          <div class="tag-btns">
+            <div class="tag-btn ${tags[ph.id]==='real'?'on-real':''}" onclick="tagPhrase('${key}','${ph.id}','real')">Real</div>
+            <div class="tag-btn ${tags[ph.id]==='trick'?'on-trick':''}" onclick="tagPhrase('${key}','${ph.id}','trick')">Trick</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!allTagged?'disabled':''} onclick="submitTag('${key}')">Check my tags</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryTag('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.moodPick = (key, q) => {
+  const s = ls[key]; if(s.submitted) return;
+  s.pick = q; s.submitted = true; render();
+};
+window.retryMood = key => { ls[key].pick = null; ls[key].submitted = false; render(); };
+
+function renderPart3_moodPick(p){
+  const key = p.classification;
+  const s = ls[key];
+  const pick = s.pick;
+  const correct = pick === p.guideTarget;
+  const posMap = {
+    'dark-tense':{x:'25%',y:'25%'}, 'bright-tense':{x:'75%',y:'25%'},
+    'dark-calm':{x:'25%',y:'75%'},  'bright-calm':{x:'75%',y:'75%'}
+  };
+  const pos = pick ? posMap[pick] : null;
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-mood"><div class="mood-wrap"><div class="mood-grid">
+      <div class="mood-cell ${pick==='dark-tense'?'picked':''}" onclick="moodPick('${key}','dark-tense')">DARK<br>TENSE</div>
+      <div class="mood-cell ${pick==='bright-tense'?'picked':''}" onclick="moodPick('${key}','bright-tense')">BRIGHT<br>TENSE</div>
+      <div class="mood-cell ${pick==='dark-calm'?'picked':''}" onclick="moodPick('${key}','dark-calm')">DARK<br>CALM</div>
+      <div class="mood-cell ${pick==='bright-calm'?'picked':''}" onclick="moodPick('${key}','bright-calm')">BRIGHT<br>CALM</div>
+      ${pos ? `<div class="mood-marker" style="left:${pos.x};top:${pos.y};"></div>` : ''}
+    </div>
+    <div class="mood-axis-y"><span>TENSE</span><span>CALM</span></div>
+    <div class="mood-axis-x"><span>DARK</span><span>BRIGHT</span></div>
+    </div></div>
+    ${s.submitted ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${s.submitted && !correct ? `<button class="btn-ghost" onclick="retryMood('${key}')">Try a different quadrant</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : '')}
+    </div>`;
+}
+
+window.tonePick = (key, toneId) => {
+  const s = ls[key]; if(s.submitted) return;
+  s.tone = toneId; s.submitted = true; render();
+};
+window.retryTone = key => { ls[key].tone = null; ls[key].submitted = false; render(); };
+
+function renderPart3_tonePick(p){
+  const key = p.classification;
+  const s = ls[key];
+  const picked = s.tone;
+  const correct = picked === p.guideTarget;
+  const tones = [
+    { id:'sardonic', label:'Sardonic', fill:'#DCD7F5', stroke:'#6d28d9' },
+    { id:'earnest',  label:'Earnest',  fill:'#C6EFCE', stroke:'#3B6D11' },
+    { id:'bitter',   label:'Bitter',   fill:'#FCEBEB', stroke:'#A32D2D' },
+    { id:'playful',  label:'Playful',  fill:'#FAEEDA', stroke:'#BA7517' },
+    { id:'solemn',   label:'Solemn',   fill:'#E8E8E4', stroke:'#888780' },
+    { id:'warm',     label:'Warm',     fill:'#E6F1FB', stroke:'#2E75B6' }
+  ];
+  const paths = [
+    'M 150 150 L 150 24 A 126 126 0 0 1 259.12 87 Z',
+    'M 150 150 L 259.12 87 A 126 126 0 0 1 259.12 213 Z',
+    'M 150 150 L 259.12 213 A 126 126 0 0 1 150 276 Z',
+    'M 150 150 L 150 276 A 126 126 0 0 1 40.88 213 Z',
+    'M 150 150 L 40.88 213 A 126 126 0 0 1 40.88 87 Z',
+    'M 150 150 L 40.88 87 A 126 126 0 0 1 150 24 Z'
+  ];
+  const lbl = [[192,82],[235,150],[192,218],[108,218],[65,150],[108,82]];
+  let svg = '<div class="diag-wheel"><svg class="wheel" viewBox="0 0 300 300">';
+  tones.forEach((t,i) => {
+    const sel = picked === t.id;
+    const dim = picked && !sel;
+    svg += `<path d="${paths[i]}" fill="${t.fill}" stroke="${t.stroke}" stroke-width="${sel?2.5:1.5}" opacity="${dim?0.3:1}" onclick="tonePick('${key}','${t.id}')"/>`;
+  });
+  tones.forEach((t,i) => { svg += `<text x="${lbl[i][0]}" y="${lbl[i][1]+4}" fill="${t.stroke}" text-anchor="middle">${t.label}</text>`; });
+  svg += '</svg></div>';
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    ${svg}
+    ${s.submitted ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${s.submitted && !correct ? `<button class="btn-ghost" onclick="retryTone('${key}')">Clear and try again</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : '')}
+    </div>`;
+}
+
+window.pairLabel = (key, labelId) => { ls[key].label = labelId; ls[key].submitted = true; render(); };
+window.retryPair = key => { ls[key].label = null; ls[key].submitted = false; render(); };
+
+function renderPart3_pairLabel(p){
+  const key = p.classification;
+  const s = ls[key];
+  const picked = s.label;
+  const chip = p.guideLabelChips.find(c => c.id === picked);
+  const correct = picked === p.guideTarget;
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-pair">
+      <div class="char-circle"><div class="char-name">${p.guidePairA.name}</div><div class="char-sub">${p.guidePairA.sub}</div></div>
+      <div class="pair-line"><div class="pair-label ${chip?'':'empty'}">${chip?chip.text:'pick a label →'}</div></div>
+      <div class="char-circle"><div class="char-name">${p.guidePairB.name}</div><div class="char-sub">${p.guidePairB.sub}</div></div>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Relationship label chips</div>
+    <div class="chip-bank">
+      ${p.guideLabelChips.map(c => `<div class="chip ${picked===c.id?'used':''}" onclick="pairLabel('${key}','${c.id}')">${c.text}</div>`).join('')}
+    </div>
+    ${s.submitted ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${s.submitted && !correct ? `<button class="btn-ghost" onclick="retryPair('${key}')">Try a different label</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : '')}
+    </div>`;
+}
+
+window.binSort = (key, id, bin) => {
+  const s = ls[key]; s.sort = s.sort || {};
+  if(s.submitted) return;
+  s.sort[id] = bin;
+  render();
+};
+window.submitBin = key => { ls[key].submitted = true; render(); };
+window.retryBin = key => { ls[key].sort = {}; ls[key].submitted = false; render(); };
+
+function renderPart3_binSort(p){
+  const key = p.classification;
+  const s = ls[key];
+  const sort = s.sort || {};
+  const allPlaced = p.guideCards.every(c => sort[c.id]);
+  const allRight = allPlaced && p.guideCards.every(c => sort[c.id] === c.bin);
+  const topicCards = p.guideCards.filter(c => sort[c.id] === 'topic');
+  const themeCards = p.guideCards.filter(c => sort[c.id] === 'theme');
+  const unplaced = p.guideCards.filter(c => !sort[c.id]);
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-bins">
+      <div class="bin topic"><div class="bin-label">Topic</div><div class="bin-sub">a word or phrase</div>
+        ${topicCards.map(c => `<div class="bin-card">${c.text}</div>`).join('')}
+      </div>
+      <div class="bin theme"><div class="bin-label">Theme</div><div class="bin-sub">a full claim about life</div>
+        ${themeCards.map(c => `<div class="bin-card">${c.text}</div>`).join('')}
+      </div>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Tap a card, then tap Topic or Theme</div>
+    ${unplaced.map(c => `<div class="bin-chip" style="margin-bottom:6px;"><div style="font-size:12.5px;margin-bottom:6px;">${c.text}</div><div style="display:flex;gap:6px;"><button class="btn-ghost" style="margin:0;padding:4px 10px;font-size:11px;" onclick="binSort('${key}','${c.id}','topic')">Topic</button><button class="btn-ghost" style="margin:0;padding:4px 10px;font-size:11px;" onclick="binSort('${key}','${c.id}','theme')">Theme</button></div></div>`).join('')}
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!allPlaced?'disabled':''} onclick="submitBin('${key}')">Check my sort</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryBin('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.proofPick = (key, id) => { ls[key].pick = id; ls[key].submitted = true; render(); };
+window.retryProof = key => { ls[key].pick = null; ls[key].submitted = false; render(); };
+
+function renderPart3_proofPick(p){
+  const key = p.classification;
+  const s = ls[key];
+  const picked = s.pick;
+  const correct = picked === p.guideTarget;
+  return `
+    <div class="prompt" style="margin-top:8px;">${p.guidePrompt}</div>
+    <div class="diag-proof">
+      <div class="proof-claim"><span class="mini">Claim</span>${p.guideClaim}</div>
+      <div class="proof-arrow">↓</div>
+      <div class="proof-passage">
+        ${p.guideSentences.map(sen => {
+          let cls = 'proof-sent';
+          if(picked === sen.id && sen.id === p.guideTarget) cls += ' picked';
+          else if(picked === sen.id) cls += ' wrong-pick';
+          return `<span class="${cls}" onclick="proofPick('${key}','${sen.id}')">${sen.text}</span>`;
+        }).join(' ')}
+      </div>
+    </div>
+    ${s.submitted ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${s.submitted && !correct ? `<button class="btn-ghost" onclick="retryProof('${key}')">Try a different sentence</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : '')}
+    </div>`;
+}
+
+window.cewPickE = (key, id) => { ls[key].eid = id; render(); };
+window.cewPickW = (key, id) => { ls[key].wid = id; render(); };
+window.submitCEW = key => { ls[key].submitted = true; render(); };
+window.retryCEW = key => { ls[key].eid = null; ls[key].wid = null; ls[key].submitted = false; render(); };
+
+function renderPart3_cewBuild(p){
+  const key = p.classification;
+  const s = ls[key];
+  const ec = p.guideEvidenceChips.find(c => c.id === s.eid);
+  const wc = p.guideWarrantChips.find(c => c.id === s.wid);
+  const done = ec && wc;
+  const correct = done && ec.correct && wc.correct;
+  return `
+    <div class="passage"><div class="passage-title">${p.passageTitle} — different moment</div>${p.guidePassage}</div>
+    <div class="prompt">${p.guidePrompt}</div>
+    <div class="diag-cew">
+      <div class="cew-box filled"><div class="cew-lab">Claim</div><div class="cew-content">${p.guideClaim}</div></div>
+      <div class="cew-arrow">↓</div>
+      <div class="cew-box ${ec?'filled':''}"><div class="cew-lab">Evidence</div><div class="cew-content">${ec?ec.text:'<em style="color:var(--c-gray);">tap an evidence chip below</em>'}</div></div>
+      <div class="cew-arrow">↓</div>
+      <div class="cew-box ${wc?'filled':''}"><div class="cew-lab">Warrant</div><div class="cew-content">${wc?wc.text:'<em style="color:var(--c-gray);">tap a warrant chip below</em>'}</div></div>
+    </div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Evidence chips</div>
+    <div class="chip-bank">${p.guideEvidenceChips.map(c => `<div class="chip ${s.eid===c.id?'used':''}" onclick="cewPickE('${key}','${c.id}')">${c.text}</div>`).join('')}</div>
+    <div style="font-size:10.5px;color:var(--c-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:14px 0 6px;">Warrant chips</div>
+    <div class="chip-bank">${p.guideWarrantChips.map(c => `<div class="chip ${s.wid===c.id?'used':''}" onclick="cewPickW('${key}','${c.id}')">${c.text}</div>`).join('')}</div>
+    ${s.submitted ? gogiBubble(correct?'celebrate':'neutral', correct?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!done?'disabled':''} onclick="submitCEW('${key}')">Build the argument</button>` : (correct ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retryCEW('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+window.soapLens = (key, lensId) => { ls[key].lens = lensId; render(); };
+window.soapTag = (key, sentIdx) => {
+  const s = ls[key]; if(!s.lens || s.submitted) return;
+  s.tags = s.tags || {}; s.tags[sentIdx] = s.lens;
+  render();
+};
+window.submitSoap = key => { ls[key].submitted = true; render(); };
+window.retrySoap = key => { ls[key].lens = null; ls[key].tags = {}; ls[key].submitted = false; render(); };
+
+function renderPart3_soapInteractive(p){
+  const key = p.classification;
+  const s = ls[key];
+  const tags = s.tags || {};
+  const need = p.guideLenses.length;
+  const doneCount = Object.keys(tags).length;
+  const done = doneCount >= need;
+  const allRight = done && p.guideLenses.every(L => tags[L.sentIdx] === L.id);
+  return `
+    <div class="prompt" style="margin-top:8px;">${p.guidePrompt}</div>
+    <div class="diag-soap">
+      <div class="lens-bar">
+        ${p.guideLenses.map(L => `<div class="lens ${s.lens===L.id?'active':''}" onclick="soapLens('${key}','${L.id}')">${L.label}<span class="lens-full">${L.full}</span></div>`).join('')}
+      </div>
+      <div class="soap-passage">
+        ${p.guideSentences.map(sen => {
+          const tag = tags[sen.idx];
+          let cls = 'soap-sent';
+          if(tag){
+            const L = p.guideLenses.find(LL => LL.id === tag);
+            if(s.submitted && L && L.sentIdx === sen.idx) cls += ' tagged-right';
+            else cls += ' tagged';
+          }
+          return `<span class="${cls}" data-tag="${tag||''}" onclick="soapTag('${key}',${sen.idx})">${sen.text}</span>`;
+        }).join(' ')}
+      </div>
+    </div>
+    ${s.submitted ? gogiBubble(allRight?'celebrate':'neutral', allRight?p.guideRightGogi:p.guideWrongGogi) : ''}
+    <div class="action-row">
+      ${!s.submitted ? `<button class="btn" ${!done?'disabled':''} onclick="submitSoap('${key}')">Check my tags</button>` : (allRight ? `<button class="btn btn-green">I've got it →</button>` : `<button class="btn-ghost" onclick="retrySoap('${key}')">Reset</button>`)}
+    </div>`;
+}
+
+// ============================================================================
+// ROUTER FOR PART 3
+// ============================================================================
+function renderPart3(p){
+  switch(p.guideType){
+    case 'chip-stem':        return renderPart3_chipStem(p);
+    case 'predict-pick':     return renderPart3_predictPick(p);
+    case 'frayer-fill':      return renderPart3_frayerFill(p);
+    case 'split-fill':       return renderPart3_splitFill(p);
+    case 'strip-interactive':return renderPart3_stripInteractive(p);
+    case 'tag-interactive':  return renderPart3_tagInteractive(p);
+    case 'mood-pick':        return renderPart3_moodPick(p);
+    case 'tone-pick':        return renderPart3_tonePick(p);
+    case 'pair-label':       return renderPart3_pairLabel(p);
+    case 'bin-sort':         return renderPart3_binSort(p);
+    case 'proof-pick':       return renderPart3_proofPick(p);
+    case 'cew-build':        return renderPart3_cewBuild(p);
+    case 'soap-interactive': return renderPart3_soapInteractive(p);
+  }
+}
+
+// ============================================================================
+// MAIN RENDER
+// ============================================================================
+function render(){
+  const p = PATTERNS[current];
+  const idx = ORDER.indexOf(current);
+  document.getElementById('counter').textContent = `${idx+1} / ${ORDER.length}`;
+  document.getElementById('prev').disabled = idx === 0;
+  document.getElementById('next').disabled = idx === ORDER.length - 1;
+  document.getElementById('selector').value = current;
+
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div class="route-line">
+      <div class="route-code">route: <b>${p.route}</b></div>
+      <div class="gap-badge">classification: <b>${p.classification}</b></div>
+    </div>
+
+    <!-- Part 1 -->
+    <div class="card">
+      ${cardHeader(p, 'Intervention — Learn the move')}
+      <div class="lesson-stage">Part 1 of 3 · The move</div>
+      <h2 class="lesson-title">${p.moveName}</h2>
+      <p class="lesson-body">${p.partOneBody}</p>
+      <div class="strategy-name">${p.moveShort}</div>
+      ${renderPartOneDiagram(p)}
+      <p class="lesson-body" style="margin-top:14px;">${p.partOneBottom}</p>
+    </div>
+
+    <!-- Part 2 -->
+    <div class="card">
+      <div class="lesson-stage">Part 2 of 3 · Watch me do it</div>
+      <h2 class="lesson-title">One worked example</h2>
+      <div class="passage"><div class="passage-title">${p.passageTitle}</div>${p.modelPassage}</div>
+      ${gogiBubble('engaged', p.modelThinkAloud)}
+      <div style="margin-top:14px;">${renderModelDiagram(p)}</div>
+    </div>
+
+    <!-- Part 3 -->
+    <div class="card">
+      <div class="lesson-stage">Part 3 of 3 · Try it with me</div>
+      <h2 class="lesson-title">Your turn — same story, different moment</h2>
+      ${renderPart3(p)}
+    </div>
+  `;
+  window.scrollTo(0, 0);
+}
+
+// Selector + nav
+selector.addEventListener('change', e => { current = e.target.value; render(); });
+document.getElementById('prev').addEventListener('click', () => { const i = ORDER.indexOf(current); if(i>0){ current = ORDER[i-1]; render(); } });
+document.getElementById('next').addEventListener('click', () => { const i = ORDER.indexOf(current); if(i<ORDER.length-1){ current = ORDER[i+1]; render(); } });
+
+render();
+</script>
+</body>
+</html>

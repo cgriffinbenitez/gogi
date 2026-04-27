@@ -22,7 +22,7 @@ import { fetchBooksForClassification } from './stages/fetch';
 import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
 import { filterParagraph, getFilterCacheStats, resetFilterCacheStats } from './stages/filter';
 import { tagParagraph, getTagCacheStats } from './stages/tag';
-import { appendCSV, initCSV, isDuplicateV3, writePassageV3, fetchDiversityCounts } from './stages/write';
+import { appendCSV, initCSV, isDuplicateV3, writePassageV3, fetchDiversityCounts, fetchTierCounts } from './stages/write';
 
 const PIPELINE_VERSION: 'v4' = 'v4';
 
@@ -194,6 +194,14 @@ async function main() {
   const criteria = loadCriteria(classification);
   const sources  = loadSources(classification);
 
+  // Tier harvest targets — defaults T1=30, T2=35, T3=30, T4=20
+  const tierTargets: Record<TierKey, number> = {
+    T1: sources.tierTargets?.T1 ?? 30,
+    T2: sources.tierTargets?.T2 ?? 35,
+    T3: sources.tierTargets?.T3 ?? 30,
+    T4: sources.tierTargets?.T4 ?? 20,
+  };
+
   // CSV output
   const ts      = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const csvPath = `/tmp/pipeline-summary-${classification}-${ts}.csv`;
@@ -221,6 +229,21 @@ async function main() {
   const { authorCounts: divAuthorCounts, bookCounts: divBookCounts } = dryRun
     ? { authorCounts: new Map<string, number>(), bookCounts: new Map<number, number>() }
     : await fetchDiversityCounts(classification);
+
+  // ── Tier counts (cumulative across all runs — enforces harvest targets) ───────
+  const existingTierCounts: Record<TierKey, number> = dryRun
+    ? { T1: 0, T2: 0, T3: 0, T4: 0 }
+    : await fetchTierCounts(classification);
+  const inRunTierCounts:   Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
+  let rejectedForTierSaturation = 0;
+  let runComplete = false;
+
+  console.log(
+    `  [tier-state] ${classification}: ` +
+    (['T1', 'T2', 'T3', 'T4'] as TierKey[])
+      .map(t => `${t}=${existingTierCounts[t]}/${tierTargets[t]}`)
+      .join(', '),
+  );
 
   // ── Stage 0: Pre-fetch author saturation check ────────────────────────────────
   let fetchSources = sources;
@@ -260,6 +283,7 @@ async function main() {
 
   // ── Per-book: filter → immediately tag + write (FIX 1) ─────────────────────
   for (const book of books) {
+    if (runComplete) break;
     bookIndex++;
     resetFilterCacheStats();
     let bookFilterCalls = 0;
@@ -452,6 +476,20 @@ async function main() {
           continue;
         }
 
+        // Tier saturation check — fires before tagParagraph to avoid wasting API calls
+        {
+          const tierTotal = existingTierCounts[para.tierKey] + inRunTierCounts[para.tierKey];
+          if (tierTotal >= tierTargets[para.tierKey]) {
+            console.log(
+              `  [tier-saturated] ${para.tierKey} at ${tierTotal}/${tierTargets[para.tierKey]}` +
+              ` — rejecting "${para.sourceTitle.slice(0, 35)}"`,
+            );
+            appendCSV(csvPath, { ...csvBase, status: 'tier_saturated' });
+            rejectedForTierSaturation++;
+            continue;
+          }
+        }
+
         // Tag
         const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
         const tagResult = await tagParagraph(para, criteria, q5Patterns);
@@ -510,10 +548,20 @@ async function main() {
           const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
           if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
           tierCounts[para.tierKey]++;
+          inRunTierCounts[para.tierKey]++;
 
           // Update in-memory diversity counts so subsequent passages see current state
           divAuthorCounts.set(para.sourceAuthor, (divAuthorCounts.get(para.sourceAuthor) ?? 0) + 1);
           divBookCounts.set(para.gutenbergId,    (divBookCounts.get(para.gutenbergId)    ?? 0) + 1);
+
+          // Check if all tiers are saturated — terminate run early
+          if ((['T1', 'T2', 'T3', 'T4'] as TierKey[]).every(
+            t => (existingTierCounts[t] + inRunTierCounts[t]) >= tierTargets[t],
+          )) {
+            console.log(`\n  [run-complete] All tiers saturated for ${classification}. Terminating run.`);
+            runComplete = true;
+            break;
+          }
 
           const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
           console.log(
@@ -597,11 +645,12 @@ ${frontMatterLines || '    (none stripped)'}
   Duplicates skipped:      ${duplicates}
   Other skipped:           ${skipped}
 
-  Tier distribution of inserted:
-    T1 (Foundation):       ${tierCounts.T1}
-    T2 (Guided Practice):  ${tierCounts.T2}
-    T3 (Independent):      ${tierCounts.T3}
-    T4 (Transfer):         ${tierCounts.T4}
+  Tier distribution (cumulative vs. targets):
+    T1: ${existingTierCounts.T1 + inRunTierCounts.T1}/${tierTargets.T1}${(existingTierCounts.T1 + inRunTierCounts.T1) >= tierTargets.T1 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T1 - existingTierCounts.T1 - inRunTierCounts.T1}`}  (+${inRunTierCounts.T1} this run)
+    T2: ${existingTierCounts.T2 + inRunTierCounts.T2}/${tierTargets.T2}${(existingTierCounts.T2 + inRunTierCounts.T2) >= tierTargets.T2 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T2 - existingTierCounts.T2 - inRunTierCounts.T2}`}  (+${inRunTierCounts.T2} this run)
+    T3: ${existingTierCounts.T3 + inRunTierCounts.T3}/${tierTargets.T3}${(existingTierCounts.T3 + inRunTierCounts.T3) >= tierTargets.T3 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T3 - existingTierCounts.T3 - inRunTierCounts.T3}`}  (+${inRunTierCounts.T3} this run)
+    T4: ${existingTierCounts.T4 + inRunTierCounts.T4}/${tierTargets.T4}${(existingTierCounts.T4 + inRunTierCounts.T4) >= tierTargets.T4 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T4 - existingTierCounts.T4 - inRunTierCounts.T4}`}  (+${inRunTierCounts.T4} this run)
+  Rejected for tier saturation: ${rejectedForTierSaturation}
 
   Inserted by source:
 ${writtenBySource || '    (none)'}

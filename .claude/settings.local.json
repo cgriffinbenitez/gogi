@@ -43,7 +43,18 @@
       "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/theme-builder)",
       "Bash(mkdir -p /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/\\\\[standardId\\\\]/teach/structure-purpose)",
       "Bash(curl -s \"https://www.gutenberg.org/cache/epub/2776/pg2776.txt\")",
-      "Bash(grep -n \"^[A-Z][A-Z ]*$\\\\|^[IVX]\\\\.\\\\|CHAPTER\\\\|STORY\\\\|THE [A-Z]\")"
+      "Bash(grep -n \"^[A-Z][A-Z ]*$\\\\|^[IVX]\\\\.\\\\|CHAPTER\\\\|STORY\\\\|THE [A-Z]\")",
+      "Bash(wc:*)",
+      "Bash(grep -n \"useTriggerQuestion\\\\|from.*questions\" /Users/coachgriffin/Desktop/Gogi-RocketAI/gogi-main/src/app/standard/[standardId]/teach/vocabulary/page.tsx)",
+      "Bash(wait)",
+      "Bash(chmod +x /tmp/gogi-kill-watcher.sh)",
+      "Bash(bash /tmp/gogi-kill-watcher.sh)",
+      "Bash(echo \"Watcher PID: $!\")",
+      "Bash(awk '{print \"PID:\"$2, $11}')",
+      "Bash(chmod +x /tmp/gogi-deadline-kill.sh)",
+      "Bash(bash /tmp/gogi-deadline-kill.sh)",
+      "Bash(echo \"Deadline watcher PID: $!\")",
+      "Bash(awk -F',' 'NR>1 {print $8}' /tmp/pipeline-summary-mood_misreading-2026-04-27T00-31-00.csv)"
     ]
   }
 }

@@ -26,6 +26,12 @@ export interface SourceConfig {
     authors: string[];    // display-name format ("Jane Austen") — matched loosely
     maxInserted: number;
   }>;
+  /**
+   * Cumulative per-tier harvest targets (across all runs).
+   * Pipeline rejects candidates for a tier once its target is reached.
+   * Defaults: T1=30, T2=35, T3=30, T4=20 if omitted.
+   */
+  tierTargets?: { T1?: number; T2?: number; T3?: number; T4?: number };
 }
 
 export interface GutendexAuthor {

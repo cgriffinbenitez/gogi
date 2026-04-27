@@ -79,6 +79,26 @@ export async function writePassageV3(row: PassageRowV3): Promise<WriteResult> {
   return { status: 'inserted' };
 }
 
+// ── Tier counts (cumulative across all runs — used for harvest targets) ────────
+
+export async function fetchTierCounts(
+  classification: string,
+): Promise<Record<'T1' | 'T2' | 'T3' | 'T4', number>> {
+  const supabase = getSupabase();
+  const counts: Record<'T1' | 'T2' | 'T3' | 'T4', number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
+  const { data, error } = await supabase
+    .from('intervention_passages')
+    .select('intervention_tier')
+    .eq('classification', classification)
+    .in('approval_status', ['pending_review', 'approved']);
+  if (error || !data) return counts;
+  for (const row of data) {
+    const key = `T${row.intervention_tier}` as 'T1' | 'T2' | 'T3' | 'T4';
+    if (key in counts) counts[key]++;
+  }
+  return counts;
+}
+
 // ── Diversity counts (one query — shared by pre-fetch check and Phase 2 caps) ─
 
 export async function fetchDiversityCounts(

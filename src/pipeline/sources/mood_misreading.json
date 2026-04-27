@@ -30,5 +30,6 @@
     "Guy de Maupassant",
     "Sherwood Anderson",
     "Herman Melville"
-  ]
+  ],
+  "tierTargets": { "T1": 30, "T2": 35, "T3": 30, "T4": 20 }
 }
