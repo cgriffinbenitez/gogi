@@ -131,100 +131,227 @@ interface OMCResponse {
   option_d:                 { text: string; classification: string };
   correct_option:           'A' | 'B' | 'C' | 'D';
   cognitive_skill_targeted: string;
+  accessibility_concern:    boolean;
+  vocabulary_pre_teach:     string[];
+  schema_pre_activate:      string | null;
   rationale:                string;
 }
 
 // ─── Prompt builders ──────────────────────────────────────────────────────────
 
-// Stable block (~1600 tokens) — cached across all calls in a run.
-// Contains the full OMC spec and Distractor Design Spec.
+// Stable block — cached across all calls in a run.
 // Must stay above 1024 tokens to qualify for Sonnet prompt caching.
 function buildStableSystemPrompt(): string {
   return `\
-You are a clinical literacy assessment designer for 9th grade Title I ELA students.
+You are a clinical literacy assessment designer for 9th-grade Title I ELA students.
 
-## YOUR TASK
-For each passage, generate a single Ordered Multiple Choice (OMC) diagnostic question where every wrong answer is pre-coded to a specific cognitive failure layer. The question identifies WHICH breakdown is blocking a student's reading comprehension — and routes them to the correct targeted intervention.
+## TWO-AXIS ARCHITECTURE
+
+Every question operates on two independent axes that must NEVER be conflated:
+
+**COGNITIVE TIER (1–4):** The analytical demand of the task. Scales with passage craft complexity and the synthesis required. Higher tiers ask students to hold more contradictions, integrate more craft elements, or detect subtler irony.
+
+**LINGUISTIC ACCESSIBILITY:** Fixed at 9th-grade reading level across ALL tiers. This does NOT scale. A Tier 4 question must challenge analytically while remaining linguistically plain. The wall students hit at higher tiers must be a thinking wall, never a word wall.
+
+---
+
+## STUDENT-FACING SURFACE RULES
+
+These rules govern the stem and every answer choice — what a student reads on screen.
+The diagnostic backend (classifications, rationale) stays clinical and technical.
+
+### STEM
+- Plain, conversational phrasing — write how a good teacher talks, not how a test booklet reads
+- Under 30 words
+- NO abstract literary terms in the stem: do not write "ironic distance," "register," "rhetorical markers," "ventriloquism," "bathetic," "free indirect discourse," or any AP-prep vocabulary
+- Ask about what the author IS DOING or how the passage MAKES YOU FEEL, not about abstract constructs
+- Avoid the stock formula "most strongly suggest about the narrator's attitude toward" — it is overused and inaccessible
+- Good stem patterns:
+    "What does this passage show about how [person] feels about [X]?"
+    "The author describes [X] using [plain description of device]. What is he really doing?"
+    "How does the author make you feel [X] and [Y] at the same time?"
+    "What kind of feeling does this passage give you about [X]?"
+
+These patterns are examples of accessible framings, not a fixed template set. Vary stem construction across the questions you generate. Avoid producing multiple questions that open with identical phrasing. A library where every stem starts with "How does" is just as fatiguing as one where every stem starts with "most strongly suggest."
+
+### ANSWER CHOICES
+- One clear sentence each — no compound sentences chained with semicolons
+- Under 20 words each, ideally
+- 9th-grade vocabulary only: if a student needs to look up a word inside an answer choice, it is too hard
+- No em-dashes, no nested subordinate clauses, no qualifying phrases like "neither X nor Y" or "simultaneously acknowledges X while treating Y as Z"
+- Each choice must be readable aloud in one breath without stumbling
+- Choices MAY and SHOULD quote specific words or phrases from the passage to anchor the reasoning
+
+---
+
+## COGNITIVE TIER DIFFERENTIATION
+
+Use the passage's COGNITIVE_TIER (from the variable block below) to calibrate analytical demand.
+
+**Tier 1 — Foundational**
+Analytical task: identify a single, direct tone signal where the surface words point one way and the author clearly means something different.
+Distractor design: one distractor captures a student who read too fast and took one word out of context; one captures a student who missed the signal entirely and named what a character feels; one captures a student who read an unfamiliar word wrong.
+Stem pattern: "How does the narrator feel about [X]?" / "What does [short quote] tell you about how the author feels?"
+Choice pattern: Short, direct statements. No hedging.
+
+**Tier 2 — Developing**
+Analytical task: hold two or three tone signals together to name a tone that no single sentence proves alone.
+Distractor design: one distractor names a close-but-different tone (sad vs. bitter, amused vs. contemptuous); one distractor takes only the first signal and ignores the rest; one distractor misreads a key word.
+Stem pattern: "What kind of attitude does the narrator have toward [X]?" / "What do [several details] together tell you about how the narrator sees [X]?"
+Choice pattern: Still simple sentences, but choices are closer to each other — students must discriminate carefully.
+
+**Tier 3 — Proficient**
+Analytical task: recognize a split or doubled tone — irony, sarcasm, mock-praise, bittersweet praise — where the surface says one thing and the author means something more complex.
+Distractor design: one distractor reads only the surface (misses the irony); one distractor over-corrects (reads everything as negative when the author holds both); one distractor assigns the wrong layer (reads craft as character feeling).
+Stem pattern: "The author uses [plain-language description of the move]. What is he really doing?" / "Why does the author [describe action in plain terms]?"
+Choice pattern: Choices may be slightly longer to describe the two-layer move, but still in plain language.
+
+**Tier 4 — Advanced**
+Analytical task: synthesize tone + at least one other craft element (structure, figurative language, imagery) to name an effect that emerges only from their combination.
+Distractor design: one distractor gets one craft element right but misses the integration; one distractor names the tone correctly but misses the structural move; one distractor names the craft element but assigns it the wrong purpose.
+Stem pattern: "How does the author make you feel [X] and [Y] at the same time?" / "What does the whole passage do together that no single line does alone?"
+Choice pattern: Choices may run up to 22 words at T4. If a choice runs over 20 words, you are likely combining two distinct ideas. Split them into one clearer point or trim modifiers. Length is never an excuse for complexity.
+
+---
+
+## WORKED EXAMPLES — BEFORE/AFTER REWRITES
+
+These show the cognitive demand staying identical while the linguistic demand drops. This is the two-axis principle in practice.
+
+**Tier 1 example — Jack London, cessation of movement passage**
+
+INACCESSIBLE STEM (do not write this):
+"Based on this passage, what does the author's description of the Wild — including phrases like 'cessation of movement' — most strongly suggest about the author's attitude toward death and the natural world?"
+
+ACCESSIBLE STEM (write this):
+"How does the author feel about death and the wilderness in this passage?"
+
+INACCESSIBLE CHOICE (do not write this):
+"The author treats death and the Wild's power with grave, ceremonial seriousness — presenting both as weighty, inevitable forces rather than as causes for grief or outrage."
+
+ACCESSIBLE CHOICE (write this):
+"The author sees death as serious and powerful. He is not sad or angry — he is just stating it like a heavy fact."
+
+**Tier 3 example — Melville, 'cheerfully consign ourselves to perdition' passage**
+
+INACCESSIBLE STEM (do not write this):
+"Based on this passage, what does the narrator's exclamation 'Ah! how cheerfully we consign ourselves to perdition!' most strongly suggest about his attitude toward people who love being paid?"
+
+ACCESSIBLE STEM (write this):
+"The narrator says people 'cheerfully' destroy themselves by loving money. What is he really doing?"
+
+INACCESSIBLE CHOICE (do not write this):
+"The narrator is being ironic — he celebrates the joy of being paid while simultaneously acknowledging that loving money leads, by his own stated beliefs, straight to damnation."
+
+ACCESSIBLE CHOICE (write this):
+"He is making fun of how people say money is bad but still love getting paid."
+
+Notice: the cognitive demand is identical in both pairs. Recognizing the irony is just as hard. The linguistic demand drops from college-prep to 9th-grade. This is the target for every question you generate.
+
+---
+
+## PASSAGE ACCESSIBILITY GATE
+
+Before writing the question, check the passage on three factors:
+
+1. **Vocabulary density:** More than 3 words that a typical Title I 9th-grader is unlikely to know?
+2. **Syntactic complexity:** Sentences longer than 25 words with 3+ embedded clauses?
+3. **Required schema:** Does the correct answer require outside knowledge (religious context, historical event, classical allusion) that the passage itself does not supply?
+
+If any factor applies:
+- Set \`accessibility_concern: true\`
+- \`vocabulary_pre_teach\`: list the 3–5 words a teacher should pre-teach before assigning this question (the hardest words FROM THE PASSAGE, not from your answer choices — your choices must already be accessible)
+- \`schema_pre_activate\`: one sentence describing what background knowledge a teacher should activate (e.g. "Puritan beliefs about communal sin and public shame")
+- Still generate the question — these fields are for teacher prep, not for blocking the question
+
+If no factor applies: \`accessibility_concern: false\`, \`vocabulary_pre_teach: []\`, \`schema_pre_activate: null\`
+
+---
 
 ## OMC STRUCTURE
+
 Every question has exactly 4 options:
 - 1 CORRECT option — requires the reading skill being tested
 - 1 Layer 1 distractor — schema or metacognitive failure
 - 1 Layer 2 distractor — language access failure (vocabulary, morphology, or syntax)
 - 1 Layer 3 distractor — reading construction failure (inferencing, evidence, theme, structure, figurative language, tone, or mood)
 
-The correct option placement rule: correct_option must be B or C (never A or D — avoids primacy/recency bias).
+**LAYER DIVERSITY IS REQUIRED.** Do not assign the same layer to more than one distractor. Three L3 distractors means three students with different breakdowns all get routed to the same intervention — the diagnostic is broken. Every question must have exactly one L1, one L2, one L3 distractor.
+
+The correct answer placement is specified as CORRECT_OPTION_TARGET in the variable block. Place the correct answer at that position exactly — do not choose a different position.
+
+---
 
 ## DISTRACTOR DESIGN SPEC — ALL 13 CLASSIFICATION CODES
 
 ### Layer 1 — Schema / Metacognitive Prerequisites
 
 **schema_strategy_missing**
-The student has no activatable schema for the text's world. They guess based on surface topic words without engaging the actual context. Their answer reflects what they assume the topic is about, not what the passage shows.
-Distractor behavior: plausible surface-topic guess, unconnected to any specific textual evidence.
+Student guesses from surface topic words without engaging the passage's actual context. Their answer reflects an assumption about the topic, not textual evidence.
+Distractor: plausible surface-topic guess, unconnected to any specific line in the passage.
 
 **no_metacognitive_strategy**
-The student applies no monitoring strategy. They accept first-pass meaning without pausing to re-read, clarify confusion, or check whether their understanding is consistent with the full passage.
-Distractor behavior: early-passage reading that was never revised; reflects misreading of the opening without accounting for corrective information that follows.
+Student accepts first-pass meaning and never revises. They misread the opening and ignore corrective information that follows.
+Distractor: early-passage reading that was never revised; accurate to the opening, wrong about the whole.
 
 ### Layer 2 — Language Access Prerequisites
 
 **vocabulary_gap**
-The student encounters an unfamiliar Tier 2 word and either skips it or substitutes a familiar-sounding meaning. Their comprehension breaks at the word level and they cannot recover from context.
-Distractor behavior: answer that would be correct IF the key vocabulary word meant what the student assumed it meant.
+Student substitutes a familiar-sounding meaning for an unfamiliar Tier 2 word. Comprehension breaks at the word level.
+Distractor: answer that would be correct IF the key vocabulary word meant what the student assumed.
 
 **morphology_gap**
-The student cannot decode a morphologically complex word (prefix + root + suffix) and guesses at its meaning based on partial recognition of one morpheme.
-Distractor behavior: answer derived from partial morpheme recognition.
+Student guesses meaning from partial recognition of one morpheme in a complex word.
+Distractor: answer derived from that partial morpheme recognition.
 
 **syntax_barrier**
-The student cannot parse the sentence structure — embedded clauses, inverted syntax, or long nominal phrases cause them to lose the grammatical subject-verb-object relationship.
-Distractor behavior: answer that reflects a misparse of the sentence (wrong grammatical subject assigned, wrong relationship between clauses).
+Student cannot parse embedded clauses or inverted syntax and loses the grammatical subject-verb relationship.
+Distractor: answer reflecting a misparse of the sentence structure.
 
 ### Layer 3 — Core Reading Construction Skills
 
 **inferencing**
-The student reads only the literal surface. They cannot bridge from what the text says to what it means. The correct answer requires a conclusion the author intends but never states.
-Distractor behavior: a literally stated detail from the passage — correct as a fact, wrong as an inference.
+Student reads only the literal surface. The correct answer requires a conclusion the author intends but never states.
+Distractor: a literally stated detail — correct as a fact, wrong as an inference.
 
 **evidence_retrieval_failure**
-The student knows an answer should be supported by the text but cannot locate the specific evidence. They substitute a general impression for a pointed quotation.
-Distractor behavior: an accurate general statement about the passage that does not specifically address the question's evidence target.
+Student substitutes a general impression for specific textual evidence.
+Distractor: an accurate general statement about the passage that doesn't address the specific evidence target.
 
 **comprehension_integration_failure**
-The student processes the passage segment by segment without building a unified meaning. They cannot synthesize information distributed across sentences or paragraphs.
-Distractor behavior: an answer that is true of ONE part of the passage but fails when the full passage is integrated.
+Student reads segment by segment and cannot build a unified meaning.
+Distractor: answer true of ONE part of the passage but wrong when the full passage is integrated.
 
 **topic_vs_theme_confusion**
-The student identifies the topic (what the story is about — one or two words) rather than the theme (what the story reveals about human experience — a complete claim).
-Distractor behavior: a single-word or single-phrase topic label presented as a theme.
+Student names the topic (one or two words) instead of the theme (a complete claim about human experience).
+Distractor: a topic label presented as a theme.
 
 **structure_purpose_disconnect**
-The student identifies WHAT the text is about (content) but not HOW the author organized it (structure) or WHY they chose that structure (purpose).
-Distractor behavior: a content summary or topic identification presented as a structural observation.
+Student identifies content but not structure or authorial purpose.
+Distractor: a content summary or topic identification presented as a structural observation.
 
 **figurative_language_failure**
-The student reads a metaphor, simile, personification, or symbol literally. They extract the concrete vehicle but miss the tenor — what the figure actually communicates.
-Distractor behavior: a literal reading of the figurative element that makes surface sense but misses the intended comparison or meaning.
+Student reads figurative language literally, extracting the vehicle but missing the tenor.
+Distractor: a literal reading that makes surface sense but misses the figure's meaning.
 
 **tone_misreading**
-The student misidentifies the author's attitude toward the subject. Common errors: reading irony as sincerity, detachment as warmth, gentle criticism as praise.
-Distractor behavior: the tone label the student would assign if reading surface-level word choices without attending to authorial distance or rhetorical markers.
+Student misidentifies the author's attitude. Common errors: reads irony as sincerity, detachment as warmth, gentle criticism as praise.
+Distractor: the tone label a student assigns from surface word choices without attending to authorial distance.
 
 **mood_misreading**
-The student misidentifies the emotional atmosphere the passage creates in the reader. They report the plot emotion (what a character feels) rather than the textual mood (what the passage makes the reader feel).
-Distractor behavior: a mood label derived from what a character explicitly expresses, not from the cumulative effect of the author's craft choices.
+Student reports what a character feels (plot emotion) rather than what the passage makes the reader feel (textual mood).
+Distractor: a mood label derived from what a character explicitly expresses.
+
+---
 
 ## QUALITY RULES
 1. Stem must require the target skill — never ask for a fact literally stated in the passage
 2. Correct answer must be directly defensible from the passage's own words
 3. Each distractor must be plausible to a student with exactly that cognitive gap
 4. No distractor should be obviously wrong to any reasonably engaged reader
-5. Distractor classification must match the actual wrong-answer reasoning pattern above
-
-## STEM FORMAT
-All questions target ELA.9.R.1.1 (Inferencing and Textual Evidence):
-"Based on this passage, what does [specific detail] most strongly suggest about [character / situation / author's intent]?"
+5. Distractor classification must match the actual reasoning failure pattern above
+6. Student-facing language (stem + all choices) stays at 9th-grade reading level — always, every tier
+7. Cognitive demand scales with tier; linguistic demand does not
 
 ## OUTPUT FORMAT
 Valid JSON only — no markdown, no explanation before or after:
@@ -236,14 +363,23 @@ Valid JSON only — no markdown, no explanation before or after:
   "option_d": { "text": string, "classification": string },
   "correct_option": "B" | "C",
   "cognitive_skill_targeted": string,
+  "accessibility_concern": boolean,
+  "vocabulary_pre_teach": string[],
+  "schema_pre_activate": string | null,
   "rationale": string
 }
 
-The "rationale" field: 2–3 sentences covering (1) what the correct answer requires from the text, (2) the specific cognitive gap each distractor exploits, and (3) how the v3 metadata (target_signal, supporting_evidence) shaped your choices.`;
+"correct_option" MUST exactly match CORRECT_OPTION_TARGET from the variable block.
+
+"rationale": 2–3 sentences for teacher/designer review — (1) what the correct answer requires from the text, (2) the specific cognitive gap each distractor exploits, (3) how the v3 metadata shaped your choices. Rationale may use technical literary terms; it is never shown to students.`;
 }
 
 // Variable block — per passage. NOT cached.
-function buildVariableBlock(passage: PassageRecord, mapping: PrimitiveMapping): string {
+function buildVariableBlock(
+  passage: PassageRecord,
+  mapping: PrimitiveMapping,
+  correctOptionTarget: 'B' | 'C',
+): string {
   const evidence = (passage.supporting_evidence ?? [])
     .map((e) => `  • "${e.element}" — ${e.rationale}`)
     .join('\n') || '  (none tagged)';
@@ -265,7 +401,12 @@ PASSAGE SOURCE
 Title:  ${passage.source_title ?? 'Unknown'}
 Author: ${passage.source_author ?? 'Unknown'}
 Year:   ${passage.source_year ?? 'Unknown'}
-Tier:   ${passage.intervention_tier} of 4 (1 = accessible, 4 = challenging)
+
+COGNITIVE_TIER: ${passage.intervention_tier} of 4
+  (1 = foundational one-signal, 2 = multi-signal, 3 = irony/split-tone, 4 = multi-craft synthesis)
+
+CORRECT_OPTION_TARGET: ${correctOptionTarget}
+  Place the correct answer at option ${correctOptionTarget} exactly.
 
 CLASSIFICATION
 Primitive:             ${passage.classification}
@@ -295,7 +436,6 @@ ${craftStr}
 TIER RATIONALE:
   ${passage.tier_rationale}
 
-QUESTION TYPE: INFERENCING
 STANDARD: ${R1_1_STANDARD.code} — ${R1_1_STANDARD.title}`;
 }
 
@@ -314,7 +454,7 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(cleaned) as T;
 }
 
-function validateOMC(r: OMCResponse): string | null {
+function validateOMC(r: OMCResponse, correctOptionTarget: 'B' | 'C'): string | null {
   if (!r.question_stem)            return 'missing question_stem';
   if (!r.option_a?.text)           return 'missing option_a.text';
   if (!r.option_b?.text)           return 'missing option_b.text';
@@ -326,11 +466,34 @@ function validateOMC(r: OMCResponse): string | null {
   if (!r.option_d?.classification) return 'missing option_d.classification';
   if (!['A', 'B', 'C', 'D'].includes(r.correct_option))
     return `invalid correct_option: ${r.correct_option}`;
-  if (r.correct_option === 'A' || r.correct_option === 'D')
-    return `correct_option must be B or C, got ${r.correct_option}`;
+  if (r.correct_option !== correctOptionTarget)
+    return `correct_option mismatch: expected ${correctOptionTarget}, got ${r.correct_option}`;
   if (!r.cognitive_skill_targeted) return 'missing cognitive_skill_targeted';
   if (!r.rationale)                return 'missing rationale';
   return null;
+}
+
+// Warn if any two wrong-answer distractors share a classification code.
+// This breaks triage: a student who picks any wrong answer routes to the same intervention.
+function warnDuplicateDistractors(
+  r: OMCResponse,
+  prefix: string,
+): void {
+  const wrongClasses = (['a', 'b', 'c', 'd'] as const)
+    .filter((opt) => opt !== r.correct_option.toLowerCase())
+    .map((opt) => r[`option_${opt}`].classification);
+  const seen = new Set<string>();
+  const dupes = wrongClasses.filter((c) => {
+    if (seen.has(c)) return true;
+    seen.add(c);
+    return false;
+  });
+  if (dupes.length > 0) {
+    console.warn(
+      `${prefix} ⚠  duplicate distractor class(es): [${wrongClasses.join(', ')}] ` +
+      `— all three wrong answers may route to the same intervention`,
+    );
+  }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -434,7 +597,10 @@ async function main() {
 
     if (i > 0) await sleep(CALL_DELAY_MS);
 
-    const variableBlock = buildVariableBlock(p, mapping);
+    // Randomize correct option placement 50/50 B or C to eliminate position bias.
+    const correctOptionTarget: 'B' | 'C' = Math.random() < 0.5 ? 'B' : 'C';
+
+    const variableBlock = buildVariableBlock(p, mapping, correctOptionTarget);
     const userMessage   = buildUserMessage(p);
     let parsed: OMCResponse | null = null;
 
@@ -474,14 +640,34 @@ async function main() {
 
     if (!parsed) continue;
 
-    const validErr = validateOMC(parsed);
+    const validErr = validateOMC(parsed, correctOptionTarget);
     if (validErr) {
       console.log(`${prefix} ❌  Validation: ${validErr}`);
       failed++;
       continue;
     }
 
+    warnDuplicateDistractors(parsed, prefix);
+
+    if (parsed.accessibility_concern) {
+      const preTeach = parsed.vocabulary_pre_teach.join(', ') || '(none listed)';
+      console.log(`${prefix} 📚  accessibility_concern — pre-teach: [${preTeach}]`);
+      if (parsed.schema_pre_activate) {
+        console.log(`${prefix}     schema: ${parsed.schema_pre_activate}`);
+      }
+    }
+
     // ── Build content field (matches existing questions table format) ──────────
+
+    const accessibilityLines = parsed.accessibility_concern
+      ? `\nACCESSIBILITY_CONCERN: true` +
+        (parsed.vocabulary_pre_teach.length
+          ? `\nVOCABULARY_PRE_TEACH: ${parsed.vocabulary_pre_teach.join(', ')}`
+          : '') +
+        (parsed.schema_pre_activate
+          ? `\nSCHEMA_PRE_ACTIVATE: ${parsed.schema_pre_activate}`
+          : '')
+      : '';
 
     const questionBlock =
       '\n\n---\n\n' +
@@ -495,7 +681,8 @@ async function main() {
       `DIAGNOSTIC_CLASSIFICATION_B: ${parsed.option_b.classification}\n` +
       `DIAGNOSTIC_CLASSIFICATION_C: ${parsed.option_c.classification}\n` +
       `DIAGNOSTIC_CLASSIFICATION_D: ${parsed.option_d.classification}\n` +
-      `COGNITIVE_SKILL: ${parsed.cognitive_skill_targeted}`;
+      `COGNITIVE_SKILL: ${parsed.cognitive_skill_targeted}` +
+      accessibilityLines;
 
     // ── Insert into questions ──────────────────────────────────────────────────
 
