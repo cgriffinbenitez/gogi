@@ -26,8 +26,8 @@ import { appendCSV, initCSV, isDuplicateV3, writePassageV3, fetchDiversityCounts
 
 const PIPELINE_VERSION: 'v4' = 'v4';
 
-// Per-book filter API call cap — prevents omnibus volume runaway cost
-const PER_BOOK_FILTER_CAP = 1000;
+// Per-book filter API call hard ceiling — sources config maxFilterCallsPerBook overrides this
+const FILTER_CAP_HARD_CEILING = 1000;
 
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
@@ -281,12 +281,13 @@ async function main() {
       for (const unit of units) {
         if (!writeAllPassed && tierSuitable >= poolCapPerBookPerTier) break;
 
-        // FIX 3: per-book filter API budget cap
-        if (bookFilterCalls >= PER_BOOK_FILTER_CAP) {
+        // Per-book filter budget cap — sources.maxFilterCallsPerBook (default 250), hard ceiling 1000
+        const filterCap = Math.min(sources.maxFilterCallsPerBook ?? 250, FILTER_CAP_HARD_CEILING);
+        if (bookFilterCalls >= filterCap) {
           if (!budgetExceeded) {
             console.warn(
-              `  [budget] Filter cap (${PER_BOOK_FILTER_CAP} calls) reached for` +
-              ` "${book.title.slice(0, 50)}" — skipping remaining passages in this book`,
+              `  [budget] per-book filter cap (${filterCap} calls) reached for` +
+              ` "${book.title.slice(0, 50)}" — stopping filter, proceeding to Phase 2`,
             );
             budgetExceeded = true;
           }

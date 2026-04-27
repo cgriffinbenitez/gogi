@@ -17,6 +17,7 @@ export interface CriteriaConfig {
 export interface SourceConfig {
   gutendexSearchTerms: string[];
   priorityAuthors: string[];
+  maxFilterCallsPerBook?: number;  // Phase 1 budget cap: max Claude filter calls per book (default 250, hard ceiling 1000)
   maxApprovedPerAuthor?: number;   // diversity cap: max pending_review+approved rows per author per classification
   maxApprovedPerBook?: number;     // diversity cap: max pending_review+approved rows per Gutenberg book per classification
   maxApprovedPerRun?: number;      // diversity cap: max inserts in a single pipeline run

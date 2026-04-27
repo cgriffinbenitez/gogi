@@ -1,4 +1,5 @@
 {
+  "maxFilterCallsPerBook": 250,
   "maxApprovedPerAuthor": 10,
   "maxApprovedPerBook": 6,
   "maxApprovedPerRun": 80,

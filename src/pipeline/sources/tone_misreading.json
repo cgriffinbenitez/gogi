@@ -1,4 +1,5 @@
 {
+  "maxFilterCallsPerBook": 250,
   "maxApprovedPerAuthor": 10,
   "maxApprovedPerBook": 6,
   "maxApprovedPerRun": 80,
@@ -33,6 +34,12 @@
     "Louisa May Alcott"
   ],
   "authorGroupCaps": [
-    { "authors": ["Jane Austen", "Charles Dickens"], "maxInserted": 3 }
+    {
+      "authors": [
+        "Jane Austen",
+        "Charles Dickens"
+      ],
+      "maxInserted": 3
+    }
   ]
 }
