@@ -25,6 +25,7 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve(process.cwd(), '.env.local') });
 
+import fs from 'fs';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
 
@@ -77,6 +78,18 @@ const R1_1_STANDARD = {
 } as const;
 
 // ─── Primitive map ────────────────────────────────────────────────────────────
+//
+// Layer assignments are clinically deliberate — not taxonomic labels.
+// Layer 1 (schema / metacognitive): student never engages the text; background
+//   knowledge or comprehension-monitoring is the gate that must open first.
+// Layer 2 (language access): student reaches the text but is blocked at the
+//   word or sentence level; vocabulary, morphology, or syntax is the gate.
+// Layer 3 (reading construction): student decodes and accesses language but
+//   cannot build the higher-order meaning the question requires.
+//
+// These assignments drive distractor slot pre-assignment (see main loop).
+// Do NOT change a layer value without re-auditing questions for that
+// classification and updating the corresponding prompt guidance.
 
 interface PrimitiveMapping {
   layer:       1 | 2 | 3;
@@ -276,7 +289,7 @@ Every question has exactly 4 options:
 - 1 Layer 2 distractor — language access failure (vocabulary, morphology, or syntax)
 - 1 Layer 3 distractor — reading construction failure (inferencing, evidence, theme, structure, figurative language, tone, or mood)
 
-**LAYER DIVERSITY IS REQUIRED.** Do not assign the same layer to more than one distractor. Three L3 distractors means three students with different breakdowns all get routed to the same intervention — the diagnostic is broken. Every question must have exactly one L1, one L2, one L3 distractor.
+**DISTRACTOR LAYER ASSIGNMENTS are pre-specified per slot in the variable block** (DISTRACTOR SLOT ASSIGNMENT section). Each wrong-answer slot has been assigned exactly one layer — fill each slot with content that matches its assigned layer. Do not choose or change layer assignments yourself.
 
 The correct answer placement is specified as CORRECT_OPTION_TARGET in the variable block. Place the correct answer at that position exactly — do not choose a different position.
 
@@ -361,7 +374,7 @@ Valid JSON only — no markdown, no explanation before or after:
   "option_b": { "text": string, "classification": string },
   "option_c": { "text": string, "classification": string },
   "option_d": { "text": string, "classification": string },
-  "correct_option": "B" | "C",
+  "correct_option": "A" | "B" | "C" | "D",
   "cognitive_skill_targeted": string,
   "accessibility_concern": boolean,
   "vocabulary_pre_teach": string[],
@@ -378,7 +391,8 @@ Valid JSON only — no markdown, no explanation before or after:
 function buildVariableBlock(
   passage: PassageRecord,
   mapping: PrimitiveMapping,
-  correctOptionTarget: 'B' | 'C',
+  correctOptionTarget: 'A' | 'B' | 'C' | 'D',
+  slotAssignments: Record<string, 1 | 2 | 3>,
 ): string {
   const evidence = (passage.supporting_evidence ?? [])
     .map((e) => `  • "${e.element}" — ${e.rationale}`)
@@ -396,6 +410,14 @@ function buildVariableBlock(
     ? passage.plausible_distractors.map((d) => `  • ${d}`).join('\n')
     : '  (none tagged)';
 
+  const slotLines = (['A', 'B', 'C', 'D'] as const)
+    .map((opt) =>
+      opt === correctOptionTarget
+        ? `  Option ${opt}: CORRECT`
+        : `  Option ${opt}: Layer ${slotAssignments[opt]} distractor`,
+    )
+    .join('\n');
+
   return `\
 PASSAGE SOURCE
 Title:  ${passage.source_title ?? 'Unknown'}
@@ -407,6 +429,12 @@ COGNITIVE_TIER: ${passage.intervention_tier} of 4
 
 CORRECT_OPTION_TARGET: ${correctOptionTarget}
   Place the correct answer at option ${correctOptionTarget} exactly.
+
+DISTRACTOR SLOT ASSIGNMENT (required — do not change these):
+${slotLines}
+  Layer 1 = schema or metacognitive failure
+  Layer 2 = language access failure (vocabulary, morphology, or syntax)
+  Layer 3 = reading construction failure (inferencing, evidence, tone, mood, figurative language, etc.)
 
 CLASSIFICATION
 Primitive:             ${passage.classification}
@@ -454,7 +482,7 @@ function parseJson<T>(raw: string): T {
   return JSON.parse(cleaned) as T;
 }
 
-function validateOMC(r: OMCResponse, correctOptionTarget: 'B' | 'C'): string | null {
+function validateOMC(r: OMCResponse, correctOptionTarget: 'A' | 'B' | 'C' | 'D'): string | null {
   if (!r.question_stem)            return 'missing question_stem';
   if (!r.option_a?.text)           return 'missing option_a.text';
   if (!r.option_b?.text)           return 'missing option_b.text';
@@ -563,18 +591,49 @@ async function main() {
 
   console.log(`Found ${passages.length} passage(s) in promotion queue.\n`);
 
+  const correctSlotSequence:     Array<'A' | 'B' | 'C' | 'D'>              = [];
+  const correctSlotDistribution: Record<'A' | 'B' | 'C' | 'D', number>    = { A: 0, B: 0, C: 0, D: 0 };
+
+  // ── Build correct-slot sequence (forced exact A/B/C/D balance) ──────────────
+  //
+  // Pure per-question randomization drifts on small batches (50 q → 14/10/13/13
+  // is normal variance). Pre-shuffling a sequence guarantees exact distribution
+  // and is defensible as deliberate design in the pilot methodology.
+  //
+  // For N passages: base = floor(N/4). Slots A…D each get `base` copies; the
+  // first `remainder` slots (A, B, …) each get one extra.
+  // Example — 50 passages: 13 A, 13 B, 12 C, 12 D, shuffled.
+  {
+    const base      = Math.floor(passages.length / 4);
+    const remainder = passages.length % 4;
+    const slotLabels = ['A', 'B', 'C', 'D'] as const;
+    slotLabels.forEach((slot, idx) => {
+      const count = base + (idx < remainder ? 1 : 0);
+      for (let n = 0; n < count; n++) correctSlotSequence.push(slot);
+    });
+    // Fisher-Yates shuffle
+    for (let j = correctSlotSequence.length - 1; j > 0; j--) {
+      const k = Math.floor(Math.random() * (j + 1));
+      [correctSlotSequence[j], correctSlotSequence[k]] = [correctSlotSequence[k], correctSlotSequence[j]];
+    }
+    const seqCounts = slotLabels.map((s) => `${s}=${correctSlotSequence.filter((x) => x === s).length}`).join(', ');
+    console.log(`Correct-slot sequence (${passages.length}): ${seqCounts} — shuffled.\n`);
+  }
+
   // ── Build stable system prompt once (cached across all calls) ───────────────
 
   const stableSystem = buildStableSystemPrompt();
 
   // ── Stats ───────────────────────────────────────────────────────────────────
 
-  let promoted       = 0;
-  let failed         = 0;
-  let skipped        = 0;
-  let totalCalls     = 0;
-  let cacheReadTotal = 0;
-  let inputTotal     = 0;
+  let promoted        = 0;
+  let failed          = 0;
+  let skipped         = 0;
+  let totalCalls      = 0;
+  let cacheReadTotal  = 0;
+  let inputTotal      = 0;
+  let layerPassed     = 0;
+  let layerViolated   = 0;
 
   // ── Process ─────────────────────────────────────────────────────────────────
 
@@ -597,10 +656,24 @@ async function main() {
 
     if (i > 0) await sleep(CALL_DELAY_MS);
 
-    // Randomize correct option placement 50/50 B or C to eliminate position bias.
-    const correctOptionTarget: 'B' | 'C' = Math.random() < 0.5 ? 'B' : 'C';
+    // Sequence-based correct option — guarantees exact A/B/C/D balance across the run.
+    const correctOptionTarget = correctSlotSequence[i];
 
-    const variableBlock = buildVariableBlock(p, mapping, correctOptionTarget);
+    // Pre-assign which wrong-answer slot maps to each diagnostic layer.
+    // Removes Claude's discretion over layer selection — it fills content, not layer.
+    const wrongOpts = (['A', 'B', 'C', 'D'] as Array<'A' | 'B' | 'C' | 'D'>)
+      .filter((o) => o !== correctOptionTarget);
+    for (let j = wrongOpts.length - 1; j > 0; j--) {
+      const k = Math.floor(Math.random() * (j + 1));
+      [wrongOpts[j], wrongOpts[k]] = [wrongOpts[k], wrongOpts[j]];
+    }
+    const slotAssignments: Record<string, 1 | 2 | 3> = {
+      [wrongOpts[0]]: 1,
+      [wrongOpts[1]]: 2,
+      [wrongOpts[2]]: 3,
+    };
+
+    const variableBlock = buildVariableBlock(p, mapping, correctOptionTarget, slotAssignments);
     const userMessage   = buildUserMessage(p);
     let parsed: OMCResponse | null = null;
 
@@ -648,6 +721,32 @@ async function main() {
     }
 
     warnDuplicateDistractors(parsed, prefix);
+
+    // Layer validator — every wrong-answer slot must match its pre-assigned layer.
+    // Mismatch means Claude filled the slot with the wrong diagnostic class.
+    // Drop the question and log to .promotion-violations.log (hard failure).
+    {
+      const violations: string[] = [];
+      for (const opt of ['A', 'B', 'C', 'D'] as const) {
+        if (opt === parsed.correct_option) continue;
+        const cls      = parsed[`option_${opt.toLowerCase() as 'a' | 'b' | 'c' | 'd'}`].classification;
+        const expected = slotAssignments[opt];
+        const actual   = PRIMITIVE_MAP[cls]?.layer;
+        if (actual !== expected) {
+          violations.push(`option_${opt}: expected L${expected}, got "${cls}" (L${actual ?? '?'})`);
+        }
+      }
+      if (violations.length > 0) {
+        const detail  = violations.join('; ');
+        const logLine = `[${new Date().toISOString()}] passage ${p.id} (${p.classification}): ${detail}\n`;
+        fs.appendFileSync('.promotion-violations.log', logLine, 'utf8');
+        console.log(`${prefix} ❌  Layer violation — ${detail} — dropped`);
+        layerViolated++;
+        failed++;
+        continue;
+      }
+      layerPassed++;
+    }
 
     if (parsed.accessibility_concern) {
       const preTeach = parsed.vocabulary_pre_teach.join(', ') || '(none listed)';
@@ -742,6 +841,7 @@ async function main() {
       `         ${R1_1_STANDARD.code} | correct=${parsed.correct_option} | ` +
       `${parsed.question_stem.slice(0, 70)}${parsed.question_stem.length > 70 ? '…' : ''}`,
     );
+    correctSlotDistribution[parsed.correct_option]++;
     promoted++;
   }
 
@@ -751,13 +851,26 @@ async function main() {
     ? ((cacheReadTotal / inputTotal) * 100).toFixed(1)
     : '—';
 
+  const layerTotal = layerPassed + layerViolated;
+
+  const slotDistStr = (['A', 'B', 'C', 'D'] as const)
+    .map((s) => `${s}=${correctSlotDistribution[s]}`)
+    .join(', ');
+
   console.log('\n' + '═'.repeat(68));
   console.log(`  Promoted:         ${promoted}`);
   console.log(`  Failed:           ${failed}`);
   console.log(`  Skipped:          ${skipped}`);
+  if (!DRY_RUN && promoted > 0) {
+    console.log(`  Correct slot dist: ${slotDistStr}`);
+  }
   console.log(`  API calls:        ${totalCalls}`);
   console.log(`  Cache hit rate:   ${hitRate}%`);
   console.log(`  Total input tokens (approx): ${inputTotal.toLocaleString()}`);
+  if (layerTotal > 0) {
+    console.log(`  Layer validation: ${layerPassed}/${layerTotal} passed. ${layerViolated} violation(s) logged.`);
+    if (layerViolated > 0) console.log(`  Violations log:   .promotion-violations.log`);
+  }
   if (DRY_RUN) console.log('\n  [DRY RUN — no writes performed]');
   console.log('═'.repeat(68) + '\n');
 
