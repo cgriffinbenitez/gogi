@@ -171,6 +171,7 @@ export interface PassageRowV3 {
   discrimination_item_type: 'phrase_level' | 'sentence_level' | 'paragraph_level';
   intervention_tier: number;
   tagger_tier: number | null;
+  word_count_tier: number | null;
   tier_rationale: string;
   q5_flag_5e_compatible: boolean;
   approval_status: 'pending_review' | 'approved' | 'rejected';
