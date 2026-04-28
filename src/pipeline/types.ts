@@ -170,6 +170,7 @@ export interface PassageRowV3 {
   craft_features: Array<{ type: string; location: string; description: string }> | null;
   discrimination_item_type: 'phrase_level' | 'sentence_level' | 'paragraph_level';
   intervention_tier: number;
+  tagger_tier: number | null;
   tier_rationale: string;
   q5_flag_5e_compatible: boolean;
   approval_status: 'pending_review' | 'approved' | 'rejected';
