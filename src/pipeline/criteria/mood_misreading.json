@@ -16,9 +16,86 @@
     "Archaic or heavily poetic prose that obscures mood signals behind unfamiliar syntax"
   ],
   "tierSignals": {
-    "tier1": "Mood is thick and unmistakable. Signals concrete and repeated (rain, darkness, silence, cold). A student notices the feeling on first read.",
-    "tier2": "Mood is present but subtler. Requires noticing 3 or more contributing signals working together. Student must slow down to feel it.",
-    "tier3": "Mood is built more through omission or rhythm than through diction. Requires sharper attention. Student must re-read to identify what's doing the work."
+    "tier1": {
+      "name": "Foundation — concentrated mood signal",
+      "description": "Mood is built through concentrated craft devices that a 9th-grade student can identify on first read. The signal is dense in 2-4 specific phrases the reader can point to as the source of the feeling.",
+      "identifyingFeatures": [
+        "Mood-bearing words appear in concentration — 2-4 strong diction choices in close proximity carry most of the atmospheric work",
+        "Imagery is sensory and concrete (specific sights, sounds, textures), not abstract or symbolic",
+        "Sentence structure is simple to moderate; no nested subordination that obscures signals",
+        "Vocabulary is accessible at grade 8-9 level; any Tier 2 academic words are supported by context",
+        "A careful reader notices the mood on first read; a careless reader still gets the gist but misses craft anchors"
+      ],
+      "thresholds": {
+        "signalDistribution": "Concentrated — student can underline 2-4 specific phrases as the mood source",
+        "syntaxComplexity": "Simple to moderate; clear subject-verb-object patterns dominate",
+        "vocabularyAccessibility": "Grade 8-9 reading level; archaisms only if their meaning is transparent in context",
+        "cognitiveDemand": "Single-pass identification — student does not need to re-read or accumulate"
+      },
+      "exampleDescription": "A passage where the mood is carried by a small cluster of clear signals (e.g., 'broken windows,' 'hollow eyes,' 'no wind, no bird, no creak'). The reader recognizes the eerie quality without needing to track architectural patterns across the full passage.",
+      "distinctFromT2": "T1 mood is concentrated and locatable in specific phrases; T2 mood is distributed across the passage and requires the reader to accumulate signals from multiple craft devices working together. If a student must track cumulative architecture (anaphora across paragraphs, structural pivots, sustained tonal register) to feel the mood, it is T2."
+    },
+    "tier2": {
+      "name": "Guided practice — distributed mood architecture",
+      "description": "Mood is built through 3-5 craft devices working in coordination across the passage. No single phrase carries the mood; the reader must accumulate signals to identify it. Requires the reader to slow down and track multiple sources of atmosphere simultaneously.",
+      "identifyingFeatures": [
+        "Mood signal distributed across the full passage — no single phrase carries it; the reader integrates 3-5 contributing elements",
+        "Multiple craft devices work in coordination (e.g., diction + imagery + rhythm + structural pivot)",
+        "Sentence structure includes some embedded subordination, parenthetical asides, or longer compound sentences",
+        "Vocabulary may include Tier 2 academic words requiring context inference",
+        "A careful reader identifies the mood with focused attention; a careless reader misses the cumulative pattern and may misread"
+      ],
+      "thresholds": {
+        "signalDistribution": "Distributed — student must connect signals across multiple sentences or paragraphs",
+        "syntaxComplexity": "Moderate; some embedded clauses and varied sentence structures",
+        "vocabularyAccessibility": "Grade 9-10 reading level; period vocabulary acceptable if not obscuring",
+        "cognitiveDemand": "Sustained attention — student tracks multiple signals across the passage"
+      },
+      "exampleDescription": "A passage where mood emerges from architectural coordination — e.g., antithetical juxtaposition of festivity and pestilence (Poe's Red Death opening), where the ominous quality lives in the coordination of multiple devices, not in any single sentence.",
+      "distinctFromT1": "T1 has concentrated signals locatable in specific phrases. T2 requires distributed reading — the student integrates signals across the full passage.",
+      "distinctFromT3": "T2 mood lives primarily in diction and imagery distributed across the passage. T3 mood lives more in omission and rhythm — what is conspicuously unsaid, or in pacing patterns — and requires the student to identify what isn't there as much as what is."
+    },
+    "tier3": {
+      "name": "Independent application — mood through omission and rhythm",
+      "description": "Mood is built primarily through what is conspicuously absent from the passage or through pacing patterns rather than through diction or imagery. Requires the reader to identify negative space — what the author chose NOT to say — as the source of atmosphere.",
+      "identifyingFeatures": [
+        "Mood emerges from omission — what is conspicuously unsaid (silences, gaps, refusals to describe)",
+        "Rhythm and pacing are primary tools (short staccato sentences vs. long flowing ones, deliberate fragmentation, repetition of structure)",
+        "Imagery may be sparse or restrained; the absence of expected sensory detail is itself a signal",
+        "Vocabulary may be deceptively simple while syntax carries the complexity",
+        "A careful reader identifies the mood by noticing absences and patterns; a careless reader may not detect mood at all because the signals are not in the words but between them"
+      ],
+      "thresholds": {
+        "signalDistribution": "Negative-space — student identifies what is missing or what the rhythm signals",
+        "syntaxComplexity": "Variable; complexity may live in rhythm rather than in vocabulary",
+        "vocabularyAccessibility": "Grade 9-10 reading level; words may be simple but their arrangement carries meaning",
+        "cognitiveDemand": "Re-reading required — student typically must read the passage twice to identify what is doing the mood work"
+      },
+      "exampleDescription": "A passage where stillness is built through negation ('No wind. No bird. No creak.') and rhythm carries dread through deliberately short sentences that mirror suspended breath. The mood lives in pacing and absence, not in stated atmosphere.",
+      "distinctFromT2": "T2 builds mood through positive craft — what IS in the passage. T3 builds mood through negative craft — what isn't, and how rhythm patterns the reading experience itself.",
+      "distinctFromT4": "T3 mood requires re-reading but is internally coherent. T4 mood depends on architectural sophistication that approaches grade-11+ literary analysis — sustained irony, complex tonal layering, or registers that require extensive cultural/period context to decode."
+    },
+    "tier4": {
+      "name": "Transfer challenge — sophisticated tonal architecture",
+      "description": "Mood is built through layered tonal sophistication — sustained irony, register shifts, embedded contradictions, or atmospheric architecture that requires substantial literary attention to decode. Approaches grade-11+ analytical demand. Used for transfer assessment, not foundation instruction.",
+      "identifyingFeatures": [
+        "Sustained irony where the surface tone (e.g., celebratory) contradicts the actual mood (e.g., ominous)",
+        "Multiple coordinated tonal registers operating simultaneously (e.g., elevated diction with undercurrent of dread)",
+        "Mood depends partly on the reader's ability to recognize tonal dissonance — the gap between what is said and what is felt",
+        "Syntax may include extended periodic sentences, complex subordination, or deliberate archaism that contributes to tonal effect",
+        "Vocabulary includes Tier 2 and Tier 3 academic words that carry connotative as well as denotative weight",
+        "A careful reader identifies multiple operating moods or recognizes ironic distance; a careless reader takes surface meaning at face value"
+      ],
+      "thresholds": {
+        "signalDistribution": "Architectural — mood lives in the structural relationship between elements, not in any single device",
+        "syntaxComplexity": "Complex; periodic sentences, archaic syntax (when it intensifies rather than obscures), or sustained literary register",
+        "vocabularyAccessibility": "Grade 11+ reading level; expects familiarity with literary conventions",
+        "cognitiveDemand": "Multiple readings required for full apprehension; reader must hold competing tonal registers in mind"
+      },
+      "exampleDescription": "A passage where the tonal sophistication requires the student to recognize that festivity ('thousand friends at a masked ball of the most unusual magnificence') and dread ('pestilence raged most furiously abroad') coexist in a single architectural frame — and that the coexistence itself is the mood.",
+      "distinctFromT3": "T3 mood requires re-reading to identify omission or rhythm patterns, but operates within a single tonal register. T4 mood requires the student to hold multiple tonal registers simultaneously and recognize their structural relationship.",
+      "useCase": "T4 passages are used for transfer assessment — verifying mastery has generalized — not for foundation instruction. A student who succeeds at T1-T3 is ready to encounter T4. T4 should not appear in initial diagnostic or teach-phase content."
+    }
   },
   "canonicalVocabulary": [
     "tense", "melancholy", "ominous", "hopeful", "grief-struck",
