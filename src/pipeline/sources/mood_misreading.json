@@ -1,6 +1,6 @@
 {
   "maxFilterCallsPerBook": 250,
-  "maxApprovedPerAuthor": 10,
+  "maxApprovedPerAuthor": 5,
   "maxApprovedPerBook": 6,
   "maxApprovedPerRun": 80,
   "gutendexSearchTerms": [
