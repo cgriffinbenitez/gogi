@@ -73,8 +73,8 @@ export function stripBookFrontMatter(
   };
 }
 
-const MIN_WORDS = 150;
-const MAX_WORDS = 350;
+export const MIN_WORDS = 150;
+export const MAX_WORDS = 350;
 const MAX_DIALOGUE_RATIO = 0.35; // skip if >35% of chars are inside quotation marks
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -326,7 +326,8 @@ export function extractParagraphs(
 // Tier word-count windows — all must stay within the absolute 150-350 cap.
 // T1 < T2 < T3 < T4 in target length to preserve cognitive differentiation,
 // but no tier may produce a passage outside [MIN_WORDS, MAX_WORDS].
-const TIER_BOUNDS: Record<TierKey, { min: number; max: number }> = {
+// Exported so tests can assert both the specific values and containment within the cap.
+export const TIER_BOUNDS: Record<TierKey, { min: number; max: number }> = {
   T1: { min: 150, max: 210 },
   T2: { min: 175, max: 260 },
   T3: { min: 225, max: 310 },

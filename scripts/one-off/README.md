@@ -23,6 +23,14 @@ Then ran a verification query to confirm the distribution.
 **Modified:** 14 rows in `intervention_passages` (12 corrected, 2 already correct).
 **Result:** T1:10, T2:2, T3:1, T4:1
 
+## verify-local-auth.ts
+**Purpose:** Verified that the `sb_secret_*` key format produced by Supabase CLI v2.95.4
+is accepted by `@supabase/supabase-js` v2.103.0. Confirmed the local instance at
+`http://127.0.0.1:54321` could be queried successfully using the new key format, unblocking
+the integration test credential swap design.
+**Run:** 2026-04-28
+**Modified:** nothing — read-only.
+
 ## verify-migration-scope.ts
 **Purpose:** Verified the scope of the `tagger_tier` column migration
 (`20260427_tagger_tier.sql`) before and after it was applied via the Supabase SQL editor.
