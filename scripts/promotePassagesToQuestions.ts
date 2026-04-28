@@ -28,6 +28,7 @@ config({ path: resolve(process.cwd(), '.env.local') });
 import fs from 'fs';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
+import { PRIMITIVE_MAP, PrimitiveMapping, buildSlotSequence, checkLayerViolations } from '../src/pipeline/stages/promoteUtils';
 
 // ─── CLI ──────────────────────────────────────────────────────────────────────
 
@@ -77,43 +78,8 @@ const R1_1_STANDARD = {
   title: 'Inferencing and Textual Evidence',
 } as const;
 
-// ─── Primitive map ────────────────────────────────────────────────────────────
-//
-// Layer assignments are clinically deliberate — not taxonomic labels.
-// Layer 1 (schema / metacognitive): student never engages the text; background
-//   knowledge or comprehension-monitoring is the gate that must open first.
-// Layer 2 (language access): student reaches the text but is blocked at the
-//   word or sentence level; vocabulary, morphology, or syntax is the gate.
-// Layer 3 (reading construction): student decodes and accesses language but
-//   cannot build the higher-order meaning the question requires.
-//
-// These assignments drive distractor slot pre-assignment (see main loop).
-// Do NOT change a layer value without re-auditing questions for that
-// classification and updating the corresponding prompt guidance.
-
-interface PrimitiveMapping {
-  layer:       1 | 2 | 3;
-  description: string;
-}
-
-const PRIMITIVE_MAP: Record<string, PrimitiveMapping> = {
-  // Layer 3 — Core reading construction skills
-  inferencing:                      { layer: 3, description: 'Student cannot construct implied meaning from textual clues' },
-  evidence_retrieval_failure:        { layer: 3, description: 'Student cannot locate specific textual support for a claim' },
-  tone_misreading:                   { layer: 3, description: "Student misreads the author's implied emotional register" },
-  mood_misreading:                   { layer: 3, description: 'Student misreads the emotional atmosphere of a passage' },
-  figurative_language_failure:       { layer: 3, description: 'Student reads figurative language literally' },
-  comprehension_integration_failure: { layer: 3, description: 'Student cannot synthesize information across passage segments' },
-  topic_vs_theme_confusion:          { layer: 3, description: 'Student confuses topic (subject) with thematic claim (meaning)' },
-  structure_purpose_disconnect:      { layer: 3, description: "Student cannot identify structural pattern or author's purpose" },
-  // Layer 2 — Language access prerequisites
-  vocabulary_gap:                    { layer: 2, description: 'Student blocked by unfamiliar Tier 2 academic vocabulary' },
-  morphology_gap:                    { layer: 2, description: 'Student cannot decode unfamiliar word via morphemic analysis' },
-  syntax_barrier:                    { layer: 2, description: 'Student cannot parse a complex sentence structure' },
-  // Layer 1 — Schema / metacognitive prerequisites
-  schema_strategy_missing:           { layer: 1, description: 'Student lacks activatable background knowledge to approach the text' },
-  no_metacognitive_strategy:         { layer: 1, description: 'Student has no comprehension-monitoring or repair strategy' },
-};
+// PRIMITIVE_MAP, PrimitiveMapping, buildSlotSequence, checkLayerViolations
+// are imported from src/pipeline/stages/promoteUtils.ts above.
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -597,26 +563,13 @@ async function main() {
   // ── Build correct-slot sequence (forced exact A/B/C/D balance) ──────────────
   //
   // Pure per-question randomization drifts on small batches (50 q → 14/10/13/13
-  // is normal variance). Pre-shuffling a sequence guarantees exact distribution
-  // and is defensible as deliberate design in the pilot methodology.
-  //
-  // For N passages: base = floor(N/4). Slots A…D each get `base` copies; the
-  // first `remainder` slots (A, B, …) each get one extra.
-  // Example — 50 passages: 13 A, 13 B, 12 C, 12 D, shuffled.
+  // is normal variance). buildSlotSequence() guarantees exact distribution and is
+  // defensible as deliberate design in the pilot methodology.
   {
-    const base      = Math.floor(passages.length / 4);
-    const remainder = passages.length % 4;
+    const seq = buildSlotSequence(passages.length);
+    correctSlotSequence.push(...seq);
     const slotLabels = ['A', 'B', 'C', 'D'] as const;
-    slotLabels.forEach((slot, idx) => {
-      const count = base + (idx < remainder ? 1 : 0);
-      for (let n = 0; n < count; n++) correctSlotSequence.push(slot);
-    });
-    // Fisher-Yates shuffle
-    for (let j = correctSlotSequence.length - 1; j > 0; j--) {
-      const k = Math.floor(Math.random() * (j + 1));
-      [correctSlotSequence[j], correctSlotSequence[k]] = [correctSlotSequence[k], correctSlotSequence[j]];
-    }
-    const seqCounts = slotLabels.map((s) => `${s}=${correctSlotSequence.filter((x) => x === s).length}`).join(', ');
+    const seqCounts = slotLabels.map((s) => `${s}=${seq.filter((x) => x === s).length}`).join(', ');
     console.log(`Correct-slot sequence (${passages.length}): ${seqCounts} — shuffled.\n`);
   }
 
@@ -726,16 +679,11 @@ async function main() {
     // Mismatch means Claude filled the slot with the wrong diagnostic class.
     // Drop the question and log to .promotion-violations.log (hard failure).
     {
-      const violations: string[] = [];
-      for (const opt of ['A', 'B', 'C', 'D'] as const) {
-        if (opt === parsed.correct_option) continue;
-        const cls      = parsed[`option_${opt.toLowerCase() as 'a' | 'b' | 'c' | 'd'}`].classification;
-        const expected = slotAssignments[opt];
-        const actual   = PRIMITIVE_MAP[cls]?.layer;
-        if (actual !== expected) {
-          violations.push(`option_${opt}: expected L${expected}, got "${cls}" (L${actual ?? '?'})`);
-        }
-      }
+      const violations = checkLayerViolations(
+        { a: parsed.option_a, b: parsed.option_b, c: parsed.option_c, d: parsed.option_d },
+        parsed.correct_option,
+        slotAssignments,
+      );
       if (violations.length > 0) {
         const detail  = violations.join('; ');
         const logLine = `[${new Date().toISOString()}] passage ${p.id} (${p.classification}): ${detail}\n`;
