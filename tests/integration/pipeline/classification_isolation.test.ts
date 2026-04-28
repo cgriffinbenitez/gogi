@@ -87,9 +87,18 @@ describe('classification_isolation — criteria JSON files are self-consistent',
     expect(Array.isArray(criteria.mustNotHave)).toBe(true);
     expect(criteria.mustNotHave.length).toBeGreaterThan(0);
     expect(criteria.tierSignals).toBeDefined();
-    expect(typeof criteria.tierSignals.tier1).toBe('string');
-    expect(typeof criteria.tierSignals.tier2).toBe('string');
-    expect(typeof criteria.tierSignals.tier3).toBe('string');
+    // mood_misreading uses rich tier signals (objects) since the tier-architecture refactor.
+    // Accept either string (legacy simple) or object (rich structured) — both are valid.
+    expect(['string', 'object']).toContain(typeof criteria.tierSignals.tier1);
+    expect(['string', 'object']).toContain(typeof criteria.tierSignals.tier2);
+    expect(['string', 'object']).toContain(typeof criteria.tierSignals.tier3);
+    // Verify rich signals have the expected shape for mood_misreading specifically
+    if (typeof criteria.tierSignals.tier1 === 'object' && criteria.tierSignals.tier1 !== null) {
+      const t1 = criteria.tierSignals.tier1 as { name: string; description: string; identifyingFeatures: string[] };
+      expect(typeof t1.name).toBe('string');
+      expect(typeof t1.description).toBe('string');
+      expect(Array.isArray(t1.identifyingFeatures)).toBe(true);
+    }
   });
 
   it('no two criteria files have the same classification value — no aliasing', () => {
