@@ -45,6 +45,101 @@ export function resetTagCacheStats(): void {
  * null escape hatch, and output format.
  * This block must be ≥1024 tokens for Sonnet cache to activate.
  */
+/**
+ * Returns true when the criteria has rich structured tierSignals (objects with
+ * name/description/identifyingFeatures/thresholds), false when still plain strings.
+ */
+function hasRichTierSignals(criteria: CriteriaConfig): boolean {
+  return typeof criteria.tierSignals?.tier1 === 'object' && criteria.tierSignals.tier1 !== null;
+}
+
+/**
+ * Build the INTERVENTION TIER section of the tag prompt.
+ *
+ * For classifications with rich tierSignals (structured objects), uses the
+ * criteria-defined tier descriptions — literary difficulty is primary.
+ *
+ * For classifications with simple string tierSignals (legacy), falls back to
+ * the word-count-primary rules with complexity override.
+ */
+function buildTierInstructions(criteria: CriteriaConfig): string {
+  if (hasRichTierSignals(criteria)) {
+    // Rich path: use criteria-defined tier descriptions, literary difficulty primary
+    const ts = criteria.tierSignals as unknown as Record<string, {
+      name: string;
+      description: string;
+      identifyingFeatures: string[];
+      thresholds: Record<string, string>;
+      distinctFromT2?: string;
+      distinctFromT1?: string;
+      distinctFromT3?: string;
+      distinctFromT4?: string;
+    }>;
+
+    const renderTier = (key: string, label: string): string => {
+      const t = ts[key];
+      if (!t) return '';
+      const features = t.identifyingFeatures.map(f => `     • ${f}`).join('\n');
+      const distinctions = [
+        t.distinctFromT2 ? `   Distinct from T2: ${t.distinctFromT2}` : '',
+        t.distinctFromT1 ? `   Distinct from T1: ${t.distinctFromT1}` : '',
+        t.distinctFromT3 ? `   Distinct from T3: ${t.distinctFromT3}` : '',
+        t.distinctFromT4 ? `   Distinct from T4: ${t.distinctFromT4}` : '',
+      ].filter(Boolean).join('\n');
+
+      return `   ${label} — ${t.name}
+   ${t.description}
+   Identifying features:
+${features}
+   Signal distribution: ${t.thresholds.signalDistribution}
+   Cognitive demand: ${t.thresholds.cognitiveDemand}
+${distinctions}`;
+    };
+
+    return `7. INTERVENTION TIER: Assign a tier based on LITERARY DIFFICULTY — how the mood signal is constructed and what cognitive demand it places on the reader. Word count informs but does not determine the tier.
+
+${renderTier('tier1', 'Tier 1 (Foundation)')}
+
+${renderTier('tier2', 'Tier 2 (Guided Practice)')}
+
+${renderTier('tier3', 'Tier 3 (Independent Practice)')}
+
+${renderTier('tier4', 'Tier 4 (Transfer/Assessment)')}
+
+   TIER ASSIGNMENT PROCESS:
+   Step 1: Read the passage and identify how the mood signal is constructed (concentrated phrases vs. distributed architecture vs. omission/rhythm vs. sustained irony).
+   Step 2: Match the construction pattern to the tier descriptions above.
+   Step 3: Check word count as a sanity bound: if your literary-difficulty assignment is more than 1 tier away from the word-count-implied tier, explain why in tier_rationale.
+   Step 4: Assign the tier that best reflects the cognitive demand placed on a 9th-grade Title I reader.
+
+   In tier_rationale, name the specific construction pattern that determined your assignment (e.g., "T2: mood distributed across 4 coordinating craft devices — anaphora, juxtaposition, ironic understatement, structural pivot; no single phrase carries the signal").`;
+  }
+
+  // Legacy path: word-count-primary with complexity override (unchanged behavior)
+  return `7. INTERVENTION TIER: Assign a tier based on word count, paragraph count, and complexity:
+   - Tier 1 (Foundation): 40-150 words, 1 paragraph, maximally accessible
+   - Tier 2 (Guided Practice): 100-300 words, 1-2 paragraphs, requires sustained reading
+   - Tier 3 (Independent Practice): 200-500 words, 2-3 paragraphs, more distributed signal
+   - Tier 4 (Transfer/Assessment): 400-800 words, 3-5 paragraphs, full-passage complexity
+
+   Word count is the PRIMARY criterion. Tier assignment must start from word count, then apply the override check below.
+
+   COMPLEXITY OVERRIDE — upward adjustment by ONE tier is permitted ONLY if the passage contains at least one of these genuine parsing barriers:
+   - Nested subordinate clauses more than 2 levels deep that obscure the main clause
+   - Sustained archaic vocabulary density: 3+ words within any 50-word span that a 9th-grade student cannot resolve from sentence context alone
+   - Syntactic ambiguity requiring re-reading to determine which noun a verb or modifier applies to
+   - Period-specific grammatical structures that obscure meaning (not merely flavor)
+
+   The following features are explicitly NOT complexity markers and must NOT trigger an upward override:
+   - Anaphora or other repetition structures (aid comprehension, do not impede it)
+   - Periodic sentences with parallel structure (register-flagged but structurally clear)
+   - Syntactic inversion where the meaning is still immediately parseable (e.g., "It is a truth universally acknowledged, that...")
+   - Rhetorical sophistication, formal diction, or elevated register that does not block parsing
+   - Vivid or emotionally intense language
+
+   When applying an override, you MUST name the specific complexity marker in tier_rationale (e.g., "Override applied: nested subordinate clauses in sentence 3 obscure main clause"). If you cannot name a specific marker from the permitted list, do NOT apply the override.`;
+}
+
 function buildTagSystemStable(criteria: CriteriaConfig): string {
   const vocab = criteria.canonicalVocabulary?.length
     ? criteria.canonicalVocabulary.join(', ')
@@ -80,28 +175,7 @@ YOUR TASKS:
    - "sentence_level": target skill signal requires reading a complete sentence in context
    - "paragraph_level": target skill signal requires tracking across multiple sentences or paragraphs
 
-7. INTERVENTION TIER: Assign a tier based on word count, paragraph count, and complexity:
-   - Tier 1 (Foundation): 40-150 words, 1 paragraph, maximally accessible
-   - Tier 2 (Guided Practice): 100-300 words, 1-2 paragraphs, requires sustained reading
-   - Tier 3 (Independent Practice): 200-500 words, 2-3 paragraphs, more distributed signal
-   - Tier 4 (Transfer/Assessment): 400-800 words, 3-5 paragraphs, full-passage complexity
-
-   Word count is the PRIMARY criterion. Tier assignment must start from word count, then apply the override check below.
-
-   COMPLEXITY OVERRIDE — upward adjustment by ONE tier is permitted ONLY if the passage contains at least one of these genuine parsing barriers:
-   - Nested subordinate clauses more than 2 levels deep that obscure the main clause
-   - Sustained archaic vocabulary density: 3+ words within any 50-word span that a 9th-grade student cannot resolve from sentence context alone
-   - Syntactic ambiguity requiring re-reading to determine which noun a verb or modifier applies to
-   - Period-specific grammatical structures that obscure meaning (not merely flavor)
-
-   The following features are explicitly NOT complexity markers and must NOT trigger an upward override:
-   - Anaphora or other repetition structures (aid comprehension, do not impede it)
-   - Periodic sentences with parallel structure (register-flagged but structurally clear)
-   - Syntactic inversion where the meaning is still immediately parseable (e.g., "It is a truth universally acknowledged, that...")
-   - Rhetorical sophistication, formal diction, or elevated register that does not block parsing
-   - Vivid or emotionally intense language
-
-   When applying an override, you MUST name the specific complexity marker in tier_rationale (e.g., "Override applied: nested subordinate clauses in sentence 3 obscure main clause"). If you cannot name a specific marker from the permitted list, do NOT apply the override.
+${buildTierInstructions(criteria)}
 
 CRITICAL — NULL ESCAPE HATCH:
 If you cannot confidently construct 2+ supporting evidence elements AND 2+ non-supporting elements, return:

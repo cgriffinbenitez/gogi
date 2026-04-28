@@ -51,27 +51,43 @@ This is the single source of truth for all database tables and columns. Never re
 
 ## Schema Conventions — intervention_passages
 
-The pipeline writes two separate tier values to every row. **Do not collapse these back into one column.**
+The pipeline writes three separate tier values to every row. **Do not collapse these into fewer columns.**
 
 **`intervention_tier`** (integer 1–4, NOT NULL)
-Word-count-deterministic: T1 < 210 words, T2 < 260, T3 < 310, T4 ≥ 310.
-This is the authoritative value for library balance and tier saturation tracking.
-`run.ts` derives it from `para.tierKey` (set at extract stage) via `parseInt(para.tierKey.slice(1), 10)`.
-It is the only value used in `fetchTierCounts()`, `existingTierCounts`, and saturation checks.
+The authoritative tier for library balance, saturation tracking, and all public-facing tier logic.
+Derived by `applyTierGuardrail(tagger_tier, word_count_tier)` in `run.ts`:
+- If `tagger_tier == word_count_tier`: use that value.
+- If `|tagger_tier - word_count_tier| == 1`: tagger wins (literary judgment preferred for single-step differences).
+- If `|tagger_tier - word_count_tier| >= 2`: word_count_tier wins (guardrail against extreme mismatch).
+This is the only value used in `fetchTierCounts()`, `existingTierCounts`, and saturation checks.
 
 **`tagger_tier`** (integer 1–4, NULL allowed)
-The AI tagger's independent literary-difficulty judgment, returned in the tag JSON response.
-Preserved for analysis — e.g. comparing model difficulty perception against the word-count proxy,
-or auditing classification-level tagger bias. It is NOT used in saturation logic or library
-balance decisions and must not be promoted to that role without deliberate re-evaluation.
+The AI tagger's raw literary-difficulty judgment, returned directly in the tag JSON response.
+Preserved for analysis — comparing model perception against the word-count proxy, auditing
+classification-level tagger bias, and powering `retag-pending.ts` reruns.
+NOT used in saturation logic or library balance decisions.
 
-**Why both exist:**
-The tagger criteria JSON for each classification contains only 3 `tierSignals` entries (tier1/tier2/tier3).
-The tagger cannot produce a reliable T4 signal and defaults to tier 2 for some classifications
-(observed across all 14 mood_misreading passages, 2026-04-27). Using `tagResult.intervention_tier`
-as the authoritative tier would silently corrupt library balance — T4 passages would be logged as T2,
-tier saturation tracking would fail, and the mismatch would be invisible at runtime.
-The lossless split preserves the AI signal without letting it break structural invariants.
+**`word_count_tier`** (integer 1–4, NULL allowed — added 2026-04-28)
+Word-count-deterministic tier, derived from `extractTier()` in `run.ts` at the extract stage.
+Thresholds for new rows: T1 < 210 words, T2 < 260, T3 < 310, T4 ≥ 310.
+Historical backfill used midpoint approximation (175/225/275 boundaries) — edge-case rows may
+differ by ≤1 tier from the exact threshold. The guardrail compares `tagger_tier` against this
+value to catch extreme mismatches before they corrupt library balance.
+
+**Why three columns exist:**
+Classifications with rich `tierSignals` (structured objects, e.g. mood_misreading) use literary
+difficulty as the primary tier signal — the tagger can produce better-calibrated assignments than
+a raw word-count proxy. But the tagger cannot reliably produce T4 signals and defaults to T2 for
+some classifications. `applyTierGuardrail` lets the tagger win on close calls while preventing
+extreme drift (e.g. a 350-word passage tagged T1) from corrupting saturation tracking.
+The three-column split preserves both signals losslessly without letting either break invariants.
+
+**Rich vs. simple tierSignals in criteria JSON:**
+- Simple (legacy): `tierSignals.tier1` is a plain string → word-count-primary tier instructions.
+- Rich (structured): `tierSignals.tier1` is an object with `name`, `description`, `identifyingFeatures`,
+  `thresholds`, etc. → literary-difficulty-primary tier instructions via `buildTierInstructions()`.
+Use `hasRichTierSignals(criteria)` in `tag.ts` to distinguish. Only mood_misreading uses rich signals
+as of 2026-04-28; the remaining 13 classifications use simple strings.
 
 ## Target Florida BEST Standards (Pilot)
 - ELA.9.R.1.1 — Explain how key elements enhance or add layers of meaning and/or style in a literary text.

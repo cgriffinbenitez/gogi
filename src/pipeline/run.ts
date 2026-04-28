@@ -29,6 +29,33 @@ const PIPELINE_VERSION: 'v4' = 'v4';
 // Per-book filter API call hard ceiling — sources config maxFilterCallsPerBook overrides this
 const FILTER_CAP_HARD_CEILING = 1000;
 
+// ─── Tier guardrail ───────────────────────────────────────────────────────────
+//
+// intervention_tier is now tagger-authoritative when the criteria has rich tier
+// signals, with word-count as a guardrail for extreme mismatches (diff >= 2).
+//
+// Background: word-count proxy failed systematically for distributed/cumulative
+// craft (mood_misreading review 2026-04-28 surfaced 6/14 passages misclassified
+// as T1 by word-count when the tagger correctly identified them as T2).
+//
+// word_count_tier is preserved separately for analysis and as the guardrail input.
+
+function applyTierGuardrail(taggerTier: number, wordCountTier: number): number {
+  // If tagger and word-count agree, use that.
+  if (taggerTier === wordCountTier) return taggerTier;
+
+  // Tagger primary, word-count guardrail for extreme mismatches.
+  // If tagger says T1 but word-count is T3 or T4 (clearly long passage), trust word-count.
+  // If tagger says T4 but word-count is T1 or T2 (clearly short passage), trust word-count.
+  const diff = Math.abs(taggerTier - wordCountTier);
+  if (diff >= 2) {
+    return wordCountTier; // Guardrail: extreme mismatches favor word-count
+  }
+
+  // Diff is 1 — trust the tagger.
+  return taggerTier;
+}
+
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
 const VALID_CLASSIFICATIONS = [
@@ -530,21 +557,25 @@ async function main() {
           plausible_distractors:    tagResult.plausible_distractors ?? null,
           craft_features:           tagResult.craft_features ?? null,
           discrimination_item_type: tagResult.discrimination_item_type,
-          // Two tier values are written intentionally — they measure different things:
+          // Three tier values are written intentionally — each measures something different:
           //
-          //   intervention_tier  — word-count-deterministic (T1<210, T2<260, T3<310, T4≥310).
-          //                        Authoritative for library balance and tier saturation
-          //                        tracking. Always equals extractTier derived from para.tierKey.
+          //   intervention_tier  — authoritative for library structure and routing.
+          //                        Derived from applyTierGuardrail(taggerTier, wordCountTier):
+          //                        tagger-primary when diff < 2; word-count when diff >= 2.
           //
-          //   tagger_tier        — the AI tagger's independent literary-difficulty judgment,
-          //                        returned as intervention_tier in the tag JSON response.
-          //                        Preserved for analysis (e.g. comparing AI perception vs.
-          //                        word-count proxy). NOT used for saturation logic.
-          //                        The tagger criteria JSON currently has 3 tier signals, so
-          //                        it cannot reliably produce T4 and tends to default to tier 2
-          //                        for some classifications — hence the split.
-          intervention_tier:        extractTier,
+          //   tagger_tier        — the AI tagger's raw literary-difficulty judgment.
+          //                        Preserved for analysis (comparing AI perception vs.
+          //                        word-count proxy). NOT used directly in saturation logic.
+          //
+          //   word_count_tier    — word-count-deterministic (T1<210, T2<260, T3<310, T4≥310).
+          //                        Preserved as guardrail input and for analysis. Equals
+          //                        extractTier derived from para.tierKey.
+          //
+          // Saturation tracking uses para.tierKey (which mirrors word_count_tier at extract
+          // time) so it is unaffected by this architectural change.
+          intervention_tier:        applyTierGuardrail(tagResult.intervention_tier, extractTier),
           tagger_tier:              tagResult.intervention_tier,
+          word_count_tier:          extractTier,
           tier_rationale:           tagResult.tier_rationale,
           q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
           approval_status:          'pending_review' as const,

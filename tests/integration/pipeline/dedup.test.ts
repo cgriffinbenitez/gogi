@@ -49,6 +49,7 @@ const seedRow: PassageRowV3 = {
   discrimination_item_type: 'sentence_level',
   intervention_tier:        2,
   tagger_tier:              2,
+  word_count_tier:          2,
   tier_rationale:           'test',
   q5_flag_5e_compatible:    false,
   approval_status:          'pending_review',

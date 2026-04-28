@@ -1,14 +1,43 @@
 // ─── Shared types for the intervention passage pipeline ───────────────────────
 
+/** Simple (legacy) tier signal — a single description string. */
+export type TierSignalSimple = string;
+
+/** Rich tier signal — structured object with identifying features and thresholds. */
+export interface TierSignalRich {
+  name: string;
+  description: string;
+  identifyingFeatures: string[];
+  thresholds: {
+    signalDistribution: string;
+    syntaxComplexity: string;
+    vocabularyAccessibility: string;
+    cognitiveDemand: string;
+  };
+  exampleDescription?: string;
+  distinctFromT1?: string;
+  distinctFromT2?: string;
+  distinctFromT3?: string;
+  distinctFromT4?: string;
+  useCase?: string;
+}
+
 export interface CriteriaConfig {
   classification: string;
   targetSkill: string;
   mustHave: string[];
   mustNotHave: string[];
+  /**
+   * tierSignals can be either:
+   * - Simple strings (legacy format, word-count-primary tier assignment)
+   * - Rich objects (structured format, literary-difficulty-primary assignment)
+   * Use hasRichTierSignals() in tag.ts to distinguish.
+   */
   tierSignals: {
-    tier1: string;
-    tier2: string;
-    tier3: string;
+    tier1: TierSignalSimple | TierSignalRich;
+    tier2: TierSignalSimple | TierSignalRich;
+    tier3: TierSignalSimple | TierSignalRich;
+    tier4?: TierSignalSimple | TierSignalRich;
   };
   /** Constrained vocabulary for canonical_answer. Empty = unconstrained. */
   canonicalVocabulary?: string[];
@@ -171,6 +200,7 @@ export interface PassageRowV3 {
   discrimination_item_type: 'phrase_level' | 'sentence_level' | 'paragraph_level';
   intervention_tier: number;
   tagger_tier: number | null;
+  word_count_tier: number | null;
   tier_rationale: string;
   q5_flag_5e_compatible: boolean;
   approval_status: 'pending_review' | 'approved' | 'rejected';
