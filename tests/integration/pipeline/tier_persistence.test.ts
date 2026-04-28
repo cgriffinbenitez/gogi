@@ -112,6 +112,7 @@ describe('tier_persistence — regression test for intervention_tier / tagger_ti
         discrimination_item_type: 'sentence_level',
         intervention_tier:        fx.expectedTier,
         tagger_tier:              fx.simulatedTaggerTier,
+        word_count_tier:          fx.expectedTier,
         tier_rationale:           'test',
         q5_flag_5e_compatible:    false,
         approval_status:          'pending_review',
