@@ -49,10 +49,34 @@ This is the single source of truth for all database tables and columns. Never re
 **responses**
 - id, session_id, question_id, student_id, standard_id, cognitive_skill_targeted, diagnostic_classification, intervention_type, intervention_content, student_response, mastery_achieved, attempt_number, ai_feedback, teacher_override, created_at
 
+## Schema Conventions — intervention_passages
+
+The pipeline writes two separate tier values to every row. **Do not collapse these back into one column.**
+
+**`intervention_tier`** (integer 1–4, NOT NULL)
+Word-count-deterministic: T1 < 210 words, T2 < 260, T3 < 310, T4 ≥ 310.
+This is the authoritative value for library balance and tier saturation tracking.
+`run.ts` derives it from `para.tierKey` (set at extract stage) via `parseInt(para.tierKey.slice(1), 10)`.
+It is the only value used in `fetchTierCounts()`, `existingTierCounts`, and saturation checks.
+
+**`tagger_tier`** (integer 1–4, NULL allowed)
+The AI tagger's independent literary-difficulty judgment, returned in the tag JSON response.
+Preserved for analysis — e.g. comparing model difficulty perception against the word-count proxy,
+or auditing classification-level tagger bias. It is NOT used in saturation logic or library
+balance decisions and must not be promoted to that role without deliberate re-evaluation.
+
+**Why both exist:**
+The tagger criteria JSON for each classification contains only 3 `tierSignals` entries (tier1/tier2/tier3).
+The tagger cannot produce a reliable T4 signal and defaults to tier 2 for some classifications
+(observed across all 14 mood_misreading passages, 2026-04-27). Using `tagResult.intervention_tier`
+as the authoritative tier would silently corrupt library balance — T4 passages would be logged as T2,
+tier saturation tracking would fail, and the mismatch would be invisible at runtime.
+The lossless split preserves the AI signal without letting it break structural invariants.
+
 ## Target Florida BEST Standards (Pilot)
-- ELA.9.R.1.1 — Inferencing and textual evidence
-- ELA.9.R.1.2 — Universal themes in literary texts
-- ELA.9.R.2.1 — Analyzing text structure and purpose
+- ELA.9.R.1.1 — Explain how key elements enhance or add layers of meaning and/or style in a literary text.
+- ELA.9.R.1.2 — Analyze universal themes and their development throughout a literary text.
+- ELA.9.R.2.1 — Analyze how multiple text structures and/or features convey a purpose and/or meaning in texts.
 
 ## Learning Loop Logic
 - Diagnostic score 80%+ → skip to Reassess
