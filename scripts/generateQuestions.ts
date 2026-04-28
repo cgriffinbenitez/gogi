@@ -32,19 +32,19 @@ const PILOT_STANDARDS = [
   {
     id:    '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e',
     code:  'ELA.9.R.1.1',
-    title: 'Inferencing and Textual Evidence',
+    title: 'Explain how key elements enhance or add layers of meaning and/or style in a literary text.',
     type:  'inferencing' as const,
   },
   {
     id:    'e9bd1f36-5bab-4dbf-ac57-132c55dd139c',
     code:  'ELA.9.R.1.2',
-    title: 'Universal Themes in Literary Texts',
+    title: 'Analyze universal themes and their development throughout a literary text.',
     type:  'universal_theme' as const,
   },
   {
     id:    '595a9506-5cf6-4e5a-8e8d-74473fed3fe8',
     code:  'ELA.9.R.2.1',
-    title: 'Analyzing Text Structure and Purpose',
+    title: 'Analyze how multiple text structures and/or features convey a purpose and/or meaning in texts.',
     type:  'text_structure' as const,
   },
 ] as const;

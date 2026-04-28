@@ -468,8 +468,9 @@ async function main() {
           continue;
         }
 
-        // Duplicate check
-        const dup = await isDuplicateV3(para.gutenbergId, para.hash, 0);
+        // Duplicate check — use extract-stage tier (para.tierKey → integer)
+        const extractTier = parseInt(para.tierKey.slice(1), 10) as 1 | 2 | 3 | 4;
+        const dup = await isDuplicateV3(para.gutenbergId, para.hash, extractTier);
         if (dup) {
           appendCSV(csvPath, { ...csvBase, status: 'duplicate' });
           duplicates++;
@@ -529,7 +530,21 @@ async function main() {
           plausible_distractors:    tagResult.plausible_distractors ?? null,
           craft_features:           tagResult.craft_features ?? null,
           discrimination_item_type: tagResult.discrimination_item_type,
-          intervention_tier:        tagResult.intervention_tier,
+          // Two tier values are written intentionally — they measure different things:
+          //
+          //   intervention_tier  — word-count-deterministic (T1<210, T2<260, T3<310, T4≥310).
+          //                        Authoritative for library balance and tier saturation
+          //                        tracking. Always equals extractTier derived from para.tierKey.
+          //
+          //   tagger_tier        — the AI tagger's independent literary-difficulty judgment,
+          //                        returned as intervention_tier in the tag JSON response.
+          //                        Preserved for analysis (e.g. comparing AI perception vs.
+          //                        word-count proxy). NOT used for saturation logic.
+          //                        The tagger criteria JSON currently has 3 tier signals, so
+          //                        it cannot reliably produce T4 and tends to default to tier 2
+          //                        for some classifications — hence the split.
+          intervention_tier:        extractTier,
+          tagger_tier:              tagResult.intervention_tier,
           tier_rationale:           tagResult.tier_rationale,
           q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
           approval_status:          'pending_review' as const,

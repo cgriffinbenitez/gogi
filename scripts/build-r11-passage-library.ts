@@ -293,7 +293,7 @@ function buildEvalUserPrompt(
   passageExcerpt: string,
   q: RawQuestion,
 ): string {
-  return `Standard: ELA.9.R.1.1 — Key elements enhance meaning and style in literary text
+  return `Standard: ELA.9.R.1.1 — Explain how key elements enhance or add layers of meaning and/or style in a literary text.
 Skill targeted: ${skill}
 
 Passage excerpt (first 250 chars):
