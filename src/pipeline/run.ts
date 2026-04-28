@@ -276,17 +276,16 @@ async function main() {
   let fetchSources = sources;
   {
     const maxPerAuthor = sources.maxApprovedPerAuthor ?? 10;
+    console.log(`  [author-skip] checking ${sources.priorityAuthors.length} priority authors (cap: ${maxPerAuthor}):`);
     const filteredAuthors = sources.priorityAuthors.filter(displayName => {
       const existing = [...divAuthorCounts.entries()]
         .filter(([gutendexName]) => authorMatchesDisplayName(gutendexName, displayName))
         .reduce((sum, [, n]) => sum + n, 0);
       if (existing >= maxPerAuthor) {
-        console.log(
-          `  [diversity] already saturated, skipping: "${displayName}"` +
-          ` (${existing}/${maxPerAuthor} in library)`,
-        );
+        console.log(`  [skip] ${displayName} — ${existing} existing approved/pending passages (cap: ${maxPerAuthor})`);
         return false;
       }
+      console.log(`  [run]  ${displayName} — ${existing} existing passages, harvesting`);
       return true;
     });
     if (filteredAuthors.length < sources.priorityAuthors.length) {
