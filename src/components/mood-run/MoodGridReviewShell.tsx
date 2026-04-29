@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
-import { Eye, Workflow } from 'lucide-react';
 import {
   GogiAvatar,
   GogiBubble,
@@ -72,25 +71,9 @@ export function MoodGridReviewShell({
     <div className="reviewPage">
       <TeachNav
         standardCode={standardCode}
-        navLabel="Mood Read · Review Build"
+        navLabel="Mood Read · Layer 3"
         layerColor={C.greenBorder}
       />
-
-      <div className="reviewStrip">
-        <div className="reviewStripItem">
-          <Workflow size={16} />
-          <span>Native GOGI teach shell: passage, coaching, intervention.</span>
-        </div>
-        <div className="reviewStripItem">
-          <Eye size={16} />
-          <span>Scaffold fade: labels visible, labels on hover, 3 x 3 transfer.</span>
-        </div>
-        {onBack && (
-          <button className="backButton" onClick={onBack} type="button">
-            Current mood page
-          </button>
-        )}
-      </div>
 
       <div className="screenTabs" aria-label="Mood run screens">
         {moodRunScreens.map((screen, index) => (
@@ -154,46 +137,6 @@ export function MoodGridReviewShell({
           overflow: hidden;
         }
 
-        .reviewStrip {
-          align-items: center;
-          background: #f8f9fa;
-          border-bottom: 1px solid ${C.border};
-          display: flex;
-          flex-shrink: 0;
-          gap: 10px;
-          padding: 8px 16px;
-        }
-
-        .reviewStripItem {
-          align-items: center;
-          background: ${C.white};
-          border: 1px solid ${C.border};
-          border-radius: 8px;
-          color: ${C.dark};
-          display: flex;
-          flex: 1;
-          gap: 8px;
-          min-height: 38px;
-          padding: 8px 10px;
-          font-size: 12px;
-          font-weight: 650;
-          line-height: 1.35;
-        }
-
-        .backButton {
-          background: ${C.navy};
-          border: 0;
-          border-radius: 8px;
-          color: ${C.white};
-          cursor: pointer;
-          flex-shrink: 0;
-          font-family: ${FONTS.ui};
-          font-size: 12px;
-          font-weight: 800;
-          min-height: 38px;
-          padding: 0 14px;
-        }
-
         .screenTabs {
           background: ${C.white};
           border-bottom: 1px solid ${C.border};
@@ -201,7 +144,7 @@ export function MoodGridReviewShell({
           flex-shrink: 0;
           gap: 8px;
           overflow-x: auto;
-          padding: 8px 16px;
+          padding: 8px 16px 7px;
         }
 
         .screenTabs button {
@@ -312,24 +255,33 @@ export function MoodGridReviewShell({
             overflow: visible;
           }
 
-          .reviewStrip {
-            align-items: stretch;
-            flex-direction: column;
+          .screenTabs {
+            padding: 8px 10px;
           }
 
-          .reviewStripItem,
-          .backButton {
-            width: 100%;
+          .screenTabs button {
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 0 10px;
+          }
+
+          .reviewColumns > div:first-child {
+            order: 3 !important;
+            height: 180px !important;
           }
 
           .coachColumn {
             border-right: 0;
             flex: 0 0 auto;
             height: auto;
+            order: 2;
+            padding: 12px;
           }
 
           .interventionColumn {
             height: auto;
+            order: 1;
+            padding: 12px;
           }
         }
 

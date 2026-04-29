@@ -278,6 +278,7 @@ export function MoodGridExperience({
           box-shadow: inset 0 0 80px rgba(0,0,0,.18);
           max-height: min(45vh, 390px);
           max-width: min(100%, 390px);
+          margin: 0 auto;
           overflow: hidden;
           position: relative;
           touch-action: none;
@@ -485,9 +486,37 @@ export function MoodGridExperience({
             margin-top: 8px;
           }
 
+          h1 {
+            font-size: 17px;
+            line-height: 1.25;
+          }
+
+          .prompt {
+            font-size: 12px;
+            margin-bottom: 10px;
+          }
+
+          .readout {
+            font-size: 13px;
+            min-height: 40px;
+          }
+
           .moodGrid {
-            height: min(86vw, 390px) !important;
-            width: min(86vw, 390px) !important;
+            height: min(82vw, 360px) !important;
+            width: min(82vw, 360px) !important;
+          }
+
+          .evidenceTray {
+            gap: 6px;
+          }
+
+          .evidenceChip {
+            min-height: 40px;
+            padding: 6px 9px;
+          }
+
+          .evidenceChip span {
+            font-size: 12px;
           }
         }
       `}</style>
