@@ -1,237 +1,339 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Columns2, Eye, Workflow } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { Eye, Workflow } from 'lucide-react';
+import {
+  GogiAvatar,
+  GogiBubble,
+  PassagePanel,
+  TeachNav,
+  TEACH_3COL_CSS,
+} from '@/components/teach/TeachShared';
 import { MoodGridExperience } from '@/components/mood-run/MoodGridExperience';
 import { moodRunScreens } from '@/components/mood-run/moodRunDemoData';
+import { C, FONTS } from '@/lib/constants/design';
 
 type MoodGridReviewShellProps = {
   standardCode?: string;
   onBack?: () => void;
 };
 
+function findEvidenceRanges(text: string, words: string[]): [number, number][] {
+  const ranges: [number, number][] = [];
+
+  words.forEach((word) => {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`\\b${escaped}\\b`, 'gi');
+    let match;
+    while ((match = re.exec(text)) !== null) {
+      ranges.push([match.index, match.index + match[0].length]);
+    }
+  });
+
+  return ranges.sort((a, b) => a[0] - b[0]);
+}
+
 export function MoodGridReviewShell({
   standardCode = 'ELA.9.R.1.1',
   onBack,
 }: MoodGridReviewShellProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeEvidence, setActiveEvidence] = useState<string[]>([]);
   const activeScreen = moodRunScreens[activeIndex];
+  const passageRef = useRef<HTMLDivElement>(null);
+
+  const passageText = activeScreen.passage.join('\n\n');
+  const evidenceWords = activeScreen.evidenceWords.map((item) => item.word);
+  const ranges = useMemo(
+    () => findEvidenceRanges(passageText, activeEvidence.length ? activeEvidence : evidenceWords),
+    [activeEvidence, evidenceWords, passageText],
+  );
+
+  const markStyle = {
+    background: activeEvidence.length ? C.yellow : C.greenLight,
+    color: activeEvidence.length ? C.dark : C.green,
+    borderRadius: 2,
+    padding: '0 2px',
+  };
+
+  function handleScreenChange(index: number) {
+    setActiveIndex(index);
+    setActiveEvidence([]);
+  }
+
+  function jumpToHighlight() {
+    passageRef.current?.querySelector('mark')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+    });
+  }
 
   return (
     <div className="reviewPage">
-      <header className="reviewHeader">
-        <div className="headerLeft">
-          {onBack && (
-            <button
-              aria-label="Back to current mood implementation"
-              className="iconButton"
-              onClick={onBack}
-              type="button"
-            >
-              <ArrowLeft size={18} />
-            </button>
-          )}
-          <div>
-            <div className="headerKicker">{standardCode} · Side-by-side build</div>
-            <h1>GOGI Mood Run redesign</h1>
-          </div>
-        </div>
-        <div className="headerRight">
-          <div className="statusPill">
-            <Columns2 size={15} />
-            Review route
-          </div>
-        </div>
-      </header>
+      <TeachNav
+        standardCode={standardCode}
+        navLabel="Mood Read · Review Build"
+        layerColor={C.greenBorder}
+      />
 
-      <nav className="screenTabs" aria-label="Mood run screens">
+      <div className="reviewStrip">
+        <div className="reviewStripItem">
+          <Workflow size={16} />
+          <span>Native GOGI teach shell: passage, coaching, intervention.</span>
+        </div>
+        <div className="reviewStripItem">
+          <Eye size={16} />
+          <span>Scaffold fade: labels visible, labels on hover, 3 x 3 transfer.</span>
+        </div>
+        {onBack && (
+          <button className="backButton" onClick={onBack} type="button">
+            Current mood page
+          </button>
+        )}
+      </div>
+
+      <div className="screenTabs" aria-label="Mood run screens">
         {moodRunScreens.map((screen, index) => (
           <button
             className={index === activeIndex ? 'active' : ''}
             key={screen.mode}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => handleScreenChange(index)}
             type="button"
           >
             <span>{index + 1}</span>
             {screen.mode === 'teach' ? 'Teach' : screen.mode === 'full' ? 'P1 full' : screen.mode === 'partial' ? 'P2 partial' : screen.mode === 'none' ? 'P3 none' : 'Reassess'}
           </button>
         ))}
-      </nav>
+      </div>
 
-      <section className="designNotes">
-        <div>
-          <Workflow size={18} />
-          <span>Side-by-side structure: passage evidence, Mood Grid workspace, and Gogi coaching stay visible together on Chromebook.</span>
-        </div>
-        <div>
-          <Eye size={18} />
-          <span>Scaffold fade is visible across tabs: labels visible, labels on hover, 3 x 3 no labels, then fresh transfer.</span>
-        </div>
-      </section>
+      <div className="teach-3col reviewColumns">
+        <PassagePanel
+          passageTitle={activeScreen.passageTitle}
+          passageAuthor="GOGI review passage"
+          passageText={passageText}
+          ranges={ranges}
+          markStyle={markStyle}
+          onJump={jumpToHighlight}
+          panelRef={passageRef}
+          loading={false}
+          loadTimeout
+        />
 
-      <MoodGridExperience {...activeScreen} />
+        <div className="coachColumn">
+          <div className="sectionLabel">GOGI COACHING</div>
+          <div className="coachBubbleRow">
+            <GogiAvatar size={36} state="engaged" />
+            <GogiBubble state="engaged">
+              {activeScreen.gogiCopy}
+            </GogiBubble>
+          </div>
+
+          <div className="moveCard">
+            <div className="sectionLabel">MOOD READ MOVE</div>
+            <div className="moveStep active">1. Pick words that change the air.</div>
+            <div className="moveStep">2. Place the feeling on the grid.</div>
+            <div className="moveStep">3. Defend it without revealing the answer.</div>
+          </div>
+        </div>
+
+        <div className="interventionColumn">
+          <MoodGridExperience
+            {...activeScreen}
+            onEvidenceChange={setActiveEvidence}
+          />
+        </div>
+      </div>
 
       <style jsx>{`
         .reviewPage {
-          min-height: 100vh;
-          background: #0e1413;
-        }
-
-        .reviewHeader {
-          min-height: 64px;
-          background: #0e1413;
-          border-bottom: 1px solid #2d4139;
-          color: #f3f7f5;
+          background: ${C.white};
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          padding: 10px 16px;
-          font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+          flex-direction: column;
+          font-family: ${FONTS.ui};
+          height: 100vh;
+          overflow: hidden;
         }
 
-        .headerLeft,
-        .headerRight {
+        .reviewStrip {
+          align-items: center;
+          background: #f8f9fa;
+          border-bottom: 1px solid ${C.border};
           display: flex;
+          flex-shrink: 0;
+          gap: 10px;
+          padding: 8px 16px;
+        }
+
+        .reviewStripItem {
           align-items: center;
-          gap: 12px;
-        }
-
-        .headerKicker {
-          color: #4cc9a6;
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-        }
-
-        .reviewHeader h1 {
-          font-size: 18px;
-          line-height: 24px;
-          margin: 2px 0 0;
-        }
-
-        .iconButton,
-        .statusPill {
-          min-height: 44px;
+          background: ${C.white};
+          border: 1px solid ${C.border};
           border-radius: 8px;
-          border: 1px solid #2d4139;
-          background: #18231f;
-          color: #f3f7f5;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
+          color: ${C.dark};
+          display: flex;
+          flex: 1;
           gap: 8px;
-          font-size: 13px;
-          font-weight: 800;
+          min-height: 38px;
+          padding: 8px 10px;
+          font-size: 12px;
+          font-weight: 650;
+          line-height: 1.35;
         }
 
-        .iconButton {
-          width: 44px;
+        .backButton {
+          background: ${C.navy};
+          border: 0;
+          border-radius: 8px;
+          color: ${C.white};
           cursor: pointer;
-        }
-
-        .statusPill {
-          color: #a9b8b2;
-          padding: 0 12px;
+          flex-shrink: 0;
+          font-family: ${FONTS.ui};
+          font-size: 12px;
+          font-weight: 800;
+          min-height: 38px;
+          padding: 0 14px;
         }
 
         .screenTabs {
-          background: #101715;
-          border-bottom: 1px solid #2d4139;
+          background: ${C.white};
+          border-bottom: 1px solid ${C.border};
           display: flex;
+          flex-shrink: 0;
           gap: 8px;
           overflow-x: auto;
-          padding: 10px 16px;
-          font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+          padding: 8px 16px;
         }
 
         .screenTabs button {
-          min-height: 44px;
-          border: 1px solid #2d4139;
+          align-items: center;
+          background: ${C.white};
+          border: 1px solid ${C.border};
           border-radius: 8px;
-          background: #18231f;
-          color: #a9b8b2;
+          color: ${C.gray};
           cursor: pointer;
           display: inline-flex;
-          align-items: center;
           gap: 8px;
-          padding: 0 14px;
-          font-size: 13px;
+          min-height: 40px;
+          padding: 0 12px;
+          font-family: ${FONTS.ui};
+          font-size: 12px;
           font-weight: 800;
           white-space: nowrap;
         }
 
         .screenTabs button span {
-          width: 22px;
-          height: 22px;
+          align-items: center;
+          background: ${C.light};
           border-radius: 50%;
-          background: #2d4139;
-          color: #f3f7f5;
-          display: grid;
-          place-items: center;
+          color: ${C.gray};
+          display: flex;
+          height: 22px;
+          justify-content: center;
+          width: 22px;
           font-size: 11px;
         }
 
         .screenTabs button.active {
-          background: #4cc9a6;
-          border-color: #4cc9a6;
-          color: #071015;
+          background: ${C.blueLight};
+          border-color: ${C.blue};
+          color: ${C.blue};
         }
 
         .screenTabs button.active span {
-          background: #071015;
-          color: #4cc9a6;
+          background: ${C.blue};
+          color: ${C.white};
         }
 
-        .designNotes {
-          background: #101715;
-          border-bottom: 1px solid #2d4139;
-          color: #c8d5d0;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          padding: 10px 16px;
-          font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        .reviewColumns {
+          flex: 1;
+          min-height: 0;
         }
 
-        .designNotes div {
-          min-height: 44px;
-          border: 1px solid #2d4139;
-          border-radius: 8px;
+        .coachColumn {
+          border-right: 1px solid ${C.border};
+          box-sizing: border-box;
+          flex: 0 0 28%;
+          height: 100%;
+          overflow-y: auto;
+          padding: 16px;
+        }
+
+        .sectionLabel {
+          color: ${C.gray};
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          margin-bottom: 10px;
+          text-transform: uppercase;
+        }
+
+        .coachBubbleRow {
+          align-items: flex-start;
           display: flex;
-          align-items: center;
           gap: 10px;
-          padding: 10px 12px;
-          font-size: 13px;
-          font-weight: 650;
-          line-height: 18px;
         }
 
-        @media (max-width: 820px) {
-          .reviewHeader,
-          .headerLeft,
-          .headerRight {
-            align-items: stretch;
+        .moveCard {
+          background: #f8f9fa;
+          border: 1px solid ${C.border};
+          border-radius: 8px;
+          margin-top: 18px;
+          padding: 12px;
+        }
+
+        .moveStep {
+          border-left: 3px solid ${C.border};
+          color: ${C.dark};
+          font-size: 12px;
+          font-weight: 650;
+          line-height: 1.45;
+          margin-top: 8px;
+          padding: 8px 10px;
+        }
+
+        .moveStep.active {
+          background: ${C.greenLight};
+          border-left-color: ${C.green};
+          color: ${C.green};
+        }
+
+        .interventionColumn {
+          box-sizing: border-box;
+          flex: 1;
+          height: 100%;
+          overflow-y: auto;
+          padding: 16px;
+        }
+
+        @media (max-width: 768px) {
+          .reviewPage {
+            height: auto;
+            min-height: 100vh;
+            overflow: visible;
           }
 
-          .reviewHeader {
+          .reviewStrip {
+            align-items: stretch;
             flex-direction: column;
           }
 
-          .headerLeft,
-          .headerRight {
+          .reviewStripItem,
+          .backButton {
             width: 100%;
           }
 
-          .statusPill {
-            flex: 1;
+          .coachColumn {
+            border-right: 0;
+            flex: 0 0 auto;
+            height: auto;
           }
 
-          .designNotes {
-            grid-template-columns: 1fr;
+          .interventionColumn {
+            height: auto;
           }
         }
+
+        ${TEACH_3COL_CSS(C.border)}
       `}</style>
     </div>
   );
