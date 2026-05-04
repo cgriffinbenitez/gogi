@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
+import { ELA9R11_MISCONCEPTIONS, ELA9R11_SEED_ITEMS } from '@/lib/diagnostic/ela9r11';
 import type { StandardStatus } from '@/lib/constants/design';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -24,7 +25,7 @@ export interface StandardStatusResult {
 
   // Diagnostic progress
   diagnosticQuestionsAnswered: number;
-  diagnosticQuestionsTotal:    number;  // always 10
+  diagnosticQuestionsTotal:    number;
 
   // Intervention
   currentIntervention: string | null;   // e.g. 'vocabulary_frayer'
@@ -101,6 +102,24 @@ const CLASSIFICATION_TO_INTERVENTION: Record<string, string> = {
   comprehension_integration_failure: 'synthesis_scaffold',
 };
 
+const ELA9R11_STANDARD_UUID = '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e';
+
+function diagnosticTotalForStandard(standardId: string) {
+  return standardId === ELA9R11_STANDARD_UUID ? ELA9R11_SEED_ITEMS.length : 10;
+}
+
+function labelForClassification(classification: string) {
+  return CLASSIFICATION_LABELS[classification]
+    ?? ELA9R11_MISCONCEPTIONS[classification as keyof typeof ELA9R11_MISCONCEPTIONS]?.label
+    ?? classification;
+}
+
+function interventionForClassification(classification: string) {
+  return CLASSIFICATION_TO_INTERVENTION[classification]
+    ?? ELA9R11_MISCONCEPTIONS[classification as keyof typeof ELA9R11_MISCONCEPTIONS]?.route
+    ?? null;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mapProgressStatus(currentStatus: string | null): StandardStatus | null {
@@ -131,7 +150,7 @@ function buildSkillGaps(diagResponses: ResponseRow[]): SkillGap[] {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
     .map(([cls, count]) => ({
-      skill:          CLASSIFICATION_LABELS[cls] ?? cls,
+      skill:          labelForClassification(cls),
       classification: cls,
       status:         count >= 3 ? 'gap' : 'pending',
     }));
@@ -165,7 +184,7 @@ export async function getStudentStandardStatus(
       sessionsAttempted:          0,
       lastSessionAt:              null,
       diagnosticQuestionsAnswered: 0,
-      diagnosticQuestionsTotal:    10,
+      diagnosticQuestionsTotal:    diagnosticTotalForStandard(id),
       currentIntervention:         null,
       timeSpentMinutes:            0,
       skillGaps:                   [],
@@ -225,7 +244,7 @@ export async function getStudentStandardStatus(
   const allSessions = (sessionsResult.data ?? []) as unknown as SessionRow[];
 
   const latestSessionPerStd:   Record<string, SessionRow>    = {};
-  const diagSessionIdsByStd:   Record<string, Set<string>>   = {};
+  const latestDiagSessionIdByStd: Record<string, string>      = {};
   const timeSumSecsByStd:      Record<string, number>        = {};
   const latestDiagClassByStd:  Record<string, string | null> = {};
 
@@ -245,14 +264,10 @@ export async function getStudentStandardStatus(
 
     // Track diagnostic session IDs
     if (s.phase === 'diagnostic') {
-      if (!diagSessionIdsByStd[s.standard_id]) {
-        diagSessionIdsByStd[s.standard_id] = new Set();
-      }
-      diagSessionIdsByStd[s.standard_id].add(s.id);
-
       // Most recent diagnostic classification (first seen = most recent due to DESC sort)
       if (!seenDiag.has(s.standard_id)) {
         seenDiag.add(s.standard_id);
+        latestDiagSessionIdByStd[s.standard_id] = s.id;
         latestDiagClassByStd[s.standard_id] = s.dominant_classification ?? null;
       }
     }
@@ -263,8 +278,8 @@ export async function getStudentStandardStatus(
 
   const diagRespsByStd: Record<string, ResponseRow[]> = {};
   for (const r of allResponses) {
-    const diagSessions = diagSessionIdsByStd[r.standard_id];
-    if (diagSessions?.has(r.session_id)) {
+    const latestDiagSessionId = latestDiagSessionIdByStd[r.standard_id];
+    if (latestDiagSessionId && r.session_id === latestDiagSessionId) {
       if (!diagRespsByStd[r.standard_id]) diagRespsByStd[r.standard_id] = [];
       diagRespsByStd[r.standard_id].push(r);
     }
@@ -277,9 +292,10 @@ export async function getStudentStandardStatus(
     const diagResps      = diagRespsByStd[id] ?? [];
     const timeMins       = Math.round((timeSumSecsByStd[id] ?? 0) / 60 * 10) / 10;
     const diagClass      = latestDiagClassByStd[id] ?? null;
-    const intervention   = diagClass ? (CLASSIFICATION_TO_INTERVENTION[diagClass] ?? null) : null;
+    const intervention   = diagClass ? interventionForClassification(diagClass) : null;
     const skillGaps      = buildSkillGaps(diagResps);
-    const diagQsAnswered = diagResps.length;
+    const diagTotal      = diagnosticTotalForStandard(id);
+    const diagQsAnswered = Math.min(diagResps.length, diagTotal);
     const vocabScore     = vocabByStd[id] ?? null;
     const vocabComplete  = vocabScore !== null;
 
@@ -297,7 +313,7 @@ export async function getStudentStandardStatus(
           sessionsAttempted:           progress.sessions_attempted ?? 0,
           lastSessionAt:               progress.last_session_at    ?? null,
           diagnosticQuestionsAnswered: diagQsAnswered,
-          diagnosticQuestionsTotal:    10,
+          diagnosticQuestionsTotal:    diagTotal,
           currentIntervention:         intervention,
           timeSpentMinutes:            timeMins,
           skillGaps,
@@ -316,6 +332,8 @@ export async function getStudentStandardStatus(
       let status: StandardStatus = 'notStarted';
       if (session.mastery_achieved) {
         status = 'mastered';
+      } else if (session.phase === 'diagnostic' && session.status === 'complete') {
+        status = 'inIntervention';
       } else if (session.phase === 'diagnostic') {
         status = 'inDiagnostic';
       } else if (['teach', 'practice'].includes(session.phase)) {
@@ -332,7 +350,7 @@ export async function getStudentStandardStatus(
         sessionsAttempted:           0,
         lastSessionAt:               session.started_at ?? null,
         diagnosticQuestionsAnswered: diagQsAnswered,
-        diagnosticQuestionsTotal:    10,
+        diagnosticQuestionsTotal:    diagTotal,
         currentIntervention:         intervention,
         timeSpentMinutes:            timeMins,
         skillGaps,

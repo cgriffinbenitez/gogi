@@ -10,6 +10,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { getLatestLayer0SessionCalibration } from '@/lib/layer0/sessionCalibration';
 import { callClaude } from '@/lib/callClaude';
 import { useStreamingClaude } from '@/lib/useStreamingClaude';
 import GogiAvatar from '@/components/GogiAvatar';
@@ -217,6 +218,7 @@ export default function PracticeSession() {
         }
         setPassage(passageText);
 
+        const layer0 = await getLatestLayer0SessionCalibration(supabase, student.id);
         const { data: session, error: sessionError } = await supabase
           .from('sessions')
           .insert({
@@ -224,6 +226,8 @@ export default function PracticeSession() {
             standard_id: standardId,
             phase: 'practice',
             status: 'in_progress',
+            layer0_assessment_id: layer0.layer0AssessmentId,
+            load_calibration_at_session: layer0.loadCalibration,
           })
           .select('id')
           .single();

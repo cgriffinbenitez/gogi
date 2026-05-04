@@ -46,13 +46,16 @@ export interface CriteriaConfig {
 export interface SourceConfig {
   gutendexSearchTerms: string[];
   priorityAuthors: string[];
-  maxFilterCallsPerBook?: number;  // Phase 1 budget cap: max Claude filter calls per book (default 250, hard ceiling 1000)
-  maxApprovedPerAuthor?: number;   // diversity cap: max pending_review+approved rows per author per classification
-  maxApprovedPerBook?: number;     // diversity cap: max pending_review+approved rows per Gutenberg book per classification
-  maxApprovedPerRun?: number;      // diversity cap: max inserts in a single pipeline run
+  maxFilterCallsPerBook?: number; // Phase 1 budget cap: max Claude filter calls per book (default 250, hard ceiling 1000)
+  stopLossMinFilterCalls?: number; // minimum filter calls before no-yield stop-loss can fire
+  stopLossMaxZeroSuitableCalls?: number; // stop filtering a book after this many calls with zero suitable passages
+  stopLossMinYieldPct?: number; // after min calls, stop a book if suitable/calls falls below this percentage
+  maxApprovedPerAuthor?: number; // diversity cap: max pending_review+approved rows per author per classification
+  maxApprovedPerBook?: number; // diversity cap: max pending_review+approved rows per Gutenberg book per classification
+  maxApprovedPerRun?: number; // diversity cap: max inserts in a single pipeline run
   /** Optional combined author caps — e.g. cap Austen+Dickens at 3 inserted total. */
   authorGroupCaps?: Array<{
-    authors: string[];    // display-name format ("Jane Austen") — matched loosely
+    authors: string[]; // display-name format ("Jane Austen") — matched loosely
     maxInserted: number;
   }>;
   /**
@@ -178,6 +181,10 @@ export interface PassageRow {
 /** v3 passage row — written by v3 pipeline. Old v2 columns left null in DB. */
 export interface PassageRowV3 {
   classification: string;
+  standard_code?: string | null;
+  coverage_strand_id?: string | null;
+  coverage_strand_label?: string | null;
+  coverage_strand_signals?: string[] | null;
   paragraph_text: string;
   word_count: number;
   paragraph_count: number;
@@ -234,6 +241,10 @@ export interface CSVRow {
 
 export interface PipelineOptions {
   classification: string;
+  standardCode?: string;
+  coverageStrandId?: string;
+  coverageStrandLabel?: string;
+  coverageSignals?: string[];
   max: number;
   maxBooks: number;
   dryRun: boolean;

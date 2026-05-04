@@ -35,6 +35,8 @@ interface DbStudent {
   assent_on_file:      boolean;
   assent_signed_date:  string | null;
   cohort_group:        'A' | 'B' | null;
+  layer0_load_calibration?: string | null;
+  layer0_teacher_review_flag?: boolean;
 }
 
 type Status = 'exceeding' | 'on-track' | 'at-risk' | 'needs-support' | 'no-data';
@@ -114,7 +116,38 @@ export default function StudentPerformanceTable() {
       if (queryError) {
         setError(queryError.message);
       } else {
-        setStudents((data ?? []) as unknown as DbStudent[]);
+        const studentRows = (data ?? []) as unknown as DbStudent[];
+        const ids = studentRows.map((student) => student.id);
+        let layer0ByStudent = new Map<string, { load_calibration: string | null; teacher_review_flag: boolean | null }>();
+
+        if (ids.length) {
+          const { data: layer0Rows } = await supabase
+            .from('layer0_assessments')
+            .select('student_id, load_calibration, teacher_review_flag, completed_at')
+            .in('student_id', ids)
+            .eq('status', 'completed')
+            .order('completed_at', { ascending: false, nullsFirst: false });
+
+          layer0ByStudent = new Map();
+          ((layer0Rows ?? []) as { student_id: string; load_calibration: string | null; teacher_review_flag: boolean | null }[])
+            .forEach((row) => {
+              if (!layer0ByStudent.has(row.student_id)) {
+                layer0ByStudent.set(row.student_id, {
+                  load_calibration: row.load_calibration,
+                  teacher_review_flag: row.teacher_review_flag,
+                });
+              }
+            });
+        }
+
+        setStudents(studentRows.map((student) => {
+          const layer0 = layer0ByStudent.get(student.id);
+          return {
+            ...student,
+            layer0_load_calibration: layer0?.load_calibration ?? null,
+            layer0_teacher_review_flag: layer0?.teacher_review_flag ?? false,
+          };
+        }));
       }
       setLoading(false);
     }
@@ -492,6 +525,7 @@ export default function StudentPerformanceTable() {
                   { key: 'fast_pm1_score' as SortKey, label: 'FAST PM1' },
                   { key: 'fast_pm2_score' as SortKey, label: 'FAST PM2' },
                   { key: 'status' as SortKey, label: 'Status' },
+                  { key: 'layer0_load_calibration' as SortKey, label: 'Layer 0' },
                 ].map((col) => (
                   <th
                     key={`th-${col.key}`}
@@ -583,6 +617,22 @@ export default function StudentPerformanceTable() {
                       <span className={`badge ${STATUS_STYLES[status]} text-xs whitespace-nowrap`}>
                         {STATUS_LABELS[status]}
                       </span>
+                    </td>
+
+                    {/* Layer 0 */}
+                    <td className="px-3 py-3">
+                      {student.layer0_load_calibration ? (
+                        <span className={`badge text-xs whitespace-nowrap border ${
+                          student.layer0_teacher_review_flag
+                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                            : 'bg-[#2E75B6]/20 text-[#B5D4F4] border-[#2E75B6]/30'
+                        }`}>
+                          {student.layer0_teacher_review_flag ? 'Review · ' : ''}
+                          {student.layer0_load_calibration.replace(/_/g, ' ')}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[#4B5563]">Pending</span>
+                      )}
                     </td>
 
                     {/* Actions */}

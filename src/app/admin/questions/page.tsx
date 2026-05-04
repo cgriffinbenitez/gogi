@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { GogiNav } from '@/components/nav/GogiNav';
+import { TeacherDashboardTopBar } from '@/components/teacher/TeacherDashboardTopBar';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { C, FONTS, STANDARDS } from '@/lib/constants/design';
@@ -12,19 +12,19 @@ import { C, FONTS, STANDARDS } from '@/lib/constants/design';
 const PAGE_SIZE = 20;
 
 const CLASSIFICATIONS: Record<string, string> = {
-  inferencing:                      'Inferencing',
-  evidence_retrieval_failure:       'Evidence Retrieval',
-  topic_vs_theme_confusion:         'Topic vs Theme',
-  structure_purpose_disconnect:     'Structure / Purpose',
-  comprehension_integration_failure:'Comprehension Integration',
-  figurative_language_failure:      'Figurative Language',
-  tone_misreading:                  'Tone Misreading',
-  mood_misreading:                  'Mood Misreading',
-  vocabulary_gap:                   'Vocabulary Gap',
-  morphology_gap:                   'Morphology Gap',
-  syntax_barrier:                   'Syntax Barrier',
-  schema_strategy_missing:          'Schema Strategy',
-  no_metacognitive_strategy:        'No Metacognitive Strategy',
+  inferencing: 'Inferencing',
+  evidence_retrieval_failure: 'Evidence Retrieval',
+  topic_vs_theme_confusion: 'Topic vs Theme',
+  structure_purpose_disconnect: 'Structure / Purpose',
+  comprehension_integration_failure: 'Comprehension Integration',
+  figurative_language_failure: 'Figurative Language',
+  tone_misreading: 'Tone Misreading',
+  mood_misreading: 'Mood Misreading',
+  vocabulary_gap: 'Vocabulary Gap',
+  morphology_gap: 'Morphology Gap',
+  syntax_barrier: 'Syntax Barrier',
+  schema_strategy_missing: 'Schema Strategy',
+  no_metacognitive_strategy: 'No Metacognitive Strategy',
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -99,7 +99,12 @@ function parseQuestionStem(content: string): string {
 function parseCorrectOption(content: string): string {
   const lines = content.split('\n');
   const line = lines.find((l) => l.trimStart().startsWith('CORRECT:'));
-  return line ? line.slice(line.indexOf('CORRECT:') + 8).replace(/[^A-D]/g, '').trim() : '';
+  return line
+    ? line
+        .slice(line.indexOf('CORRECT:') + 8)
+        .replace(/[^A-D]/g, '')
+        .trim()
+    : '';
 }
 
 function parseClassification(content: string, letter: string): string {
@@ -120,7 +125,12 @@ function classificationColor(cls: string | null): { bg: string; text: string; bo
     return { bg: C.amberLight, text: C.amber, border: C.amber };
   if (cls.includes('vocabulary') || cls.includes('morphology') || cls.includes('syntax'))
     return { bg: C.blueLight, text: C.blue, border: C.blue };
-  if (cls.includes('inferencing') || cls.includes('evidence') || cls.includes('abstract') || cls.includes('comprehension'))
+  if (
+    cls.includes('inferencing') ||
+    cls.includes('evidence') ||
+    cls.includes('abstract') ||
+    cls.includes('comprehension')
+  )
     return { bg: C.greenLight, text: C.green, border: C.green };
   return { bg: C.light, text: C.gray, border: C.border };
 }
@@ -178,7 +188,12 @@ function QuestionCard({
   const stem = q.option_a_text ? parseQuestionStem(q.content) : parseQuestionStem(q.content);
 
   const opts = q.option_a_text
-    ? { A: q.option_a_text, B: q.option_b_text ?? '', C: q.option_c_text ?? '', D: q.option_d_text ?? '' }
+    ? {
+        A: q.option_a_text,
+        B: q.option_b_text ?? '',
+        C: q.option_c_text ?? '',
+        D: q.option_d_text ?? '',
+      }
     : parseOptions(q.content);
 
   const classes = {
@@ -286,9 +301,7 @@ function QuestionCard({
         )}
 
         {/* Classification badge for v3 questions */}
-        {q.source_classification && (
-          <ClassBadge cls={q.source_classification} />
-        )}
+        {q.source_classification && <ClassBadge cls={q.source_classification} />}
 
         {/* Title / author */}
         <span style={{ fontSize: 12, color: C.gray }}>
@@ -299,9 +312,7 @@ function QuestionCard({
 
         {/* Difficulty */}
         {q.difficulty_level !== null && q.difficulty_level !== undefined && (
-          <span style={{ fontSize: 10, color: C.gray }}>
-            level {q.difficulty_level}
-          </span>
+          <span style={{ fontSize: 10, color: C.gray }}>level {q.difficulty_level}</span>
         )}
 
         {/* Status badge */}
@@ -333,7 +344,16 @@ function QuestionCard({
           marginBottom: 12,
         }}
       >
-        <div style={{ fontSize: 9, fontWeight: 700, color: C.gray, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>
+        <div
+          style={{
+            fontSize: 9,
+            fontWeight: 700,
+            color: C.gray,
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+            marginBottom: 6,
+          }}
+        >
           PASSAGE
         </div>
         <p
@@ -346,7 +366,9 @@ function QuestionCard({
             margin: 0,
           }}
         >
-          {showFullPassage ? passageText : passageText.slice(0, 200) + (passageText.length > 200 ? '…' : '')}
+          {showFullPassage
+            ? passageText
+            : passageText.slice(0, 200) + (passageText.length > 200 ? '…' : '')}
         </p>
         {passageText.length > 200 && (
           <button
@@ -455,9 +477,7 @@ function QuestionCard({
                   {editing ? (
                     <input
                       value={editState[editKey] as string}
-                      onChange={(e) =>
-                        setEditState((s) => ({ ...s, [editKey]: e.target.value }))
-                      }
+                      onChange={(e) => setEditState((s) => ({ ...s, [editKey]: e.target.value }))}
                       style={{
                         width: '100%',
                         border: `1px solid ${C.border}`,
@@ -692,21 +712,31 @@ export default function AdminQuestionsPage() {
 
   // ── Filter state ───────────────────────────────────────────────────────────
 
-  const [filterSource,         setFilterSource]         = useState<'v3_promoted' | 'legacy' | 'all'>('v3_promoted');
-  const [filterStatus,         setFilterStatus]         = useState<'needs_review' | 'approved' | 'flagged' | 'all'>('needs_review');
+  const [filterSource, setFilterSource] = useState<'v3_promoted' | 'legacy' | 'all'>('v3_promoted');
+  const [filterStatus, setFilterStatus] = useState<'needs_review' | 'approved' | 'flagged' | 'all'>(
+    'needs_review'
+  );
   const [filterClassification, setFilterClassification] = useState('all');
-  const [filterTier,           setFilterTier]           = useState('all');
-  const [filterAuthor,         setFilterAuthor]         = useState('all');
-  const [filterTitle,          setFilterTitle]          = useState('all');
-  const [searchText,           setSearchText]           = useState('');
-  const [sortBy,               setSortBy]               = useState<'newest' | 'oldest' | 'author' | 'tier_asc' | 'tier_desc'>('newest');
-  const [currentPage,          setCurrentPage]          = useState(1);
+  const [filterTier, setFilterTier] = useState('all');
+  const [filterAuthor, setFilterAuthor] = useState('all');
+  const [filterTitle, setFilterTitle] = useState('all');
+  const [searchText, setSearchText] = useState('');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'author' | 'tier_asc' | 'tier_desc'>(
+    'newest'
+  );
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Redirect effect — never call router.push() in the render body
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push('/login'); return; }
-    if (role !== 'teacher') { router.push('/dashboard/student'); return; }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    if (role !== 'teacher') {
+      router.push('/dashboard/student');
+      return;
+    }
   }, [authLoading, user, role, router]);
 
   // Data load effect — only runs when auth is confirmed as teacher
@@ -720,24 +750,29 @@ export default function AdminQuestionsPage() {
         const supabase = createClient();
 
         const [{ data: stds, error: stdsErr }, { data: qs, error: qsErr }] = await Promise.all([
-          supabase
-            .from('standards')
-            .select('id, code, title')
-            .order('code'),
+          supabase.from('standards').select('id, code, title').order('code'),
           supabase
             .from('questions')
             .select(
               'id, standard_id, content, title, author, pub_year, cognitive_skill_targeted, ' +
-              'option_a_text, option_b_text, option_c_text, option_d_text, ' +
-              'option_a_class, option_b_class, option_c_class, option_d_class, ' +
-              'correct_option, approved, flagged, rationale, difficulty_level, ' +
-              'created_at, pipeline_source, source_classification',
+                'option_a_text, option_b_text, option_c_text, option_d_text, ' +
+                'option_a_class, option_b_class, option_c_class, option_d_class, ' +
+                'correct_option, approved, flagged, rationale, difficulty_level, ' +
+                'created_at, pipeline_source, source_classification'
             )
             .order('created_at', { ascending: false }),
         ]);
 
-        if (stdsErr) { setErrorMsg('Could not load standards: ' + stdsErr.message); setLoadState('error'); return; }
-        if (qsErr)   { setErrorMsg('Could not load questions: '  + qsErr.message);  setLoadState('error'); return; }
+        if (stdsErr) {
+          setErrorMsg('Could not load standards: ' + stdsErr.message);
+          setLoadState('error');
+          return;
+        }
+        if (qsErr) {
+          setErrorMsg('Could not load questions: ' + qsErr.message);
+          setLoadState('error');
+          return;
+        }
 
         setStandards((stds ?? []) as unknown as StandardRow[]);
         setQuestions((qs ?? []) as unknown as QuestionRow[]);
@@ -755,7 +790,16 @@ export default function AdminQuestionsPage() {
   // Reset to page 1 whenever any filter/sort changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [filterSource, filterStatus, filterClassification, filterTier, filterAuthor, filterTitle, searchText, sortBy]);
+  }, [
+    filterSource,
+    filterStatus,
+    filterClassification,
+    filterTier,
+    filterAuthor,
+    filterTitle,
+    searchText,
+    sortBy,
+  ]);
 
   // ── Mutate helpers ────────────────────────────────────────────────────────────
 
@@ -767,7 +811,7 @@ export default function AdminQuestionsPage() {
     });
     if (res.ok) {
       setQuestions((prev) =>
-        prev.map((q) => (q.id === id ? { ...q, approved: true, flagged: false } : q)),
+        prev.map((q) => (q.id === id ? { ...q, approved: true, flagged: false } : q))
       );
     } else {
       console.error('[AdminQuestions] approve failed:', await res.text());
@@ -782,18 +826,14 @@ export default function AdminQuestionsPage() {
     });
     if (res.ok) {
       setQuestions((prev) =>
-        prev.map((q) => (q.id === id ? { ...q, flagged: true, approved: false } : q)),
+        prev.map((q) => (q.id === id ? { ...q, flagged: true, approved: false } : q))
       );
     } else {
       console.error('[AdminQuestions] flag failed:', await res.text());
     }
   }
 
-  async function handleSaveEdit(
-    id: string,
-    newStem: string,
-    newOpts: Record<string, string>,
-  ) {
+  async function handleSaveEdit(id: string, newStem: string, newOpts: Record<string, string>) {
     const supabase = createClient();
     const q = questions.find((r) => r.id === id);
     if (!q) return;
@@ -805,7 +845,7 @@ export default function AdminQuestionsPage() {
     const classB = q.option_b_class ?? parseClassification(q.content, 'B');
     const classC = q.option_c_class ?? parseClassification(q.content, 'C');
     const classD = q.option_d_class ?? parseClassification(q.content, 'D');
-    const skill   = q.cognitive_skill_targeted ?? '';
+    const skill = q.cognitive_skill_targeted ?? '';
 
     const newContent =
       passage +
@@ -846,21 +886,23 @@ export default function AdminQuestionsPage() {
                 option_d_text: newOpts.D,
                 approved: false,
               }
-            : r,
-        ),
+            : r
+        )
       );
     }
   }
 
   // ── Derived filter options ─────────────────────────────────────────────────
 
-  const authorOptions = useMemo(() =>
-    Array.from(new Set(questions.map((q) => q.author).filter(Boolean) as string[])).sort()
-  , [questions]);
+  const authorOptions = useMemo(
+    () => Array.from(new Set(questions.map((q) => q.author).filter(Boolean) as string[])).sort(),
+    [questions]
+  );
 
-  const titleOptions = useMemo(() =>
-    Array.from(new Set(questions.map((q) => q.title).filter(Boolean) as string[])).sort()
-  , [questions]);
+  const titleOptions = useMemo(
+    () => Array.from(new Set(questions.map((q) => q.title).filter(Boolean) as string[])).sort(),
+    [questions]
+  );
 
   // ── Filtered + sorted questions ────────────────────────────────────────────
 
@@ -870,24 +912,18 @@ export default function AdminQuestionsPage() {
     if (filterSource !== 'all')
       r = r.filter((q) => (q.pipeline_source ?? 'legacy') === filterSource);
 
-    if (filterStatus === 'needs_review')
-      r = r.filter((q) => !q.approved && !q.flagged);
-    else if (filterStatus === 'approved')
-      r = r.filter((q) => q.approved === true);
-    else if (filterStatus === 'flagged')
-      r = r.filter((q) => q.flagged === true);
+    if (filterStatus === 'needs_review') r = r.filter((q) => !q.approved && !q.flagged);
+    else if (filterStatus === 'approved') r = r.filter((q) => q.approved === true);
+    else if (filterStatus === 'flagged') r = r.filter((q) => q.flagged === true);
 
     if (filterClassification !== 'all')
       r = r.filter((q) => q.source_classification === filterClassification);
 
-    if (filterTier !== 'all')
-      r = r.filter((q) => q.difficulty_level === Number(filterTier));
+    if (filterTier !== 'all') r = r.filter((q) => q.difficulty_level === Number(filterTier));
 
-    if (filterAuthor !== 'all')
-      r = r.filter((q) => q.author === filterAuthor);
+    if (filterAuthor !== 'all') r = r.filter((q) => q.author === filterAuthor);
 
-    if (filterTitle !== 'all')
-      r = r.filter((q) => q.title === filterTitle);
+    if (filterTitle !== 'all') r = r.filter((q) => q.title === filterTitle);
 
     if (searchText.trim()) {
       const lc = searchText.toLowerCase();
@@ -895,21 +931,31 @@ export default function AdminQuestionsPage() {
     }
 
     return [...r].sort((a, b) => {
-      if (sortBy === 'newest')   return (b.created_at ?? '').localeCompare(a.created_at ?? '');
-      if (sortBy === 'oldest')   return (a.created_at ?? '').localeCompare(b.created_at ?? '');
-      if (sortBy === 'author')   return (a.author ?? '').localeCompare(b.author ?? '');
+      if (sortBy === 'newest') return (b.created_at ?? '').localeCompare(a.created_at ?? '');
+      if (sortBy === 'oldest') return (a.created_at ?? '').localeCompare(b.created_at ?? '');
+      if (sortBy === 'author') return (a.author ?? '').localeCompare(b.author ?? '');
       if (sortBy === 'tier_asc') return (a.difficulty_level ?? 0) - (b.difficulty_level ?? 0);
-      if (sortBy === 'tier_desc')return (b.difficulty_level ?? 0) - (a.difficulty_level ?? 0);
+      if (sortBy === 'tier_desc') return (b.difficulty_level ?? 0) - (a.difficulty_level ?? 0);
       return 0;
     });
-  }, [questions, filterSource, filterStatus, filterClassification, filterTier, filterAuthor, filterTitle, searchText, sortBy]);
+  }, [
+    questions,
+    filterSource,
+    filterStatus,
+    filterClassification,
+    filterTier,
+    filterAuthor,
+    filterTitle,
+    searchText,
+    sortBy,
+  ]);
 
   // ── Pagination ─────────────────────────────────────────────────────────────
 
-  const totalPages        = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));
   const paginatedQuestions = filteredQuestions.slice(
     (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
+    currentPage * PAGE_SIZE
   );
 
   // ── Derived counts ─────────────────────────────────────────────────────────
@@ -942,7 +988,16 @@ export default function AdminQuestionsPage() {
 
   if (authLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#F8F9FA',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: FONTS.ui,
+        }}
+      >
         <p style={{ color: C.gray, fontSize: 14 }}>Checking access…</p>
       </div>
     );
@@ -952,7 +1007,16 @@ export default function AdminQuestionsPage() {
 
   if (loadState === 'loading') {
     return (
-      <div style={{ minHeight: '100vh', background: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#F8F9FA',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: FONTS.ui,
+        }}
+      >
         <p style={{ color: C.gray, fontSize: 14 }}>Loading question bank…</p>
       </div>
     );
@@ -960,10 +1024,32 @@ export default function AdminQuestionsPage() {
 
   if (loadState === 'error') {
     return (
-      <div style={{ minHeight: '100vh', background: '#F8F9FA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#F8F9FA',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: FONTS.ui,
+        }}
+      >
         <div style={{ maxWidth: 400, textAlign: 'center', padding: 24 }}>
           <p style={{ color: C.red, fontSize: 15, marginBottom: 12 }}>{errorMsg}</p>
-          <button onClick={() => router.push('/dashboard/teacher')} style={{ background: C.navy, color: C.white, border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: FONTS.ui }}>
+          <button
+            onClick={() => router.push('/dashboard/teacher')}
+            style={{
+              background: C.navy,
+              color: C.white,
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 24px',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontFamily: FONTS.ui,
+            }}
+          >
             Back to Dashboard
           </button>
         </div>
@@ -985,10 +1071,9 @@ export default function AdminQuestionsPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#F8F9FA', fontFamily: FONTS.ui }}>
-      <GogiNav subtitle="Question Bank — Admin Review" showLogout />
+      <TeacherDashboardTopBar active="questions" />
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '24px 20px' }}>
-
         {/* ── PAGE HEADER ─────────────────────────────────────────────────────── */}
         <div
           style={{
@@ -1027,21 +1112,23 @@ export default function AdminQuestionsPage() {
             </span>
           )}
 
-          {v3NeedsReview === 0 && questions.filter((q) => (q.pipeline_source ?? 'legacy') === 'v3_promoted').length > 0 && (
-            <span
-              style={{
-                background: C.greenLight,
-                color: C.green,
-                border: `1px solid ${C.green}`,
-                borderRadius: 6,
-                padding: '3px 10px',
-                fontSize: 12,
-                fontWeight: 700,
-              }}
-            >
-              V3 ALL REVIEWED
-            </span>
-          )}
+          {v3NeedsReview === 0 &&
+            questions.filter((q) => (q.pipeline_source ?? 'legacy') === 'v3_promoted').length >
+              0 && (
+              <span
+                style={{
+                  background: C.greenLight,
+                  color: C.green,
+                  border: `1px solid ${C.green}`,
+                  borderRadius: 6,
+                  padding: '3px 10px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              >
+                V3 ALL REVIEWED
+              </span>
+            )}
 
           <span style={{ marginLeft: 'auto', fontSize: 12, color: C.gray }}>
             {questions.length} total · {filteredQuestions.length} matching
@@ -1062,8 +1149,8 @@ export default function AdminQuestionsPage() {
           }}
         >
           Only <strong>approved</strong> questions are served to students in the diagnostic engine.
-          Review each question, then click <strong>Approve</strong> to activate it.
-          Editing a question removes approval and requires re-approval.
+          Review each question, then click <strong>Approve</strong> to activate it. Editing a
+          question removes approval and requires re-approval.
         </div>
 
         {/* ── FILTER BAR ──────────────────────────────────────────────────────── */}
@@ -1077,10 +1164,25 @@ export default function AdminQuestionsPage() {
           }}
         >
           {/* Row 1: Source toggle + Status tabs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
-
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              flexWrap: 'wrap',
+              marginBottom: 12,
+            }}
+          >
             {/* Source toggle */}
-            <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: `1px solid ${C.border}` }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: 0,
+                borderRadius: 6,
+                overflow: 'hidden',
+                border: `1px solid ${C.border}`,
+              }}
+            >
               {(['v3_promoted', 'legacy', 'all'] as const).map((src) => (
                 <button
                   key={src}
@@ -1105,13 +1207,23 @@ export default function AdminQuestionsPage() {
             </div>
 
             {/* Status tabs */}
-            <div style={{ display: 'flex', gap: 0, borderRadius: 6, overflow: 'hidden', border: `1px solid ${C.border}` }}>
-              {([
-                { value: 'needs_review', label: 'Needs Review' },
-                { value: 'approved',     label: 'Approved' },
-                { value: 'flagged',      label: 'Flagged' },
-                { value: 'all',          label: 'All' },
-              ] as const).map((tab) => (
+            <div
+              style={{
+                display: 'flex',
+                gap: 0,
+                borderRadius: 6,
+                overflow: 'hidden',
+                border: `1px solid ${C.border}`,
+              }}
+            >
+              {(
+                [
+                  { value: 'needs_review', label: 'Needs Review' },
+                  { value: 'approved', label: 'Approved' },
+                  { value: 'flagged', label: 'Flagged' },
+                  { value: 'all', label: 'All' },
+                ] as const
+              ).map((tab) => (
                 <button
                   key={tab.value}
                   onClick={() => setFilterStatus(tab.value)}
@@ -1123,9 +1235,14 @@ export default function AdminQuestionsPage() {
                     border: 'none',
                     borderRight: tab.value !== 'all' ? `1px solid ${C.border}` : 'none',
                     cursor: 'pointer',
-                    background: filterStatus === tab.value
-                      ? (tab.value === 'approved' ? C.green : tab.value === 'flagged' ? C.red : C.navy)
-                      : C.white,
+                    background:
+                      filterStatus === tab.value
+                        ? tab.value === 'approved'
+                          ? C.green
+                          : tab.value === 'flagged'
+                            ? C.red
+                            : C.navy
+                        : C.white,
                     color: filterStatus === tab.value ? C.white : C.gray,
                     textTransform: 'uppercase',
                     letterSpacing: 0.5,
@@ -1138,7 +1255,15 @@ export default function AdminQuestionsPage() {
           </div>
 
           {/* Row 2: Classification + Tier + Author + Title dropdowns + Sort */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              flexWrap: 'wrap',
+              marginBottom: 10,
+            }}
+          >
             <select
               value={filterClassification}
               onChange={(e) => setFilterClassification(e.target.value)}
@@ -1146,7 +1271,9 @@ export default function AdminQuestionsPage() {
             >
               <option value="all">All Classifications</option>
               {Object.entries(CLASSIFICATIONS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+                <option key={k} value={k}>
+                  {v}
+                </option>
               ))}
             </select>
 
@@ -1157,7 +1284,9 @@ export default function AdminQuestionsPage() {
             >
               <option value="all">All Tiers</option>
               {[1, 2, 3, 4].map((t) => (
-                <option key={t} value={t}>Tier {t}</option>
+                <option key={t} value={t}>
+                  Tier {t}
+                </option>
               ))}
             </select>
 
@@ -1168,7 +1297,9 @@ export default function AdminQuestionsPage() {
             >
               <option value="all">All Authors</option>
               {authorOptions.map((a) => (
-                <option key={a} value={a}>{a}</option>
+                <option key={a} value={a}>
+                  {a}
+                </option>
               ))}
             </select>
 
@@ -1179,7 +1310,9 @@ export default function AdminQuestionsPage() {
             >
               <option value="all">All Titles</option>
               {titleOptions.map((t) => (
-                <option key={t} value={t}>{t.length > 40 ? t.slice(0, 40) + '…' : t}</option>
+                <option key={t} value={t}>
+                  {t.length > 40 ? t.slice(0, 40) + '…' : t}
+                </option>
               ))}
             </select>
 
@@ -1248,9 +1381,11 @@ export default function AdminQuestionsPage() {
           >
             <p style={{ margin: '0 0 8px' }}>No questions found in the database.</p>
             <p style={{ margin: 0, fontSize: 12 }}>
-              Run <code style={{ background: C.light, padding: '1px 5px', borderRadius: 3 }}>
+              Run{' '}
+              <code style={{ background: C.light, padding: '1px 5px', borderRadius: 3 }}>
                 npx tsx scripts/promotePassagesToQuestions.ts
-              </code> to generate OMC questions from your v3 passages.
+              </code>{' '}
+              to generate OMC questions from your v3 passages.
             </p>
           </div>
         )}
@@ -1270,7 +1405,16 @@ export default function AdminQuestionsPage() {
             No questions match the current filters.{' '}
             <button
               onClick={resetFilters}
-              style={{ background: 'none', border: 'none', color: C.blue, fontSize: 14, cursor: 'pointer', fontFamily: FONTS.ui, textDecoration: 'underline', padding: 0 }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: C.blue,
+                fontSize: 14,
+                cursor: 'pointer',
+                fontFamily: FONTS.ui,
+                textDecoration: 'underline',
+                padding: 0,
+              }}
             >
               Reset filters
             </button>
@@ -1328,9 +1472,13 @@ export default function AdminQuestionsPage() {
             </button>
 
             <div style={{ fontSize: 12, color: C.gray, textAlign: 'center' }}>
-              <div>Page {currentPage} of {totalPages}</div>
+              <div>
+                Page {currentPage} of {totalPages}
+              </div>
               <div style={{ marginTop: 2 }}>
-                showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredQuestions.length)} of {filteredQuestions.length}
+                showing {(currentPage - 1) * PAGE_SIZE + 1}–
+                {Math.min(currentPage * PAGE_SIZE, filteredQuestions.length)} of{' '}
+                {filteredQuestions.length}
               </div>
             </div>
 

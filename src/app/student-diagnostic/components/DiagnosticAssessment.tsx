@@ -4,6 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { cleanPassageText } from '@/lib/passageUtils';
+import {
+  getFirstLayer0Complete,
+  getLatestLayer0SessionCalibration,
+} from '@/lib/layer0/sessionCalibration';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -219,6 +223,11 @@ export default function DiagnosticAssessment() {
           return;
         }
         setStudentId(student.id);
+        const hasLayer0 = await getFirstLayer0Complete(supabase, student.id);
+        if (!hasLayer0) {
+          router.push('/layer0');
+          return;
+        }
 
         const { data: standards, error: standardsError } = await supabase
           .from('standards')
@@ -271,6 +280,7 @@ export default function DiagnosticAssessment() {
 
         setQuestions(parsed);
 
+        const layer0 = await getLatestLayer0SessionCalibration(supabase, student.id);
         const sessionInserts = await Promise.all(
           standards.map(s =>
             supabase
@@ -280,6 +290,8 @@ export default function DiagnosticAssessment() {
                 standard_id: s.id,
                 phase: 'diagnostic',
                 status: 'in_progress',
+                layer0_assessment_id: layer0.layer0AssessmentId,
+                load_calibration_at_session: layer0.loadCalibration,
               })
               .select('id')
               .single()

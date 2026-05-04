@@ -15,7 +15,7 @@ export default async function StudentDashboardPage() {
   // Get student record (id + name)
   const { data: student } = await supabase
     .from('students')
-    .select('id, full_name')
+    .select('id, full_name, welcome_completed_at, first_win_completed_at')
     .eq('user_id', user.id)
     .single();
 
@@ -23,6 +23,9 @@ export default async function StudentDashboardPage() {
     // Auth user exists but no students row — redirect to login with message
     redirect('/login?error=no_student_record');
   }
+
+  if (!student.welcome_completed_at) redirect('/welcome');
+  if (!student.first_win_completed_at) redirect('/first-win');
 
   // Fetch the 3 pilot standard UUIDs by code
   const pilotCodes = Object.keys(STANDARDS);
@@ -33,7 +36,7 @@ export default async function StudentDashboardPage() {
 
   // Sort to match STANDARDS key order (ELA.9.R.1.1, 1.2, 2.1)
   const sorted = (standards ?? []).sort(
-    (a, b) => pilotCodes.indexOf(a.code) - pilotCodes.indexOf(b.code),
+    (a, b) => pilotCodes.indexOf(a.code) - pilotCodes.indexOf(b.code)
   );
 
   return (

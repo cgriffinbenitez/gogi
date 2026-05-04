@@ -12,6 +12,10 @@
  *   npx tsx scripts/recover_v3_inserts.ts \
  *     --csv docs/pipeline/runs/2026-04-22_tone_misreading_v3_run.csv \
  *     --classification tone_misreading \
+ *     [--standard ELA.9.R.3.1] \
+ *     [--coverage-strand metaphor-simile] \
+ *     [--coverage-label "Metaphor and simile"] \
+ *     [--coverage-signals "metaphor|simile|comparison without literal intent"] \
  *     --max 25 \
  *     [--per-source-cap 5] \
  *     [--dry-run]
@@ -28,14 +32,15 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
-import type { CriteriaConfig } from '../src/pipeline/types';
+import type { CriteriaConfig, PassageRowV3 } from '../src/pipeline/types';
 import { tagParagraph } from '../src/pipeline/stages/tag';
 import { isDuplicateV3, writePassageV3 } from '../src/pipeline/stages/write';
 
-const PIPELINE_VERSION = 'v3';
+const PIPELINE_VERSION: PassageRowV3['pipeline_version'] = 'v4';
 
 // ─── Arg parsing ──────────────────────────────────────────────────────────────
 
@@ -45,46 +50,64 @@ function getArg(args: string[], flag: string): string | undefined {
 }
 
 const args = process.argv.slice(2);
-const csvPath        = getArg(args, '--csv');
+const csvPath = getArg(args, '--csv');
 const classification = getArg(args, '--classification');
-const maxArg         = getArg(args, '--max');
-const perSourceArg   = getArg(args, '--per-source-cap');
-const dryRun         = args.includes('--dry-run');
+const standardCode = getArg(args, '--standard');
+const coverageStrandId = getArg(args, '--coverage-strand');
+const coverageStrandLabel = getArg(args, '--coverage-label');
+const coverageSignals = getArg(args, '--coverage-signals')
+  ?.split('|')
+  .map((item) => item.trim())
+  .filter(Boolean);
+const maxArg = getArg(args, '--max');
+const perSourceArg = getArg(args, '--per-source-cap');
+const dryRun = args.includes('--dry-run');
 const writeAllPassed = args.includes('--write-all-passed');
 
 if (!csvPath || !classification) {
-  console.error('Usage: npx tsx scripts/recover_v3_inserts.ts --csv <path> --classification <name> [--max <n>] [--per-source-cap <n>] [--write-all-passed] [--dry-run]');
+  console.error(
+    'Usage: npx tsx scripts/recover_v3_inserts.ts --csv <path> --classification <name> [--standard <code>] [--coverage-strand <id>] [--coverage-label <label>] [--coverage-signals <a|b>] [--max <n>] [--per-source-cap <n>] [--write-all-passed] [--dry-run]'
+  );
   process.exit(1);
 }
+
+const classificationName = classification;
 
 if (!fs.existsSync(csvPath)) {
   console.error(`CSV not found: ${csvPath}`);
   process.exit(1);
 }
 
-const max          = writeAllPassed ? Infinity            : (maxArg       ? parseInt(maxArg, 10)       : 25);
-const perSourceCap = writeAllPassed ? Infinity            : (perSourceArg ? parseInt(perSourceArg, 10) : Math.ceil((maxArg ? parseInt(maxArg, 10) : 25) / 3));
+const max = writeAllPassed ? Infinity : maxArg ? parseInt(maxArg, 10) : 25;
+const perSourceCap = writeAllPassed
+  ? Infinity
+  : perSourceArg
+    ? parseInt(perSourceArg, 10)
+    : Math.ceil((maxArg ? parseInt(maxArg, 10) : 25) / 3);
 
 // ─── Load criteria ────────────────────────────────────────────────────────────
 
-const criteria = require(
-  path.join(__dirname, '../src/pipeline/criteria', `${classification}.json`),
+const criteria = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, '../src/pipeline/criteria', `${classificationName}.json`),
+    'utf8'
+  )
 ) as CriteriaConfig;
 
 // ─── Parse CSV ────────────────────────────────────────────────────────────────
 
 interface CSVRecord {
-  classification:   string;
-  gutenberg_id:     string;
-  title:            string;
-  author:           string;
-  paragraph_text:   string;
-  word_count:       string;
-  paragraph_count:  string;
-  suitable:         string;
-  reasoning:        string;
-  tier:             string;
-  status:           string;
+  classification: string;
+  gutenberg_id: string;
+  title: string;
+  author: string;
+  paragraph_text: string;
+  word_count: string;
+  paragraph_count: string;
+  suitable: string;
+  reasoning: string;
+  tier: string;
+  status: string;
   pipeline_version: string;
 }
 
@@ -92,7 +115,7 @@ const raw = fs.readFileSync(csvPath, 'utf8');
 const records = parse(raw, { columns: true, skip_empty_lines: true }) as CSVRecord[];
 
 // Only recover 'error' rows — these were tagged but failed to write
-const errorRows = records.filter(r => r.status === 'error');
+const errorRows = records.filter((r) => r.status === 'error');
 
 const modeLabel = writeAllPassed
   ? 'write-all-passed (approval_status=pending_review, no cap)'
@@ -101,6 +124,11 @@ const modeLabel = writeAllPassed
 console.log(`\n═══════════════════════════════════════════════════════`);
 console.log(`  v3 Insert Recovery  |  ${classification}`);
 console.log(`  CSV: ${csvPath}`);
+if (standardCode || coverageStrandId || coverageStrandLabel) {
+  console.log(
+    `  Scope: ${[standardCode, coverageStrandLabel ?? coverageStrandId].filter(Boolean).join(' / ')}`
+  );
+}
 console.log(`  Error rows found: ${errorRows.length}`);
 console.log(`  mode: ${modeLabel}  |  dry-run: ${dryRun}`);
 console.log(`═══════════════════════════════════════════════════════\n`);
@@ -121,13 +149,27 @@ async function main() {
     console.error('Error: NEXT_PUBLIC_SUPABASE_URL is not set.');
     process.exit(1);
   }
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
+  const hasUsableWriteKey =
+    (serviceRoleKey &&
+      (serviceRoleKey.startsWith('eyJ') ||
+        serviceRoleKey.startsWith('sb_secret_') ||
+        serviceRoleKey.length > 80)) ||
+    anonKey.startsWith('eyJ');
+  if (!dryRun && !hasUsableWriteKey) {
+    console.error(
+      'Error: no usable Supabase write key found. Set SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY before recovery so we do not spend Claude calls and fail to save.'
+    );
+    process.exit(1);
+  }
 
-  let inserted       = 0;
-  let tagFailed      = 0;
+  let inserted = 0;
+  let tagFailed = 0;
   let tagNotDetected = 0;
-  let duplicates     = 0;
-  let writeErrors    = 0;
-  let skippedCap     = 0;
+  let duplicates = 0;
+  let writeErrors = 0;
+  let skippedCap = 0;
 
   const writtenPerSource: Record<string, number> = {};
 
@@ -151,18 +193,14 @@ async function main() {
     }
 
     const para = {
-      text:          row.paragraph_text,
-      wordCount:     parseInt(row.word_count, 10),
+      text: row.paragraph_text,
+      wordCount: parseInt(row.word_count, 10),
       paragraphCount: parseInt(row.paragraph_count || '1', 10),
-      sourceTitle:   row.title,
-      sourceAuthor:  row.author,
-      sourceYear:    null,
-      gutenbergId:   parseInt(row.gutenberg_id, 10),
-      hash:          require('crypto')
-                       .createHash('sha256')
-                       .update(row.paragraph_text)
-                       .digest('hex')
-                       .slice(0, 16),
+      sourceTitle: row.title,
+      sourceAuthor: row.author,
+      sourceYear: null,
+      gutenbergId: parseInt(row.gutenberg_id, 10),
+      hash: crypto.createHash('sha256').update(row.paragraph_text).digest('hex').slice(0, 16),
     };
 
     // Duplicate check
@@ -191,36 +229,44 @@ async function main() {
     // approval_status: pending_review for all inserts
     // (migration backfills existing v2 rows to 'approved' separately)
     const dbRow = {
-      classification,
-      paragraph_text:           para.text,
-      word_count:               para.wordCount,
-      paragraph_count:          para.paragraphCount,
-      source:                   'gutenberg' as const,
-      source_title:             para.sourceTitle,
-      source_author:            para.sourceAuthor,
-      source_year:              para.sourceYear,
-      source_gutenberg_id:      para.gutenbergId,
-      approved:                 false,
-      paragraph_hash:           para.hash,
-      pipeline_version:         PIPELINE_VERSION as const,
-      target_signal:            tagResult.target_signal,
-      item_patterns_supported:  tagResult.item_patterns_supported,
-      supporting_evidence:      tagResult.supporting_evidence,
-      non_supporting_evidence:  tagResult.non_supporting_evidence,
-      dominant_concept:         tagResult.dominant_concept ?? null,
-      plausible_distractors:    tagResult.plausible_distractors ?? null,
-      craft_features:           tagResult.craft_features ?? null,
+      classification: classificationName,
+      standard_code: standardCode ?? null,
+      coverage_strand_id: coverageStrandId ?? null,
+      coverage_strand_label: coverageStrandLabel ?? null,
+      coverage_strand_signals: coverageSignals ?? null,
+      paragraph_text: para.text,
+      word_count: para.wordCount,
+      paragraph_count: para.paragraphCount,
+      source: 'gutenberg' as const,
+      source_title: para.sourceTitle,
+      source_author: para.sourceAuthor,
+      source_year: para.sourceYear,
+      source_gutenberg_id: para.gutenbergId,
+      approved: false,
+      paragraph_hash: para.hash,
+      pipeline_version: PIPELINE_VERSION,
+      target_signal: tagResult.target_signal,
+      item_patterns_supported: tagResult.item_patterns_supported,
+      supporting_evidence: tagResult.supporting_evidence,
+      non_supporting_evidence: tagResult.non_supporting_evidence,
+      dominant_concept: tagResult.dominant_concept ?? null,
+      plausible_distractors: tagResult.plausible_distractors ?? null,
+      craft_features: tagResult.craft_features ?? null,
       discrimination_item_type: tagResult.discrimination_item_type,
-      intervention_tier:        tagResult.intervention_tier,
-      tier_rationale:           tagResult.tier_rationale,
-      q5_flag_5e_compatible:    false, // not preserved in CSV — safe default
-      approval_status:          'pending_review',
-    };
+      intervention_tier: tagResult.intervention_tier,
+      tagger_tier: tagResult.intervention_tier,
+      word_count_tier: tier,
+      tier_rationale: tagResult.tier_rationale,
+      q5_flag_5e_compatible: false, // not preserved in CSV — safe default
+      approval_status: 'pending_review',
+    } satisfies PassageRowV3;
 
     const insertedLabel = max === Infinity ? String(inserted + 1) : `${inserted + 1}/${max}`;
 
     if (dryRun) {
-      console.log(`  [dry-run] would insert T${tagResult.intervention_tier} approval=pending_review [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`);
+      console.log(
+        `  [dry-run] would insert T${tagResult.intervention_tier} approval=pending_review [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`
+      );
       inserted++;
       writtenPerSource[row.title] = sourceCount + 1;
       continue;
@@ -233,7 +279,7 @@ async function main() {
       writtenPerSource[row.title] = sourceCount + 1;
       console.log(
         `  [inserted] ${insertedLabel} T${tagResult.intervention_tier} approval=pending_review` +
-        ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
+          ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`
       );
     } else if (writeResult.status === 'duplicate') {
       console.log(`  [skip] duplicate at write: "${para.text.slice(0, 60)}…"`);
@@ -258,11 +304,13 @@ async function main() {
 `);
 
   if (writeErrors > 0) {
-    console.error('Write errors remain — verify the migration was applied:\n  supabase/migrations/20260422_pipeline_v3_columns.sql');
+    console.error(
+      'Write errors remain — verify the migration was applied:\n  supabase/migrations/20260422_pipeline_v3_columns.sql'
+    );
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('[recover] fatal error:', err);
   process.exit(1);
 });

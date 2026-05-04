@@ -26,7 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // ─── Pilot standard IDs ───────────────────────────────────────────────────────
@@ -39,10 +39,10 @@ const PILOT_IDS = [STD_111, STD_112, STD_221];
 // ─── Fix 1 — Retired code remap ───────────────────────────────────────────────
 
 const RETIRED_REMAP: Record<string, string> = {
-  schema_deficit:                'inferencing_schema',
-  inferencing_deficit:           'inferencing_literal',
-  abstract_reasoning_deficit:    'comprehension_integration_failure',
-  vocabulary_gap_connotative:    'vocabulary_gap',
+  schema_deficit: 'inferencing_schema',
+  inferencing_deficit: 'inferencing_literal',
+  abstract_reasoning_deficit: 'comprehension_integration_failure',
+  vocabulary_gap_connotative: 'vocabulary_gap',
 };
 
 function recode(cls: string | null | undefined): string | null {
@@ -69,7 +69,7 @@ async function fix1_recodeRetiredCodes(): Promise<number> {
       retiredSet.includes(q.option_a_class ?? '') ||
       retiredSet.includes(q.option_b_class ?? '') ||
       retiredSet.includes(q.option_c_class ?? '') ||
-      retiredSet.includes(q.option_d_class ?? ''),
+      retiredSet.includes(q.option_d_class ?? '')
   );
 
   let updated = 0;
@@ -95,10 +95,10 @@ async function fix1_recodeRetiredCodes(): Promise<number> {
       updated++;
       console.log(
         `  Recoded ${q.id.slice(0, 8)}…  ` +
-        `a:${q.option_a_class}→${newA}  ` +
-        `b:${q.option_b_class}→${newB}  ` +
-        `c:${q.option_c_class}→${newC}  ` +
-        `d:${q.option_d_class}→${newD}`,
+          `a:${q.option_a_class}→${newA}  ` +
+          `b:${q.option_b_class}→${newB}  ` +
+          `c:${q.option_c_class}→${newC}  ` +
+          `d:${q.option_d_class}→${newD}`
       );
     }
   }
@@ -110,7 +110,7 @@ async function fix1_recodeRetiredCodes(): Promise<number> {
 // ─── Fix 2 — Unapprove wrong-passage questions ────────────────────────────────
 
 // Anchor markers: presence of ANY of these proves the question belongs to this passage
-const MDG_MARKERS  = ['Rainsford', 'Zaroff', 'Whitney', 'Ship-Trap', 'Ivan'];
+const MDG_MARKERS = ['Rainsford', 'Zaroff', 'Whitney', 'Ship-Trap', 'Ivan'];
 const HILL_MARKERS = ['Desmond', 'Caesar', 'Harrow', 'Eton'];
 
 function contentHasMarker(content: string, markers: string[]): boolean {
@@ -133,7 +133,7 @@ async function fix2_unapproveWrongPassages(): Promise<number> {
 
   for (const q of rows ?? []) {
     const content = (q.content as string) ?? '';
-    const title   = (q.title   as string) ?? '';
+    const title = (q.title as string) ?? '';
 
     if (q.standard_id === STD_111) {
       // ELA.9.R.1.1 — anchor: The Most Dangerous Game
@@ -143,16 +143,17 @@ async function fix2_unapproveWrongPassages(): Promise<number> {
         !contentHasMarker(content, MDG_MARKERS)
       ) {
         toUnapprove.push(q.id as string);
-        console.log(`  Unapproving 1.1 question ${(q.id as string).slice(0, 8)}… (title="${title}", no MDG markers in content)`);
+        console.log(
+          `  Unapproving 1.1 question ${(q.id as string).slice(0, 8)}… (title="${title}", no MDG markers in content)`
+        );
       }
     } else if (q.standard_id === STD_112) {
       // ELA.9.R.1.2 — anchor: The Hill
-      if (
-        title.toLowerCase().includes('hill') &&
-        !contentHasMarker(content, HILL_MARKERS)
-      ) {
+      if (title.toLowerCase().includes('hill') && !contentHasMarker(content, HILL_MARKERS)) {
         toUnapprove.push(q.id as string);
-        console.log(`  Unapproving 1.2 question ${(q.id as string).slice(0, 8)}… (title="${title}", no Hill markers in content)`);
+        console.log(
+          `  Unapproving 1.2 question ${(q.id as string).slice(0, 8)}… (title="${title}", no Hill markers in content)`
+        );
       }
     }
   }
@@ -178,23 +179,20 @@ async function fix2_unapproveWrongPassages(): Promise<number> {
 function normalizeSkill111(raw: string): string {
   const s = raw.toLowerCase();
   if (
-    s.includes('cross-passage') || s.includes('cross-textual') ||
-    s.includes('character inference') || s.includes('character development')
-  ) return 'characterization → layers of meaning';
-  if (s.includes('diction') || s.includes('style'))
-    return 'diction → style';
-  if (s.includes('figurative'))
-    return 'figurative language → meaning';
-  if (s.includes('mood'))
-    return 'setting → mood';
-  if (s.includes('tone'))
-    return 'tone → author attitude';
-  if (s.includes('author') && s.includes('purpose') || s.includes('integration'))
+    s.includes('cross-passage') ||
+    s.includes('cross-textual') ||
+    s.includes('character inference') ||
+    s.includes('character development')
+  )
+    return 'characterization → layers of meaning';
+  if (s.includes('diction') || s.includes('style')) return 'diction → style';
+  if (s.includes('figurative')) return 'figurative language → meaning';
+  if (s.includes('mood')) return 'setting → mood';
+  if (s.includes('tone')) return 'tone → author attitude';
+  if ((s.includes('author') && s.includes('purpose')) || s.includes('integration'))
     return 'author purpose → Layer 4';
-  if (
-    s.includes('pov') || s.includes('point of view') ||
-    s.includes('characterization')
-  ) return 'characterization → POV';
+  if (s.includes('pov') || s.includes('point of view') || s.includes('characterization'))
+    return 'characterization → POV';
   return raw; // keep unchanged if no match
 }
 
@@ -204,27 +202,19 @@ function normalizeSkill112(raw: string): string {
     return 'universal theme identification';
   if (s.includes('theme development') || s.includes('theme across'))
     return 'theme development across text';
-  if (s.includes('connotation') || s.includes('vocabulary'))
-    return 'connotation → theme';
-  if (s.includes('universal application'))
-    return 'universal application';
-  if (s.includes('evidence'))
-    return 'theme evidence';
+  if (s.includes('connotation') || s.includes('vocabulary')) return 'connotation → theme';
+  if (s.includes('universal application')) return 'universal application';
+  if (s.includes('evidence')) return 'theme evidence';
   return 'universal theme identification'; // fallback per spec
 }
 
 function normalizeSkill221(raw: string): string {
   const s = raw.toLowerCase();
-  if (s.includes('chronological'))
-    return 'chronological structure → purpose';
-  if (s.includes('signal'))
-    return 'signal words → structure';
-  if (s.includes('compare'))
-    return 'compare/contrast structure';
-  if (s.includes('author') && s.includes('purpose'))
-    return 'author purpose → structure';
-  if (s.includes('feature'))
-    return 'text feature analysis';
+  if (s.includes('chronological')) return 'chronological structure → purpose';
+  if (s.includes('signal')) return 'signal words → structure';
+  if (s.includes('compare')) return 'compare/contrast structure';
+  if (s.includes('author') && s.includes('purpose')) return 'author purpose → structure';
+  if (s.includes('feature')) return 'text feature analysis';
   if (s.includes('structure purpose') || s.includes('organizational'))
     return 'structure → purpose connection';
   return 'structure → purpose connection'; // fallback per spec
@@ -271,13 +261,13 @@ async function fix3_normalizeSkills(): Promise<number> {
 // ─── Fix 4 — Redistribute correct_option (50% B / 50% C per standard) ────────
 
 type QuestionRow = {
-  id:                string;
-  standard_id:       string;
-  option_b_text:     string | null;
-  option_b_class:    string | null;
+  id: string;
+  standard_id: string;
+  option_b_text: string | null;
+  option_b_class: string | null;
   option_b_strategy: string | null;
-  option_c_text:     string | null;
-  option_c_class:    string | null;
+  option_c_text: string | null;
+  option_c_class: string | null;
   option_c_strategy: string | null;
 };
 
@@ -288,7 +278,7 @@ async function fix4_redistributeCorrectOption(): Promise<number> {
     .from('questions')
     .select(
       'id, standard_id, option_b_text, option_b_class, option_b_strategy, ' +
-      'option_c_text, option_c_class, option_c_strategy',
+        'option_c_text, option_c_class, option_c_strategy'
     )
     .in('standard_id', PILOT_IDS)
     .eq('approved', true)
@@ -304,7 +294,7 @@ async function fix4_redistributeCorrectOption(): Promise<number> {
     [STD_221]: [],
   };
 
-  for (const q of (rows ?? []) as QuestionRow[]) {
+  for (const q of (rows ?? []) as unknown as QuestionRow[]) {
     if (byStandard[q.standard_id]) byStandard[q.standard_id].push(q);
   }
 
@@ -317,13 +307,13 @@ async function fix4_redistributeCorrectOption(): Promise<number> {
       const { error: upErr } = await supabase
         .from('questions')
         .update({
-          option_b_text:     q.option_c_text,
-          option_b_class:    q.option_c_class,
+          option_b_text: q.option_c_text,
+          option_b_class: q.option_c_class,
           option_b_strategy: q.option_c_strategy,
-          option_c_text:     q.option_b_text,
-          option_c_class:    q.option_b_class,
+          option_c_text: q.option_b_text,
+          option_c_class: q.option_b_class,
           option_c_strategy: q.option_b_strategy,
-          correct_option:    'C',
+          correct_option: 'C',
         })
         .eq('id', q.id);
 
@@ -334,7 +324,9 @@ async function fix4_redistributeCorrectOption(): Promise<number> {
         console.log(`  Swapped B→C on ${q.id.slice(0, 8)}… (standard ${stdId.slice(0, 8)}…)`);
       }
     }
-    console.log(`  Standard ${stdId.slice(0, 8)}…: ${qs.length} B-questions, swapped ${Math.floor(qs.length / 2)} to C`);
+    console.log(
+      `  Standard ${stdId.slice(0, 8)}…: ${qs.length} B-questions, swapped ${Math.floor(qs.length / 2)} to C`
+    );
   }
 
   console.log(`  ✓ Correct option redistributed: ${swapped} questions flipped to C`);
@@ -383,14 +375,16 @@ async function fix5_audit(): Promise<void> {
   for (const [sid, st] of Object.entries(stats)) {
     const code = codeMap[sid] ?? sid.slice(0, 8);
     console.log(
-      `  ${code.padEnd(17)} | ${String(st.total).padEnd(5)} | ${String(st.B).padEnd(9)} | ${String(st.C).padEnd(9)} | ${st.skills.size}`,
+      `  ${code.padEnd(17)} | ${String(st.total).padEnd(5)} | ${String(st.B).padEnd(9)} | ${String(st.C).padEnd(9)} | ${st.skills.size}`
     );
   }
 
   // Retired code check
   const RETIRED = [
-    'schema_deficit', 'inferencing_deficit',
-    'abstract_reasoning_deficit', 'vocabulary_gap_connotative',
+    'schema_deficit',
+    'inferencing_deficit',
+    'abstract_reasoning_deficit',
+    'vocabulary_gap_connotative',
   ];
 
   const { data: retiredCheck, error: rErr } = await supabase
@@ -403,7 +397,7 @@ async function fix5_audit(): Promise<void> {
         ...RETIRED.map((c) => `option_b_class.eq.${c}`),
         ...RETIRED.map((c) => `option_c_class.eq.${c}`),
         ...RETIRED.map((c) => `option_d_class.eq.${c}`),
-      ].join(','),
+      ].join(',')
     );
 
   if (rErr) throw new Error(`[Fix5] retired check error: ${rErr.message}`);
@@ -421,15 +415,17 @@ async function main() {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('ERROR: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local');
+    console.error(
+      'ERROR: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local'
+    );
     process.exit(1);
   }
 
   try {
-    const recodedCount    = await fix1_recodeRetiredCodes();
+    const recodedCount = await fix1_recodeRetiredCodes();
     const unapprovedCount = await fix2_unapproveWrongPassages();
     const normalizedCount = await fix3_normalizeSkills();
-    const redistributed   = await fix4_redistributeCorrectOption();
+    const redistributed = await fix4_redistributeCorrectOption();
     await fix5_audit();
 
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

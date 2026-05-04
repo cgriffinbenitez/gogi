@@ -7,6 +7,7 @@ import { GogiBubble } from '@/components/gogi/GogiBubble';
 import { GogiNav } from '@/components/nav/GogiNav';
 import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
+import { getLatestLayer0SessionCalibration } from '@/lib/layer0/sessionCalibration';
 import { validateResponse } from '@/lib/validation/validateResponse';
 import { getTeachRoute, CLASSIFICATION_TO_SKILL } from '@/lib/classify/getTeachRoute';
 import { C, FONTS, STANDARDS } from '@/lib/constants/design';
@@ -339,6 +340,7 @@ export default function PracticePage() {
           if (existing?.id) {
             resolvedSessionId = existing.id;
           } else {
+            const layer0 = await getLatestLayer0SessionCalibration(supabase, resolvedStudentId);
             const { data: created } = await supabase
               .from('sessions')
               .insert({
@@ -346,6 +348,8 @@ export default function PracticePage() {
                 standard_id: std.id,
                 phase: 'practice',
                 status: 'in_progress',
+                layer0_assessment_id: layer0.layer0AssessmentId,
+                load_calibration_at_session: layer0.loadCalibration,
               })
               .select('id')
               .single();

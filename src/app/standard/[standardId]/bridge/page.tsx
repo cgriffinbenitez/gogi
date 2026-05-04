@@ -7,36 +7,46 @@ import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { C, FONTS, STANDARDS } from '@/lib/constants/design';
 import { getTeachRoute } from '@/lib/classify/getTeachRoute';
+import { ELA9R11_MISCONCEPTIONS } from '@/lib/diagnostic/ela9r11';
 
 // ─── Classification badge text ────────────────────────────────────────────────
 
 // Sprint O — 13 canonical codes mapped to badge text shown after diagnostic
 const BADGE_TEXT: Record<string, string> = {
   // Layer 1 — Pre-reading
-  no_metacognitive_strategy:           'Layer 1  |  Reading strategy needed',
-  schema_deficit:                      'Layer 1  |  Background knowledge needed',
+  no_metacognitive_strategy: 'Layer 1  |  Reading strategy needed',
+  schema_deficit: 'Layer 1  |  Background knowledge needed',
   // Layer 2 — During reading
-  vocabulary_gap:                      'Layer 2  |  Vocabulary support needed',
-  morphology_gap:                      'Layer 2  |  Word structure support needed',
-  syntax_barrier:                      'Layer 2  |  Sentence structure support needed',
-  figurative_language_failure:         'Layer 2  |  Figurative language support needed',
+  vocabulary_gap: 'Layer 2  |  Vocabulary support needed',
+  morphology_gap: 'Layer 2  |  Word structure support needed',
+  syntax_barrier: 'Layer 2  |  Sentence structure support needed',
+  figurative_language_failure: 'Layer 2  |  Figurative language support needed',
   // Layer 3 — After reading
-  mood_misreading:                     'Layer 3  |  Mood identification needed',
-  tone_misreading:                     'Layer 3  |  Tone identification needed',
-  inferencing_literal:                 'Layer 3  |  Inferencing support needed',
-  inferencing_schema:                  'Layer 3  |  Inferencing support needed',
-  inferencing_wm:                      'Layer 3  |  Inferencing support needed',
-  topic_vs_theme_confusion:            'Layer 3  |  Theme building support needed',
-  evidence_retrieval_failure:          'Layer 3  |  Evidence support needed',
-  structure_purpose_disconnect:        'Layer 3  |  Structure analysis support needed',
-  comprehension_integration_failure:   'Layer 3  |  Analysis support needed',
+  mood_misreading: 'Layer 3  |  Mood identification needed',
+  tone_misreading: 'Layer 3  |  Tone identification needed',
+  inferencing_literal: 'Layer 3  |  Inferencing support needed',
+  inferencing_schema: 'Layer 3  |  Inferencing support needed',
+  inferencing_wm: 'Layer 3  |  Inferencing support needed',
+  topic_vs_theme_confusion: 'Layer 3  |  Theme building support needed',
+  evidence_retrieval_failure: 'Layer 3  |  Evidence support needed',
+  structure_purpose_disconnect: 'Layer 3  |  Structure analysis support needed',
+  comprehension_integration_failure: 'Layer 3  |  Analysis support needed',
 };
 
 function badgeText(classification: string): string {
+  if (classification in ELA9R11_MISCONCEPTIONS) {
+    const spec = ELA9R11_MISCONCEPTIONS[classification as keyof typeof ELA9R11_MISCONCEPTIONS];
+    return `9.R.1.1  |  ${spec.label}`;
+  }
+
   return BADGE_TEXT[classification] ?? 'Layer 2  |  Vocabulary support needed';
 }
 
 function teachRoute(standardId: string, classification: string): string {
+  if (standardId.replace(/-/g, '.') === 'ELA.9.R.1.1') {
+    return `/standard/${standardId}/intervention`;
+  }
+
   return `/standard/${standardId}/teach/${getTeachRoute(classification)}`;
 }
 
@@ -57,7 +67,10 @@ export default function BridgePage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push('/login'); return; }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
     async function init() {
       try {
@@ -110,7 +123,9 @@ export default function BridgePage() {
           setClassification(cls);
           setStatus('ready');
         } else {
-          console.error('[bridge] no completed diagnostic session found, or dominant_classification is null');
+          console.error(
+            '[bridge] no completed diagnostic session found, or dominant_classification is null'
+          );
           setStatus('error');
         }
       } catch (err) {
@@ -131,7 +146,16 @@ export default function BridgePage() {
   // ── Error state ───────────────────────────────────────────────────────────────
   if (status === 'error') {
     return (
-      <div style={{ background: C.navy, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+      <div
+        style={{
+          background: C.navy,
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: FONTS.ui,
+        }}
+      >
         <div style={{ maxWidth: 320, textAlign: 'center', padding: 24 }}>
           <p style={{ color: C.white, fontSize: 15, lineHeight: 1.6 }}>
             We couldn&rsquo;t load your diagnostic results. Please tell your teacher.
@@ -144,7 +168,16 @@ export default function BridgePage() {
   // ── Loading state (classification not yet resolved) ───────────────────────────
   if (status === 'loading' || classification === null) {
     return (
-      <div style={{ background: C.navy, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.ui }}>
+      <div
+        style={{
+          background: C.navy,
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: FONTS.ui,
+        }}
+      >
         <p style={{ color: C.blueMid, fontSize: 13 }}>Loading your diagnostic…</p>
       </div>
     );
@@ -174,7 +207,7 @@ export default function BridgePage() {
           fontWeight: 700,
         }}
       >
-        DIAGNOSTIC COMPLETE  |  {standardCode}
+        DIAGNOSTIC COMPLETE | {standardCode}
       </div>
 
       {/* 2 — Gogi avatar */}
@@ -201,12 +234,12 @@ export default function BridgePage() {
             marginBottom: 10,
           }}
         >
-          Got it. Let me show you something.
+          Got it. I found today&apos;s Reading Win.
         </div>
         <div style={{ fontSize: 13, color: C.blueMid, lineHeight: 1.6 }}>
-          I can see exactly where you got stuck.
+          I can see the one move to practice next.
           <br />
-          There&rsquo;s a specific move that unlocks this every time.
+          We&apos;ll keep it small: learn it, try it, prove it.
         </div>
       </div>
 
@@ -231,9 +264,7 @@ export default function BridgePage() {
             flexShrink: 0,
           }}
         />
-        <span style={{ fontSize: 12, color: C.blueMid }}>
-          {badgeText(classification)}
-        </span>
+        <span style={{ fontSize: 12, color: C.blueMid }}>{badgeText(classification)}</span>
       </div>
 
       {/* 5 — Show me button (delayed 2s) */}
@@ -253,7 +284,7 @@ export default function BridgePage() {
               fontFamily: FONTS.ui,
             }}
           >
-            Show me  →
+            Start my Reading Win →
           </button>
         )}
       </div>
@@ -272,7 +303,7 @@ export default function BridgePage() {
           textAlign: 'center',
         }}
       >
-        ⚠&nbsp; No score shown. No &ldquo;You got 1/3 correct.&rdquo; Ever.
+        No score shown. This is about the next move, not a grade.
       </div>
 
       {/* Standard title (subtle, below warning) */}

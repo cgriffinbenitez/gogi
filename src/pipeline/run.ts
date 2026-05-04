@@ -22,12 +22,22 @@ import { fetchBooksForClassification } from './stages/fetch';
 import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
 import { filterParagraph, getFilterCacheStats, resetFilterCacheStats } from './stages/filter';
 import { tagParagraph, getTagCacheStats } from './stages/tag';
-import { appendCSV, initCSV, isDuplicateV3, writePassageV3, fetchDiversityCounts, fetchTierCounts } from './stages/write';
+import {
+  appendCSV,
+  initCSV,
+  isDuplicateV3,
+  writePassageV3,
+  fetchDiversityCounts,
+  fetchTierCounts,
+} from './stages/write';
 
 const PIPELINE_VERSION: 'v4' = 'v4';
 
 // Per-book filter API call hard ceiling — sources config maxFilterCallsPerBook overrides this
 const FILTER_CAP_HARD_CEILING = 1000;
+const DEFAULT_STOP_LOSS_MIN_FILTER_CALLS = 35;
+const DEFAULT_STOP_LOSS_MAX_ZERO_SUITABLE_CALLS = 35;
+const DEFAULT_STOP_LOSS_MIN_YIELD_PCT = 2;
 
 // ─── Tier guardrail ───────────────────────────────────────────────────────────
 //
@@ -59,12 +69,21 @@ function applyTierGuardrail(taggerTier: number, wordCountTier: number): number {
 // ─── Help ─────────────────────────────────────────────────────────────────────
 
 const VALID_CLASSIFICATIONS = [
-  'mood_misreading', 'tone_misreading', 'figurative_language_failure',
-  'syntax_barrier', 'vocabulary_gap', 'morphology_gap', 'inferencing',
-  'evidence_retrieval_failure', 'comprehension_integration_failure',
-  'topic_vs_theme_confusion', 'structure_purpose_disconnect',
-  'no_metacognitive_strategy', 'schema_strategy_missing',
-  'central_idea_confusion', 'theme_misreading',
+  'mood_misreading',
+  'tone_misreading',
+  'figurative_language_failure',
+  'syntax_barrier',
+  'vocabulary_gap',
+  'morphology_gap',
+  'inferencing',
+  'evidence_retrieval_failure',
+  'comprehension_integration_failure',
+  'topic_vs_theme_confusion',
+  'structure_purpose_disconnect',
+  'no_metacognitive_strategy',
+  'schema_strategy_missing',
+  'central_idea_confusion',
+  'theme_misreading',
 ];
 
 function printHelp() {
@@ -76,6 +95,10 @@ Usage:
 
 Options:
   --classification   Required. Classification to run.
+  --standard         Optional FAST/B.E.S.T. standard metadata for standard-first runs.
+  --coverage-strand  Optional strand id for standard-first runs.
+  --coverage-label   Optional strand label for standard-first runs.
+  --coverage-signals Optional pipe-delimited strand harvest signals.
   --max              Max passages to insert (default: 15).
   --per-source-cap   Max insertions per source title (default: ceil(max/3)).
   --write-all-passed Write every filter-passed passage as pending_review.
@@ -114,32 +137,51 @@ function parseArgs(argv: string[]): PipelineOptions | null {
   }
 
   const maxIdx = args.indexOf('--max');
-  const max = maxIdx !== -1 && args[maxIdx + 1]
-    ? parseInt(args[maxIdx + 1], 10)
-    : 15;
+  const max = maxIdx !== -1 && args[maxIdx + 1] ? parseInt(args[maxIdx + 1], 10) : 15;
 
   const perSourceCapIdx = args.indexOf('--per-source-cap');
-  const perSourceCapOverride = perSourceCapIdx !== -1 && args[perSourceCapIdx + 1]
-    ? parseInt(args[perSourceCapIdx + 1], 10)
-    : undefined;
+  const perSourceCapOverride =
+    perSourceCapIdx !== -1 && args[perSourceCapIdx + 1]
+      ? parseInt(args[perSourceCapIdx + 1], 10)
+      : undefined;
 
   const maxBooksIdx = args.indexOf('--max-books');
-  const maxBooks = maxBooksIdx !== -1 && args[maxBooksIdx + 1]
-    ? parseInt(args[maxBooksIdx + 1], 10)
-    : 5;
+  const maxBooks =
+    maxBooksIdx !== -1 && args[maxBooksIdx + 1] ? parseInt(args[maxBooksIdx + 1], 10) : 5;
 
-  const dryRun        = args.includes('--dry-run');
+  const dryRun = args.includes('--dry-run');
   const writeAllPassed = args.includes('--write-all-passed');
+  const standardIdx = args.indexOf('--standard');
+  const coverageStrandIdx = args.indexOf('--coverage-strand');
+  const coverageLabelIdx = args.indexOf('--coverage-label');
+  const coverageSignalsIdx = args.indexOf('--coverage-signals');
 
   return {
     classification,
+    standardCode: standardIdx !== -1 && args[standardIdx + 1] ? args[standardIdx + 1] : undefined,
+    coverageStrandId:
+      coverageStrandIdx !== -1 && args[coverageStrandIdx + 1]
+        ? args[coverageStrandIdx + 1]
+        : undefined,
+    coverageStrandLabel:
+      coverageLabelIdx !== -1 && args[coverageLabelIdx + 1]
+        ? args[coverageLabelIdx + 1]
+        : undefined,
+    coverageSignals:
+      coverageSignalsIdx !== -1 && args[coverageSignalsIdx + 1]
+        ? args[coverageSignalsIdx + 1]
+            .split('|')
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : undefined,
     max: isNaN(max) ? 15 : max,
     maxBooks: isNaN(maxBooks) ? 5 : maxBooks,
     dryRun,
     writeAllPassed,
-    perSourceCapOverride: perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
-      ? perSourceCapOverride
-      : undefined,
+    perSourceCapOverride:
+      perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
+        ? perSourceCapOverride
+        : undefined,
   };
 }
 
@@ -155,19 +197,54 @@ function loadSources(classification: string): SourceConfig {
   return require(path.join(__dirname, 'sources', `${classification}.json`)) as SourceConfig;
 }
 
+function applyCoverageFocus(criteria: CriteriaConfig, opts: PipelineOptions): CriteriaConfig {
+  if (!opts.coverageStrandLabel && !opts.coverageSignals?.length) return criteria;
+
+  const signals = opts.coverageSignals?.length ? opts.coverageSignals.join(', ') : 'not specified';
+  return {
+    ...criteria,
+    targetSkill: [
+      criteria.targetSkill,
+      '',
+      `STANDARD-FIRST COVERAGE FOCUS: This run is specifically harvesting for ${
+        opts.standardCode ?? 'the selected standard'
+      } / ${opts.coverageStrandLabel ?? opts.coverageStrandId ?? 'coverage strand'}.`,
+      `The passage should provide teachable evidence for this strand, not merely a generic example of ${criteria.classification}.`,
+      `Harvest signals to seek: ${signals}.`,
+    ].join('\n'),
+    mustHave: [
+      ...criteria.mustHave,
+      `Coverage strand match: ${opts.coverageStrandLabel ?? opts.coverageStrandId}.`,
+      `At least one of these strand-specific harvest signals must be present and pointable: ${signals}.`,
+    ],
+  };
+}
+
+function getHarvestScopeLabel(classification: string, opts: PipelineOptions): string {
+  const parts = [
+    opts.standardCode,
+    opts.coverageStrandLabel ?? opts.coverageStrandId,
+    classification,
+  ].filter(Boolean);
+  return parts.join(' / ') || classification;
+}
+
 // ─── Author-group cap helpers ─────────────────────────────────────────────────
 
 function authorMatchesDisplayName(gutendexAuthor: string, displayName: string): boolean {
   const norm = gutendexAuthor.toLowerCase();
-  return displayName.toLowerCase().split(/\s+/).every(tok => norm.includes(tok));
+  return displayName
+    .toLowerCase()
+    .split(/\s+/)
+    .every((tok) => norm.includes(tok));
 }
 
 function authorGroupIndex(
   sourceAuthor: string,
-  groupCaps: NonNullable<SourceConfig['authorGroupCaps']>,
+  groupCaps: NonNullable<SourceConfig['authorGroupCaps']>
 ): number {
   for (let i = 0; i < groupCaps.length; i++) {
-    if (groupCaps[i].authors.some(a => authorMatchesDisplayName(sourceAuthor, a))) return i;
+    if (groupCaps[i].authors.some((a) => authorMatchesDisplayName(sourceAuthor, a))) return i;
   }
   return -1;
 }
@@ -184,7 +261,9 @@ type SuitableParagraph = Paragraph & {
 
 async function main() {
   const opts = parseArgs(process.argv);
-  if (!opts) { process.exit(1); }
+  if (!opts) {
+    process.exit(1);
+  }
 
   const { classification, max, maxBooks, dryRun, writeAllPassed, perSourceCapOverride } = opts;
 
@@ -197,10 +276,20 @@ async function main() {
     process.exit(1);
   }
   fs.writeFileSync(LOCK_FILE, String(process.pid));
-  function releaseLock() { try { fs.unlinkSync(LOCK_FILE); } catch {} }
+  function releaseLock() {
+    try {
+      fs.unlinkSync(LOCK_FILE);
+    } catch {}
+  }
   process.on('exit', releaseLock);
-  process.on('SIGINT',  () => { releaseLock(); process.exit(130); });
-  process.on('SIGTERM', () => { releaseLock(); process.exit(143); });
+  process.on('SIGINT', () => {
+    releaseLock();
+    process.exit(130);
+  });
+  process.on('SIGTERM', () => {
+    releaseLock();
+    process.exit(143);
+  });
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error('Error: ANTHROPIC_API_KEY is not set.');
@@ -213,13 +302,20 @@ async function main() {
 
   console.log(`\n═══════════════════════════════════════════════════════`);
   console.log(`  GOGI Pipeline ${PIPELINE_VERSION}  |  ${classification}`);
-  console.log(`  max: ${writeAllPassed ? '∞ (write-all-passed)' : max}  |  max-books: ${maxBooks}  |  dry-run: ${dryRun}`);
+  console.log(
+    `  max: ${writeAllPassed ? '∞ (write-all-passed)' : max}  |  max-books: ${maxBooks}  |  dry-run: ${dryRun}`
+  );
   console.log(`═══════════════════════════════════════════════════════`);
   console.log(`  [mode] write-all-passed: ${writeAllPassed ? 'ON' : 'OFF (default cap)'}`);
   console.log(`═══════════════════════════════════════════════════════\n`);
 
-  const criteria = loadCriteria(classification);
-  const sources  = loadSources(classification);
+  const criteria = applyCoverageFocus(loadCriteria(classification), opts);
+  const sources = loadSources(classification);
+  const harvestScope = {
+    standardCode: opts.standardCode,
+    coverageStrandId: opts.coverageStrandId,
+  };
+  const harvestScopeLabel = getHarvestScopeLabel(classification, opts);
 
   // Tier harvest targets — defaults T1=30, T2=35, T3=30, T4=20
   const tierTargets: Record<TierKey, number> = {
@@ -230,24 +326,24 @@ async function main() {
   };
 
   // CSV output
-  const ts      = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const csvPath = `/tmp/pipeline-summary-${classification}-${ts}.csv`;
   initCSV(csvPath);
   console.log(`[CSV] writing to ${csvPath}\n`);
 
   // Per-source cap (write phase) and per-tier-per-book cap (pool build)
-  const perSourceCap         = perSourceCapOverride ?? Math.ceil(max / 3);
+  const perSourceCap = perSourceCapOverride ?? Math.ceil(max / 3);
   const poolCapPerBookPerTier = Math.max(2, Math.ceil(max / 8));
 
   // Run-level counters (persist across all books)
-  let fetched              = 0;
-  let filtered             = 0;
-  let tagged               = 0;
-  let tagRejected          = 0;
-  let inserted             = 0;
-  let duplicates           = 0;
-  let skipped              = 0;
-  let frontMatterTotal     = 0;
+  let fetched = 0;
+  let filtered = 0;
+  let tagged = 0;
+  let tagRejected = 0;
+  let inserted = 0;
+  let duplicates = 0;
+  let skipped = 0;
+  let frontMatterTotal = 0;
 
   const tierCounts: Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
   const frontMatterPerBook: Array<{ title: string; chars: number }> = [];
@@ -255,34 +351,38 @@ async function main() {
   // ── Diversity counts (one query — reused by pre-fetch check and Phase 2 caps) ─
   const { authorCounts: divAuthorCounts, bookCounts: divBookCounts } = dryRun
     ? { authorCounts: new Map<string, number>(), bookCounts: new Map<number, number>() }
-    : await fetchDiversityCounts(classification);
+    : await fetchDiversityCounts(classification, harvestScope);
 
   // ── Tier counts (cumulative across all runs — enforces harvest targets) ───────
   const existingTierCounts: Record<TierKey, number> = dryRun
     ? { T1: 0, T2: 0, T3: 0, T4: 0 }
-    : await fetchTierCounts(classification);
-  const inRunTierCounts:   Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
+    : await fetchTierCounts(classification, harvestScope);
+  const inRunTierCounts: Record<TierKey, number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
   let rejectedForTierSaturation = 0;
   let runComplete = false;
 
   console.log(
-    `  [tier-state] ${classification}: ` +
-    (['T1', 'T2', 'T3', 'T4'] as TierKey[])
-      .map(t => `${t}=${existingTierCounts[t]}/${tierTargets[t]}`)
-      .join(', '),
+    `  [tier-state] ${harvestScopeLabel}: ` +
+      (['T1', 'T2', 'T3', 'T4'] as TierKey[])
+        .map((t) => `${t}=${existingTierCounts[t]}/${tierTargets[t]}`)
+        .join(', ')
   );
 
   // ── Stage 0: Pre-fetch author saturation check ────────────────────────────────
   let fetchSources = sources;
   {
     const maxPerAuthor = sources.maxApprovedPerAuthor ?? 10;
-    console.log(`  [author-skip] checking ${sources.priorityAuthors.length} priority authors (cap: ${maxPerAuthor}):`);
-    const filteredAuthors = sources.priorityAuthors.filter(displayName => {
+    console.log(
+      `  [author-skip] checking ${sources.priorityAuthors.length} priority authors (cap: ${maxPerAuthor}):`
+    );
+    const filteredAuthors = sources.priorityAuthors.filter((displayName) => {
       const existing = [...divAuthorCounts.entries()]
         .filter(([gutendexName]) => authorMatchesDisplayName(gutendexName, displayName))
         .reduce((sum, [, n]) => sum + n, 0);
       if (existing >= maxPerAuthor) {
-        console.log(`  [skip] ${displayName} — ${existing} existing approved/pending passages (cap: ${maxPerAuthor})`);
+        console.log(
+          `  [skip] ${displayName} — ${existing} existing approved/pending passages (cap: ${maxPerAuthor})`
+        );
         return false;
       }
       console.log(`  [run]  ${displayName} — ${existing} existing passages, harvesting`);
@@ -299,10 +399,10 @@ async function main() {
   console.log();
 
   // ── Per-book pool + write state (persists across books for cap tracking) ────
-  const suitablePool:          SuitableParagraph[]      = []; // full-run accumulator for dry-run report
-  const poolPerSourceTier:     Record<string, number>   = {};
-  const writtenPerSource:      Record<string, number>   = {};
-  const writtenPerAuthorGroup: number[]                 = (sources.authorGroupCaps ?? []).map(() => 0);
+  const suitablePool: SuitableParagraph[] = []; // full-run accumulator for dry-run report
+  const poolPerSourceTier: Record<string, number> = {};
+  const writtenPerSource: Record<string, number> = {};
+  const writtenPerAuthorGroup: number[] = (sources.authorGroupCaps ?? []).map(() => 0);
 
   const TIER_KEYS: TierKey[] = ['T1', 'T2', 'T3', 'T4'];
   let bookIndex = 0;
@@ -318,30 +418,59 @@ async function main() {
     frontMatterTotal += charsSkipped;
     frontMatterPerBook.push({ title: book.title, chars: charsSkipped });
 
-    const tierUnits  = extractPassageUnits(strippedBook);
+    const tierUnits = extractPassageUnits(strippedBook);
     let bookSuitable = 0;
-    const bookPool:  SuitableParagraph[] = [];
+    const bookPool: SuitableParagraph[] = [];
 
     // Phase 1: filter this book
     for (const tierKey of TIER_KEYS) {
       const units = tierUnits[tierKey];
       let tierSuitable = 0;
       let budgetExceeded = false;
+      let stopLossTriggered = false;
 
       for (const unit of units) {
         if (!writeAllPassed && tierSuitable >= poolCapPerBookPerTier) break;
 
         // Per-book filter budget cap — sources.maxFilterCallsPerBook (default 250), hard ceiling 1000
         const filterCap = Math.min(sources.maxFilterCallsPerBook ?? 250, FILTER_CAP_HARD_CEILING);
+        const stopLossMinFilterCalls =
+          sources.stopLossMinFilterCalls ?? DEFAULT_STOP_LOSS_MIN_FILTER_CALLS;
+        const stopLossMaxZeroSuitableCalls =
+          sources.stopLossMaxZeroSuitableCalls ?? DEFAULT_STOP_LOSS_MAX_ZERO_SUITABLE_CALLS;
+        const stopLossMinYieldPct = sources.stopLossMinYieldPct ?? DEFAULT_STOP_LOSS_MIN_YIELD_PCT;
         if (bookFilterCalls >= filterCap) {
           if (!budgetExceeded) {
             console.warn(
               `  [budget] per-book filter cap (${filterCap} calls) reached for` +
-              ` "${book.title.slice(0, 50)}" — stopping filter, proceeding to Phase 2`,
+                ` "${book.title.slice(0, 50)}" — stopping filter, proceeding to Phase 2`
             );
             budgetExceeded = true;
           }
           break;
+        }
+        if (
+          bookFilterCalls >= stopLossMinFilterCalls &&
+          bookSuitable === 0 &&
+          bookFilterCalls >= stopLossMaxZeroSuitableCalls
+        ) {
+          console.warn(
+            `  [stop-loss] "${book.title.slice(0, 50)}" produced 0 suitable passages` +
+              ` after ${bookFilterCalls} filter calls — abandoning this book for ${harvestScopeLabel}`
+          );
+          stopLossTriggered = true;
+          break;
+        }
+        if (bookFilterCalls >= stopLossMinFilterCalls && bookSuitable > 0) {
+          const yieldPct = (bookSuitable / bookFilterCalls) * 100;
+          if (yieldPct < stopLossMinYieldPct) {
+            console.warn(
+              `  [stop-loss] "${book.title.slice(0, 50)}" yield is ${yieldPct.toFixed(1)}%` +
+                ` after ${bookFilterCalls} filter calls — abandoning this book for ${harvestScopeLabel}`
+            );
+            stopLossTriggered = true;
+            break;
+          }
         }
 
         const filterResult = await filterParagraph(unit, criteria);
@@ -350,19 +479,19 @@ async function main() {
 
         const csvBase = {
           classification,
-          gutenberg_id:     unit.gutenbergId,
-          title:            unit.sourceTitle,
-          author:           unit.sourceAuthor,
-          paragraph_text:   unit.text,
-          word_count:       unit.wordCount,
-          paragraph_count:  unit.paragraphCount,
-          suitable:         filterResult.suitable,
-          reasoning:        filterResult.reasoning,
+          gutenberg_id: unit.gutenbergId,
+          title: unit.sourceTitle,
+          author: unit.sourceAuthor,
+          paragraph_text: unit.text,
+          word_count: unit.wordCount,
+          paragraph_count: unit.paragraphCount,
+          suitable: filterResult.suitable,
+          reasoning: filterResult.reasoning,
           canonical_answer: '',
-          distractors:      '',
-          keyword_flags:    '',
-          difficulty_tier:  '' as const,
-          tier:             '' as const,
+          distractors: '',
+          keyword_flags: '',
+          difficulty_tier: '' as const,
+          tier: '' as const,
           pipeline_version: PIPELINE_VERSION,
         };
 
@@ -388,31 +517,31 @@ async function main() {
           appendCSV(csvPath, { ...csvBase, status: 'rejected_by_filter' });
         }
       }
+      if (stopLossTriggered) break;
     }
 
     console.log(
       `[Stage 2-3] "${book.title.slice(0, 50)}"` +
-      `  front-matter: ${charsSkipped.toLocaleString()} chars stripped` +
-      `  suitable: ${bookSuitable}  filter-calls: ${bookFilterCalls}` +
-      `  (T1:${tierUnits.T1.length} T2:${tierUnits.T2.length} T3:${tierUnits.T3.length} T4:${tierUnits.T4.length} candidate units)`,
+        `  front-matter: ${charsSkipped.toLocaleString()} chars stripped` +
+        `  suitable: ${bookSuitable}  filter-calls: ${bookFilterCalls}` +
+        `  (T1:${tierUnits.T1.length} T2:${tierUnits.T2.length} T3:${tierUnits.T3.length} T4:${tierUnits.T4.length} candidate units)`
     );
 
     // Per-book cache hit rate (filter stage)
     const fStats = getFilterCacheStats();
     const totalFilterInput = fStats.input + fStats.cacheRead + fStats.cacheCreation;
-    const hitRate = totalFilterInput > 0
-      ? ((fStats.cacheRead / totalFilterInput) * 100).toFixed(1)
-      : '0.0';
+    const hitRate =
+      totalFilterInput > 0 ? ((fStats.cacheRead / totalFilterInput) * 100).toFixed(1) : '0.0';
     console.log(
       `  [cache] Book ${bookIndex} filter hit rate: ${hitRate}%` +
-      ` (${fStats.cacheRead.toLocaleString()} cached / ${totalFilterInput.toLocaleString()} total input tokens)`,
+        ` (${fStats.cacheRead.toLocaleString()} cached / ${totalFilterInput.toLocaleString()} total input tokens)`
     );
 
     // FIX 1: Phase 2 inline — tag + write this book's pool immediately
     if (!dryRun && bookPool.length > 0) {
       console.log(
         `\n  [Stage 4-5] Tagging and writing ${bookPool.length} suitable` +
-        ` passage(s) from "${book.title.slice(0, 50)}"...`,
+          ` passage(s) from "${book.title.slice(0, 50)}"...`
       );
 
       const poolToWrite = [...bookPool];
@@ -421,7 +550,7 @@ async function main() {
         // Diversity: run cap (checked before selecting next passage)
         if (inserted >= (sources.maxApprovedPerRun ?? 80)) {
           console.log(
-            `  [diversity] run cap reached (${sources.maxApprovedPerRun ?? 80}) — stopping Phase 2`,
+            `  [diversity] run cap reached (${sources.maxApprovedPerRun ?? 80}) — stopping Phase 2`
           );
           break;
         }
@@ -429,11 +558,11 @@ async function main() {
         let para: SuitableParagraph;
 
         if (writeAllPassed) {
-          para = poolToWrite.shift()!
+          para = poolToWrite.shift()!;
         } else {
           if (inserted >= max) break;
 
-          const eligible = poolToWrite.filter(p => {
+          const eligible = poolToWrite.filter((p) => {
             if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
             const groupIdx = authorGroupIndex(p.sourceAuthor, sources.authorGroupCaps ?? []);
             if (groupIdx !== -1) {
@@ -445,7 +574,8 @@ async function main() {
           if (eligible.length === 0) break;
 
           eligible.sort((a, b) => {
-            const sourceDiff = (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
+            const sourceDiff =
+              (writtenPerSource[a.sourceTitle] ?? 0) - (writtenPerSource[b.sourceTitle] ?? 0);
             if (sourceDiff !== 0) return sourceDiff;
             return TIER_KEYS.indexOf(a.tierKey) - TIER_KEYS.indexOf(b.tierKey);
           });
@@ -455,18 +585,18 @@ async function main() {
 
         const csvBase = {
           classification,
-          gutenberg_id:     para.gutenbergId,
-          title:            para.sourceTitle,
-          author:           para.sourceAuthor,
-          paragraph_text:   para.text,
-          word_count:       para.wordCount,
-          paragraph_count:  para.paragraphCount,
-          suitable:         true,
-          reasoning:        para.filterReasoning,
+          gutenberg_id: para.gutenbergId,
+          title: para.sourceTitle,
+          author: para.sourceAuthor,
+          paragraph_text: para.text,
+          word_count: para.wordCount,
+          paragraph_count: para.paragraphCount,
+          suitable: true,
+          reasoning: para.filterReasoning,
           canonical_answer: '',
-          distractors:      '',
-          keyword_flags:    '',
-          difficulty_tier:  '' as const,
+          distractors: '',
+          keyword_flags: '',
+          difficulty_tier: '' as const,
           pipeline_version: PIPELINE_VERSION,
         };
 
@@ -475,7 +605,7 @@ async function main() {
         if (authorExisting >= (sources.maxApprovedPerAuthor ?? 10)) {
           console.log(
             `  [diversity] author cap reached: "${para.sourceAuthor}"` +
-            ` has ${authorExisting} passages (cap: ${sources.maxApprovedPerAuthor ?? 10})`,
+              ` has ${authorExisting} passages (cap: ${sources.maxApprovedPerAuthor ?? 10})`
           );
           appendCSV(csvPath, { ...csvBase, status: 'diversity_author_cap' });
           skipped++;
@@ -487,7 +617,7 @@ async function main() {
         if (bookExisting >= (sources.maxApprovedPerBook ?? 6)) {
           console.log(
             `  [diversity] book cap reached: book ${para.gutenbergId}` +
-            ` has ${bookExisting} passages (cap: ${sources.maxApprovedPerBook ?? 6})`,
+              ` has ${bookExisting} passages (cap: ${sources.maxApprovedPerBook ?? 6})`
           );
           appendCSV(csvPath, { ...csvBase, status: 'diversity_book_cap' });
           skipped++;
@@ -508,8 +638,9 @@ async function main() {
           const tierTotal = existingTierCounts[para.tierKey] + inRunTierCounts[para.tierKey];
           if (tierTotal >= tierTargets[para.tierKey]) {
             console.log(
-              `  [tier-saturated] ${para.tierKey} at ${tierTotal}/${tierTargets[para.tierKey]}` +
-              ` — rejecting "${para.sourceTitle.slice(0, 35)}"`,
+              `  [tier-saturated] ${harvestScopeLabel} ${para.tierKey}` +
+                ` at ${tierTotal}/${tierTargets[para.tierKey]}` +
+                ` — rejecting "${para.sourceTitle.slice(0, 35)}"`
             );
             appendCSV(csvPath, { ...csvBase, status: 'tier_saturated' });
             rejectedForTierSaturation++;
@@ -537,24 +668,28 @@ async function main() {
         // Write v3 row
         const row = {
           classification,
-          paragraph_text:           para.text,
-          word_count:               para.wordCount,
-          paragraph_count:          para.paragraphCount,
-          source:                   'gutenberg',
-          source_title:             para.sourceTitle,
-          source_author:            para.sourceAuthor,
-          source_year:              para.sourceYear,
-          source_gutenberg_id:      para.gutenbergId,
-          approved:                 false,
-          paragraph_hash:           para.hash,
-          pipeline_version:         PIPELINE_VERSION,
-          target_signal:            tagResult.target_signal,
-          item_patterns_supported:  tagResult.item_patterns_supported,
-          supporting_evidence:      tagResult.supporting_evidence,
-          non_supporting_evidence:  tagResult.non_supporting_evidence,
-          dominant_concept:         tagResult.dominant_concept ?? null,
-          plausible_distractors:    tagResult.plausible_distractors ?? null,
-          craft_features:           tagResult.craft_features ?? null,
+          standard_code: opts.standardCode ?? null,
+          coverage_strand_id: opts.coverageStrandId ?? null,
+          coverage_strand_label: opts.coverageStrandLabel ?? null,
+          coverage_strand_signals: opts.coverageSignals ?? null,
+          paragraph_text: para.text,
+          word_count: para.wordCount,
+          paragraph_count: para.paragraphCount,
+          source: 'gutenberg',
+          source_title: para.sourceTitle,
+          source_author: para.sourceAuthor,
+          source_year: para.sourceYear,
+          source_gutenberg_id: para.gutenbergId,
+          approved: false,
+          paragraph_hash: para.hash,
+          pipeline_version: PIPELINE_VERSION,
+          target_signal: tagResult.target_signal,
+          item_patterns_supported: tagResult.item_patterns_supported,
+          supporting_evidence: tagResult.supporting_evidence,
+          non_supporting_evidence: tagResult.non_supporting_evidence,
+          dominant_concept: tagResult.dominant_concept ?? null,
+          plausible_distractors: tagResult.plausible_distractors ?? null,
+          craft_features: tagResult.craft_features ?? null,
           discrimination_item_type: tagResult.discrimination_item_type,
           // Three tier values are written intentionally — each measures something different:
           //
@@ -572,18 +707,18 @@ async function main() {
           //
           // Saturation tracking uses para.tierKey (which mirrors word_count_tier at extract
           // time) so it is unaffected by this architectural change.
-          intervention_tier:        applyTierGuardrail(tagResult.intervention_tier, extractTier),
-          tagger_tier:              tagResult.intervention_tier,
-          word_count_tier:          extractTier,
-          tier_rationale:           tagResult.tier_rationale,
-          q5_flag_5e_compatible:    para.filterResult.q5_flag_5e_compatible ?? false,
-          approval_status:          'pending_review' as const,
+          intervention_tier: applyTierGuardrail(tagResult.intervention_tier, extractTier),
+          tagger_tier: tagResult.intervention_tier,
+          word_count_tier: extractTier,
+          tier_rationale: tagResult.tier_rationale,
+          q5_flag_5e_compatible: para.filterResult.q5_flag_5e_compatible ?? false,
+          approval_status: 'pending_review' as const,
         };
 
         const writeResult = await writePassageV3(row);
         appendCSV(csvPath, {
           ...csvBase,
-          tier:   tagResult.intervention_tier,
+          tier: tagResult.intervention_tier,
           status: writeResult.status,
         });
 
@@ -597,13 +732,17 @@ async function main() {
 
           // Update in-memory diversity counts so subsequent passages see current state
           divAuthorCounts.set(para.sourceAuthor, (divAuthorCounts.get(para.sourceAuthor) ?? 0) + 1);
-          divBookCounts.set(para.gutenbergId,    (divBookCounts.get(para.gutenbergId)    ?? 0) + 1);
+          divBookCounts.set(para.gutenbergId, (divBookCounts.get(para.gutenbergId) ?? 0) + 1);
 
           // Check if all tiers are saturated — terminate run early
-          if ((['T1', 'T2', 'T3', 'T4'] as TierKey[]).every(
-            t => (existingTierCounts[t] + inRunTierCounts[t]) >= tierTargets[t],
-          )) {
-            console.log(`\n  [run-complete] All tiers saturated for ${classification}. Terminating run.`);
+          if (
+            (['T1', 'T2', 'T3', 'T4'] as TierKey[]).every(
+              (t) => existingTierCounts[t] + inRunTierCounts[t] >= tierTargets[t]
+            )
+          ) {
+            console.log(
+              `\n  [run-complete] All tiers saturated for ${harvestScopeLabel}. Terminating run.`
+            );
             runComplete = true;
             break;
           }
@@ -611,7 +750,7 @@ async function main() {
           const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
           console.log(
             `  [Stage 5] inserted ${insertedLabel} [T${tagResult.intervention_tier}]` +
-            ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`,
+              ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`
           );
         } else if (writeResult.status === 'duplicate') {
           duplicates++;
@@ -633,8 +772,8 @@ async function main() {
       .join('\n');
 
     const frontMatterLines = frontMatterPerBook
-      .filter(b => b.chars > 0)
-      .map(b => `    ${b.chars.toLocaleString().padStart(8)}  ${b.title.slice(0, 55)}`)
+      .filter((b) => b.chars > 0)
+      .map((b) => `    ${b.chars.toLocaleString().padStart(8)}  ${b.title.slice(0, 55)}`)
       .join('\n');
 
     console.log(`
@@ -642,7 +781,7 @@ async function main() {
   Pipeline ${PIPELINE_VERSION} complete (dry-run) — ${classification}
   Books fetched:           ${fetched}
   Claude filter calls:     ${filtered}
-  Claude YES rate:         ${suitablePool.length} / ${filtered} (${filtered > 0 ? (suitablePool.length / filtered * 100).toFixed(1) : 0}%)
+  Claude YES rate:         ${suitablePool.length} / ${filtered} (${filtered > 0 ? ((suitablePool.length / filtered) * 100).toFixed(1) : 0}%)
   Suitable pool size:      ${suitablePool.length}
   Per-source cap (write):  ${perSourceCap}
   Pool cap/book/tier:      ${poolCapPerBookPerTier}
@@ -670,18 +809,18 @@ ${frontMatterLines || '    (none stripped)'}
     .join('\n');
 
   const frontMatterLines = frontMatterPerBook
-    .filter(b => b.chars > 0)
-    .map(b => `    ${b.chars.toLocaleString().padStart(8)}  ${b.title.slice(0, 55)}`)
+    .filter((b) => b.chars > 0)
+    .map((b) => `    ${b.chars.toLocaleString().padStart(8)}  ${b.title.slice(0, 55)}`)
     .join('\n');
 
   console.log(`
 ═══════════════════════════════════════════════════════
-  Pipeline ${PIPELINE_VERSION} complete — ${classification}
+  Pipeline ${PIPELINE_VERSION} complete — ${harvestScopeLabel}
   Mode:                    ${writeAllPassed ? 'write-all-passed (no cap)' : 'default (capped)'}
   Books fetched:           ${fetched}
   Max books:               ${maxBooks}
   Claude filter calls:     ${filtered}
-  Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? (inserted / filtered * 100).toFixed(1) : 0}%)
+  Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? ((inserted / filtered) * 100).toFixed(1) : 0}%)
   Claude tag calls:        ${tagged}
   Tag-stage rejected:      ${tagRejected}
   Inserted:                ${inserted}${writeAllPassed ? ' (all pending_review)' : ''}
@@ -690,11 +829,11 @@ ${frontMatterLines || '    (none stripped)'}
   Duplicates skipped:      ${duplicates}
   Other skipped:           ${skipped}
 
-  Tier distribution (cumulative vs. targets):
-    T1: ${existingTierCounts.T1 + inRunTierCounts.T1}/${tierTargets.T1}${(existingTierCounts.T1 + inRunTierCounts.T1) >= tierTargets.T1 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T1 - existingTierCounts.T1 - inRunTierCounts.T1}`}  (+${inRunTierCounts.T1} this run)
-    T2: ${existingTierCounts.T2 + inRunTierCounts.T2}/${tierTargets.T2}${(existingTierCounts.T2 + inRunTierCounts.T2) >= tierTargets.T2 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T2 - existingTierCounts.T2 - inRunTierCounts.T2}`}  (+${inRunTierCounts.T2} this run)
-    T3: ${existingTierCounts.T3 + inRunTierCounts.T3}/${tierTargets.T3}${(existingTierCounts.T3 + inRunTierCounts.T3) >= tierTargets.T3 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T3 - existingTierCounts.T3 - inRunTierCounts.T3}`}  (+${inRunTierCounts.T3} this run)
-    T4: ${existingTierCounts.T4 + inRunTierCounts.T4}/${tierTargets.T4}${(existingTierCounts.T4 + inRunTierCounts.T4) >= tierTargets.T4 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T4 - existingTierCounts.T4 - inRunTierCounts.T4}`}  (+${inRunTierCounts.T4} this run)
+  Tier distribution for ${harvestScopeLabel} (cumulative vs. targets):
+    T1: ${existingTierCounts.T1 + inRunTierCounts.T1}/${tierTargets.T1}${existingTierCounts.T1 + inRunTierCounts.T1 >= tierTargets.T1 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T1 - existingTierCounts.T1 - inRunTierCounts.T1}`}  (+${inRunTierCounts.T1} this run)
+    T2: ${existingTierCounts.T2 + inRunTierCounts.T2}/${tierTargets.T2}${existingTierCounts.T2 + inRunTierCounts.T2 >= tierTargets.T2 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T2 - existingTierCounts.T2 - inRunTierCounts.T2}`}  (+${inRunTierCounts.T2} this run)
+    T3: ${existingTierCounts.T3 + inRunTierCounts.T3}/${tierTargets.T3}${existingTierCounts.T3 + inRunTierCounts.T3 >= tierTargets.T3 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T3 - existingTierCounts.T3 - inRunTierCounts.T3}`}  (+${inRunTierCounts.T3} this run)
+    T4: ${existingTierCounts.T4 + inRunTierCounts.T4}/${tierTargets.T4}${existingTierCounts.T4 + inRunTierCounts.T4 >= tierTargets.T4 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T4 - existingTierCounts.T4 - inRunTierCounts.T4}`}  (+${inRunTierCounts.T4} this run)
   Rejected for tier saturation: ${rejectedForTierSaturation}
 
   Inserted by source:
@@ -712,26 +851,32 @@ ${frontMatterLines || '    (none stripped)'}
 
   // ── Run-end cache report ─────────────────────────────────────────────────────
   const tagStats = getTagCacheStats();
-  const totalCacheRead     = tagStats.cacheRead;
+  const totalCacheRead = tagStats.cacheRead;
   const totalCacheCreation = tagStats.cacheCreation;
-  const totalInput         = tagStats.input;
-  const savingsUsd = (totalCacheRead / 1_000_000) * 2.70;
+  const totalInput = tagStats.input;
+  const savingsUsd = (totalCacheRead / 1_000_000) * 2.7;
   console.log(
     `  [cache] Tag stage — Total cache hits: ${totalCacheRead.toLocaleString()} tokens` +
-    ` | Cache created: ${totalCacheCreation.toLocaleString()} tokens` +
-    ` | Total input: ${totalInput.toLocaleString()} tokens` +
-    ` | Estimated savings vs. uncached: $${savingsUsd.toFixed(4)}`,
+      ` | Cache created: ${totalCacheCreation.toLocaleString()} tokens` +
+      ` | Total input: ${totalInput.toLocaleString()} tokens` +
+      ` | Estimated savings vs. uncached: $${savingsUsd.toFixed(4)}`
   );
 
   // Persist CSV to repo for v4 calibration analysis
-  const runDate = csvPath.match(/(\d{4}-\d{2}-\d{2}T[\d-]+)/)?.[1]?.slice(0, 10) ?? new Date().toISOString().slice(0, 10);
-  const archivePath = path.join(__dirname, '../../docs/pipeline/runs', `${runDate}_${classification}_${PIPELINE_VERSION}_run.csv`);
+  const runDate =
+    csvPath.match(/(\d{4}-\d{2}-\d{2}T[\d-]+)/)?.[1]?.slice(0, 10) ??
+    new Date().toISOString().slice(0, 10);
+  const archivePath = path.join(
+    __dirname,
+    '../../docs/pipeline/runs',
+    `${runDate}_${classification}_${PIPELINE_VERSION}_run.csv`
+  );
   fs.mkdirSync(path.dirname(archivePath), { recursive: true });
   fs.copyFileSync(csvPath, archivePath);
   console.log(`[pipeline] CSV archived → ${archivePath}`);
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('[pipeline] fatal error:', err);
   process.exit(1);
 });

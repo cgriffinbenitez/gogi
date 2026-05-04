@@ -17,6 +17,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { getLatestLayer0SessionCalibration } from '@/lib/layer0/sessionCalibration';
 import { callClaude } from '@/lib/callClaude';
 import { renderMarkdown } from '@/lib/renderMarkdown';
 import GogiAvatar from '@/components/GogiAvatar';
@@ -117,6 +118,7 @@ export default function ReassessSession() {
         setStandardCode(standard.code);
         setStandardTitle(standard.title);
 
+        const layer0 = await getLatestLayer0SessionCalibration(supabase, student.id);
         const { data: session, error: sessionError } = await supabase
           .from('sessions')
           .insert({
@@ -124,6 +126,8 @@ export default function ReassessSession() {
             standard_id: standardId,
             phase: 'reassess',
             status: 'in_progress',
+            layer0_assessment_id: layer0.layer0AssessmentId,
+            load_calibration_at_session: layer0.loadCalibration,
           })
           .select('id')
           .single();

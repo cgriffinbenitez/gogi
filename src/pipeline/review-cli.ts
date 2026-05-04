@@ -55,7 +55,10 @@ Actions during review:
 
 function parseArgs(argv: string[]): { classification: string; limit: number } | null {
   const args = argv.slice(2);
-  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
+  if (args.includes('--help') || args.includes('-h')) {
+    printHelp();
+    process.exit(0);
+  }
 
   const classIdx = args.indexOf('--classification');
   if (classIdx === -1 || !args[classIdx + 1]) {
@@ -65,9 +68,7 @@ function parseArgs(argv: string[]): { classification: string; limit: number } | 
   }
 
   const limitIdx = args.indexOf('--limit');
-  const limit = limitIdx !== -1 && args[limitIdx + 1]
-    ? parseInt(args[limitIdx + 1], 10)
-    : 50;
+  const limit = limitIdx !== -1 && args[limitIdx + 1] ? parseInt(args[limitIdx + 1], 10) : 50;
 
   return { classification: args[classIdx + 1], limit: isNaN(limit) ? 50 : limit };
 }
@@ -76,9 +77,7 @@ function parseArgs(argv: string[]): { classification: string; limit: number } | 
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) throw new Error('Missing Supabase env vars');
   return createClient(url, key);
 }
@@ -90,7 +89,7 @@ function clearLine() {
 }
 
 function singleKey(): Promise<string> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const stdin = process.stdin;
     const wasRaw = stdin.isTTY;
 
@@ -110,13 +109,13 @@ function singleKey(): Promise<string> {
 }
 
 function prompt(question: string): Promise<string> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
       terminal: true,
     });
-    rl.question(question, answer => {
+    rl.question(question, (answer) => {
       rl.close();
       resolve(answer.trim());
     });
@@ -130,8 +129,8 @@ function displayPassage(row: PassageRow, index: number, total: number) {
   console.log('\n' + '─'.repeat(70));
   console.log(
     `[${index + 1} of ${total}]  ${row.source_title ?? '(no title)'}` +
-    (row.source_author ? ` by ${row.source_author}` : '') +
-    (row.source_year ? ` (${row.source_year})` : ''),
+      (row.source_author ? ` by ${row.source_author}` : '') +
+      (row.source_year ? ` (${row.source_year})` : '')
   );
   console.log(`[difficulty: ${tierLabel}]  [${row.word_count} words]`);
   console.log('─'.repeat(70));
@@ -147,7 +146,11 @@ function displayPassage(row: PassageRow, index: number, total: number) {
 async function doApprove(supabase: ReturnType<typeof getSupabase>, id: string) {
   const { error } = await supabase
     .from('intervention_passages')
-    .update({ approved: true, reviewed_at: new Date().toISOString() })
+    .update({
+      approved: true,
+      approval_status: 'approved',
+      reviewed_at: new Date().toISOString(),
+    })
     .eq('id', id);
   if (error) console.error('  DB error:', error.message);
   else console.log('  ✓ approved');
@@ -157,7 +160,12 @@ async function doReject(supabase: ReturnType<typeof getSupabase>, id: string) {
   const reason = await prompt('  Rejection reason: ');
   const { error } = await supabase
     .from('intervention_passages')
-    .update({ rejection_reason: reason, reviewed_at: new Date().toISOString() })
+    .update({
+      approved: false,
+      approval_status: 'rejected',
+      rejection_reason: reason,
+      reviewed_at: new Date().toISOString(),
+    })
     .eq('id', id);
   if (error) console.error('  DB error:', error.message);
   else console.log('  ✓ rejected');
@@ -166,28 +174,32 @@ async function doReject(supabase: ReturnType<typeof getSupabase>, id: string) {
 async function doEditTags(supabase: ReturnType<typeof getSupabase>, id: string, row: PassageRow) {
   const canonical = await prompt(`  canonical_answer [${row.canonical_answer ?? ''}]: `);
   const distractorsRaw = await prompt(
-    `  distractors (comma-separated) [${(row.distractors ?? []).join(', ')}]: `,
+    `  distractors (comma-separated) [${(row.distractors ?? []).join(', ')}]: `
   );
   const keywordsRaw = await prompt(
-    `  keyword_flags (comma-separated) [${(row.keyword_flags ?? []).join(', ')}]: `,
+    `  keyword_flags (comma-separated) [${(row.keyword_flags ?? []).join(', ')}]: `
   );
 
   const updates = {
-    approved:        true,
-    reviewed_at:     new Date().toISOString(),
+    approved: true,
+    approval_status: 'approved',
+    reviewed_at: new Date().toISOString(),
     canonical_answer: canonical || row.canonical_answer,
-    distractors:     distractorsRaw
-      ? distractorsRaw.split(',').map((s: string) => s.trim()).filter(Boolean)
+    distractors: distractorsRaw
+      ? distractorsRaw
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean)
       : row.distractors,
-    keyword_flags:   keywordsRaw
-      ? keywordsRaw.split(',').map((s: string) => s.trim()).filter(Boolean)
+    keyword_flags: keywordsRaw
+      ? keywordsRaw
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean)
       : row.keyword_flags,
   };
 
-  const { error } = await supabase
-    .from('intervention_passages')
-    .update(updates)
-    .eq('id', id);
+  const { error } = await supabase.from('intervention_passages').update(updates).eq('id', id);
   if (error) console.error('  DB error:', error.message);
   else console.log('  ✓ edited and approved');
 }
@@ -196,21 +208,28 @@ async function doEditTags(supabase: ReturnType<typeof getSupabase>, id: string, 
 
 async function main() {
   const opts = parseArgs(process.argv);
-  if (!opts) { process.exit(1); }
+  if (!opts) {
+    process.exit(1);
+  }
 
   const supabase = getSupabase();
   const { classification, limit } = opts;
 
   const { data, error } = await supabase
     .from('intervention_passages')
-    .select('id, classification, paragraph_text, word_count, source_title, source_author, source_year, canonical_answer, distractors, keyword_flags, difficulty_tier, approved')
+    .select(
+      'id, classification, paragraph_text, word_count, source_title, source_author, source_year, canonical_answer, distractors, keyword_flags, difficulty_tier, approved'
+    )
     .eq('classification', classification)
     .eq('approved', false)
     .is('rejection_reason', null)
     .order('created_at', { ascending: true })
     .limit(limit);
 
-  if (error) { console.error('DB error:', error.message); process.exit(1); }
+  if (error) {
+    console.error('DB error:', error.message);
+    process.exit(1);
+  }
   if (!data || data.length === 0) {
     console.log(`No unapproved passages found for "${classification}".`);
     return;
@@ -229,10 +248,22 @@ async function main() {
       console.log('\nQuitting.');
       break;
     }
-    if (key === 's') { console.log('  skipped'); continue; }
-    if (key === 'a') { await doApprove(supabase, row.id); continue; }
-    if (key === 'r') { await doReject(supabase, row.id); continue; }
-    if (key === 'e') { await doEditTags(supabase, row.id, row); continue; }
+    if (key === 's') {
+      console.log('  skipped');
+      continue;
+    }
+    if (key === 'a') {
+      await doApprove(supabase, row.id);
+      continue;
+    }
+    if (key === 'r') {
+      await doReject(supabase, row.id);
+      continue;
+    }
+    if (key === 'e') {
+      await doEditTags(supabase, row.id, row);
+      continue;
+    }
 
     console.log(`  unknown key "${key}" — skipping`);
   }
@@ -240,7 +271,7 @@ async function main() {
   console.log('\nReview session complete.\n');
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('[review-cli] fatal error:', err);
   process.exit(1);
 });

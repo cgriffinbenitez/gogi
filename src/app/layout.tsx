@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import '../styles/tailwind.css';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/context/AuthContext';
+import { DemoNavRail } from '@/components/demo/DemoNavRail';
 import { validateEnv } from '@/lib/config/validateEnv';
 
 validateEnv();
@@ -14,15 +15,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'GOGI — AI Literacy Platform for Real Classrooms',
-  description: 'GOGI transforms how students read, analyze, and think through AI-guided structured tasks aligned to Florida B.E.S.T. standards.',
+  description:
+    'GOGI transforms how students read, analyze, and think through AI-guided structured tasks aligned to Florida B.E.S.T. standards.',
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <head>
@@ -36,6 +36,9 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           {children}
+          <React.Suspense fallback={null}>
+            <DemoNavRail />
+          </React.Suspense>
         </AuthProvider>
         <Toaster
           position="bottom-right"
@@ -50,7 +53,6 @@ export default function RootLayout({
           }}
         />
       </body>
-
     </html>
   );
 }

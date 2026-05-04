@@ -6,13 +6,18 @@ import type { CSVRow, PassageRow, PassageRowV3, WriteResult } from '../types';
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    serviceRole &&
+    (serviceRole.startsWith('eyJ') ||
+      serviceRole.startsWith('sb_secret_') ||
+      serviceRole.length > 80)
+      ? serviceRole
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     throw new Error(
-      '[write] Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      '[write] Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_SUPABASE_ANON_KEY'
     );
   }
   return createClient(url, key);
@@ -20,10 +25,7 @@ function getSupabase() {
 
 // ─── Duplicate check (v2) ─────────────────────────────────────────────────────
 
-export async function isDuplicate(
-  gutenbergId: number,
-  hash: string,
-): Promise<boolean> {
+export async function isDuplicate(gutenbergId: number, hash: string): Promise<boolean> {
   const supabase = getSupabase();
   const { data } = await supabase
     .from('intervention_passages')
@@ -39,7 +41,7 @@ export async function isDuplicate(
 export async function isDuplicateV3(
   gutenbergId: number,
   hash: string,
-  interventionTier: number,
+  interventionTier: number
 ): Promise<boolean> {
   const supabase = getSupabase();
   const { data } = await supabase
@@ -73,24 +75,68 @@ export async function writePassageV3(row: PassageRowV3): Promise<WriteResult> {
   const { error } = await supabase.from('intervention_passages').insert([row]);
 
   if (error) {
+    if (
+      /standard_code|coverage_strand_id|coverage_strand_label|coverage_strand_signals/i.test(
+        error.message
+      )
+    ) {
+      const {
+        standard_code: _standardCode,
+        coverage_strand_id: _coverageStrandId,
+        coverage_strand_label: _coverageStrandLabel,
+        coverage_strand_signals: _coverageStrandSignals,
+        ...legacyRow
+      } = row;
+      const retry = await supabase.from('intervention_passages').insert([legacyRow]);
+      if (!retry.error) return { status: 'inserted' };
+      if (retry.error.code === '23505') return { status: 'duplicate' };
+      return { status: 'error', error: retry.error.message };
+    }
     if (error.code === '23505') return { status: 'duplicate' };
     return { status: 'error', error: error.message };
   }
   return { status: 'inserted' };
 }
 
-// ── Tier counts (cumulative across all runs — used for harvest targets) ────────
+// ── Tier counts (cumulative across scoped runs — used for harvest targets) ─────
+
+export type HarvestCountScope = {
+  standardCode?: string;
+  coverageStrandId?: string;
+};
+
+function isCoverageColumnMissing(message: string): boolean {
+  return /standard_code|coverage_strand_id/i.test(message);
+}
 
 export async function fetchTierCounts(
   classification: string,
+  scope: HarvestCountScope = {}
 ): Promise<Record<'T1' | 'T2' | 'T3' | 'T4', number>> {
   const supabase = getSupabase();
   const counts: Record<'T1' | 'T2' | 'T3' | 'T4', number> = { T1: 0, T2: 0, T3: 0, T4: 0 };
-  const { data, error } = await supabase
+
+  let query = supabase
     .from('intervention_passages')
     .select('intervention_tier')
     .eq('classification', classification)
     .in('approval_status', ['pending_review', 'approved']);
+
+  if (scope.standardCode) query = query.eq('standard_code', scope.standardCode);
+  if (scope.coverageStrandId) query = query.eq('coverage_strand_id', scope.coverageStrandId);
+
+  let { data, error } = await query;
+
+  if (error && isCoverageColumnMissing(error.message)) {
+    const retry = await supabase
+      .from('intervention_passages')
+      .select('intervention_tier')
+      .eq('classification', classification)
+      .in('approval_status', ['pending_review', 'approved']);
+    data = retry.data;
+    error = retry.error;
+  }
+
   if (error || !data) return counts;
   for (const row of data) {
     const key = `T${row.intervention_tier}` as 'T1' | 'T2' | 'T3' | 'T4';
@@ -103,16 +149,33 @@ export async function fetchTierCounts(
 
 export async function fetchDiversityCounts(
   classification: string,
+  scope: HarvestCountScope = {}
 ): Promise<{ authorCounts: Map<string, number>; bookCounts: Map<number, number> }> {
   const supabase = getSupabase();
-  const { data, error } = await supabase
+
+  let query = supabase
     .from('intervention_passages')
     .select('source_author, source_gutenberg_id')
     .eq('classification', classification)
     .in('approval_status', ['pending_review', 'approved']);
 
+  if (scope.standardCode) query = query.eq('standard_code', scope.standardCode);
+  if (scope.coverageStrandId) query = query.eq('coverage_strand_id', scope.coverageStrandId);
+
+  let { data, error } = await query;
+
+  if (error && isCoverageColumnMissing(error.message)) {
+    const retry = await supabase
+      .from('intervention_passages')
+      .select('source_author, source_gutenberg_id')
+      .eq('classification', classification)
+      .in('approval_status', ['pending_review', 'approved']);
+    data = retry.data;
+    error = retry.error;
+  }
+
   const authorCounts = new Map<string, number>();
-  const bookCounts   = new Map<number, number>();
+  const bookCounts = new Map<number, number>();
   if (error || !data) return { authorCounts, bookCounts };
 
   for (const row of data) {
@@ -138,10 +201,22 @@ function escapeCSV(val: string | number | null | undefined): string {
 }
 
 const CSV_HEADERS = [
-  'classification', 'gutenberg_id', 'title', 'author',
-  'paragraph_text', 'word_count', 'paragraph_count', 'suitable', 'reasoning',
-  'canonical_answer', 'distractors', 'keyword_flags',
-  'difficulty_tier', 'tier', 'pipeline_version', 'status',
+  'classification',
+  'gutenberg_id',
+  'title',
+  'author',
+  'paragraph_text',
+  'word_count',
+  'paragraph_count',
+  'suitable',
+  'reasoning',
+  'canonical_answer',
+  'distractors',
+  'keyword_flags',
+  'difficulty_tier',
+  'tier',
+  'pipeline_version',
+  'status',
 ];
 
 export function initCSV(csvPath: string) {

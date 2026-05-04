@@ -48,6 +48,7 @@
     "serve": "next start",
     "type-check": "tsc --noEmit",
     "pipeline": "tsx src/pipeline/run.ts",
+    "pipeline:standard": "tsx src/pipeline/run-standard.ts",
     "review-passages": "tsx src/pipeline/review-cli.ts",
     "validate": "tsx src/pipeline/validate.ts",
     "test:integration": "vitest run tests/integration/"

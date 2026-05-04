@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { getLatestLayer0SessionCalibration } from '@/lib/layer0/sessionCalibration';
 import GogiAvatar from '@/components/GogiAvatar';
 import ProtocolEngine from '../protocol/ProtocolEngine';
 import { routeToProtocol, type StandardCode } from '../protocol/ClassificationRouter';
@@ -179,6 +180,7 @@ export default function TeachSession() {
         setDiagnosticPassage(passage);
 
         // Create teach session row
+        const layer0 = await getLatestLayer0SessionCalibration(supabase, student.id);
         const { data: session, error: sessionError } = await supabase
           .from('sessions')
           .insert({
@@ -186,6 +188,8 @@ export default function TeachSession() {
             standard_id: standardId,
             phase: 'teach',
             status: 'in_progress',
+            layer0_assessment_id: layer0.layer0AssessmentId,
+            load_calibration_at_session: layer0.loadCalibration,
           })
           .select('id')
           .single();

@@ -454,13 +454,13 @@ export function StandardTile({
         if (!vocabCheckComplete)  return { label: 'Start Vocabulary Check →',  route: `/standard/${standardId}/vocab-check` };
         return                           { label: 'Start Diagnostic →',        route: `/standard/${standardId}/diagnostic` };
       case 'inDiagnostic': {
-        const qNum = diagnosticQuestionsAnswered + 1;
+        const qNum = Math.min(diagnosticQuestionsAnswered + 1, diagnosticQuestionsTotal);
         return { label: `Continue Diagnostic (Q${qNum} of ${diagnosticQuestionsTotal}) →`, route: `/standard/${standardId}/diagnostic` };
       }
       case 'inIntervention':
         return isPracticing
           ? { label: `Continue — Session ${sessionsPassed + 1} of 3 →`, route: `/standard/${standardId}/practice` }
-          : { label: 'Begin Intervention →',                             route: `/standard/${standardId}/bridge`   };
+          : { label: 'Begin Intervention →',                             route: `/standard/${standardId}/intervention`   };
       case 'mastered':
         return { label: 'View My Growth →', route: `/standard/${standardId}/mastery` };
     }

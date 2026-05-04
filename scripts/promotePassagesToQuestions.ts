@@ -28,7 +28,12 @@ config({ path: resolve(process.cwd(), '.env.local') });
 import fs from 'fs';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@supabase/supabase-js';
-import { PRIMITIVE_MAP, PrimitiveMapping, buildSlotSequence, checkLayerViolations } from '../src/pipeline/stages/promoteUtils';
+import {
+  PRIMITIVE_MAP,
+  PrimitiveMapping,
+  buildSlotSequence,
+  checkLayerViolations,
+} from '../src/pipeline/stages/promoteUtils';
 
 // ─── CLI ──────────────────────────────────────────────────────────────────────
 
@@ -59,13 +64,13 @@ function getArg(flag: string): string | null {
 }
 
 const CLASSIFICATION_FILTER = getArg('--classification');
-const LIMIT                 = parseInt(getArg('--limit') ?? '50', 10);
-const DRY_RUN               = args.includes('--dry-run');
+const LIMIT = parseInt(getArg('--limit') ?? '50', 10);
+const DRY_RUN = args.includes('--dry-run');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CALL_DELAY_MS = 1500;
-const MAX_RETRIES   = 2;
+const MAX_RETRIES = 2;
 
 // ─── Pilot standard — R.1.1 only ─────────────────────────────────────────────
 //
@@ -73,8 +78,8 @@ const MAX_RETRIES   = 2;
 // Post-pilot: replace with primitive_standard_mapping table lookup.
 
 const R1_1_STANDARD = {
-  id:    '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e',
-  code:  'ELA.9.R.1.1',
+  id: '4f374bcc-9ca9-4b15-94cb-3bdd6afe477e',
+  code: 'ELA.9.R.1.1',
   title: 'Inferencing and Textual Evidence',
 } as const;
 
@@ -84,36 +89,36 @@ const R1_1_STANDARD = {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface PassageRecord {
-  id:                       string;
-  classification:           string;
-  paragraph_text:           string;
-  word_count:               number;
-  source_title:             string | null;
-  source_author:            string | null;
-  source_year:              number | null;
-  intervention_tier:        number;
-  target_signal:            string;
-  supporting_evidence:      Array<{ element: string; rationale: string }>;
-  non_supporting_evidence:  Array<{ element: string; rationale: string }>;
-  dominant_concept:         string | null;
-  plausible_distractors:    string[] | null;
-  craft_features:           Array<{ type: string; location: string; description: string }> | null;
+  id: string;
+  classification: string;
+  paragraph_text: string;
+  word_count: number;
+  source_title: string | null;
+  source_author: string | null;
+  source_year: number | null;
+  intervention_tier: number;
+  target_signal: string;
+  supporting_evidence: Array<{ element: string; rationale: string }>;
+  non_supporting_evidence: Array<{ element: string; rationale: string }>;
+  dominant_concept: string | null;
+  plausible_distractors: string[] | null;
+  craft_features: Array<{ type: string; location: string; description: string }> | null;
   discrimination_item_type: string;
-  tier_rationale:           string;
+  tier_rationale: string;
 }
 
 interface OMCResponse {
-  question_stem:            string;
-  option_a:                 { text: string; classification: string };
-  option_b:                 { text: string; classification: string };
-  option_c:                 { text: string; classification: string };
-  option_d:                 { text: string; classification: string };
-  correct_option:           'A' | 'B' | 'C' | 'D';
+  question_stem: string;
+  option_a: { text: string; classification: string };
+  option_b: { text: string; classification: string };
+  option_c: { text: string; classification: string };
+  option_d: { text: string; classification: string };
+  correct_option: 'A' | 'B' | 'C' | 'D';
   cognitive_skill_targeted: string;
-  accessibility_concern:    boolean;
-  vocabulary_pre_teach:     string[];
-  schema_pre_activate:      string | null;
-  rationale:                string;
+  accessibility_concern: boolean;
+  vocabulary_pre_teach: string[];
+  schema_pre_activate: string | null;
+  rationale: string;
 }
 
 // ─── Prompt builders ──────────────────────────────────────────────────────────
@@ -358,18 +363,22 @@ function buildVariableBlock(
   passage: PassageRecord,
   mapping: PrimitiveMapping,
   correctOptionTarget: 'A' | 'B' | 'C' | 'D',
-  slotAssignments: Record<string, 1 | 2 | 3>,
+  slotAssignments: Record<string, 1 | 2 | 3>
 ): string {
-  const evidence = (passage.supporting_evidence ?? [])
-    .map((e) => `  • "${e.element}" — ${e.rationale}`)
-    .join('\n') || '  (none tagged)';
+  const evidence =
+    (passage.supporting_evidence ?? [])
+      .map((e) => `  • "${e.element}" — ${e.rationale}`)
+      .join('\n') || '  (none tagged)';
 
-  const nonEvidence = (passage.non_supporting_evidence ?? [])
-    .map((e) => `  • "${e.element}" — ${e.rationale}`)
-    .join('\n') || '  (none tagged)';
+  const nonEvidence =
+    (passage.non_supporting_evidence ?? [])
+      .map((e) => `  • "${e.element}" — ${e.rationale}`)
+      .join('\n') || '  (none tagged)';
 
   const craftStr = passage.craft_features?.length
-    ? passage.craft_features.map((c) => `  • [${c.type}] at ${c.location}: ${c.description}`).join('\n')
+    ? passage.craft_features
+        .map((c) => `  • [${c.type}] at ${c.location}: ${c.description}`)
+        .join('\n')
     : '  (none tagged)';
 
   const distractorStr = passage.plausible_distractors?.length
@@ -380,7 +389,7 @@ function buildVariableBlock(
     .map((opt) =>
       opt === correctOptionTarget
         ? `  Option ${opt}: CORRECT`
-        : `  Option ${opt}: Layer ${slotAssignments[opt]} distractor`,
+        : `  Option ${opt}: Layer ${slotAssignments[opt]} distractor`
     )
     .join('\n');
 
@@ -444,16 +453,19 @@ function sleep(ms: number): Promise<void> {
 }
 
 function parseJson<T>(raw: string): T {
-  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  const cleaned = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '');
   return JSON.parse(cleaned) as T;
 }
 
 function validateOMC(r: OMCResponse, correctOptionTarget: 'A' | 'B' | 'C' | 'D'): string | null {
-  if (!r.question_stem)            return 'missing question_stem';
-  if (!r.option_a?.text)           return 'missing option_a.text';
-  if (!r.option_b?.text)           return 'missing option_b.text';
-  if (!r.option_c?.text)           return 'missing option_c.text';
-  if (!r.option_d?.text)           return 'missing option_d.text';
+  if (!r.question_stem) return 'missing question_stem';
+  if (!r.option_a?.text) return 'missing option_a.text';
+  if (!r.option_b?.text) return 'missing option_b.text';
+  if (!r.option_c?.text) return 'missing option_c.text';
+  if (!r.option_d?.text) return 'missing option_d.text';
   if (!r.option_a?.classification) return 'missing option_a.classification';
   if (!r.option_b?.classification) return 'missing option_b.classification';
   if (!r.option_c?.classification) return 'missing option_c.classification';
@@ -463,16 +475,13 @@ function validateOMC(r: OMCResponse, correctOptionTarget: 'A' | 'B' | 'C' | 'D')
   if (r.correct_option !== correctOptionTarget)
     return `correct_option mismatch: expected ${correctOptionTarget}, got ${r.correct_option}`;
   if (!r.cognitive_skill_targeted) return 'missing cognitive_skill_targeted';
-  if (!r.rationale)                return 'missing rationale';
+  if (!r.rationale) return 'missing rationale';
   return null;
 }
 
 // Warn if any two wrong-answer distractors share a classification code.
 // This breaks triage: a student who picks any wrong answer routes to the same intervention.
-function warnDuplicateDistractors(
-  r: OMCResponse,
-  prefix: string,
-): void {
+function warnDuplicateDistractors(r: OMCResponse, prefix: string): void {
   const wrongClasses = (['a', 'b', 'c', 'd'] as const)
     .filter((opt) => opt !== r.correct_option.toLowerCase())
     .map((opt) => r[`option_${opt}`].classification);
@@ -485,7 +494,7 @@ function warnDuplicateDistractors(
   if (dupes.length > 0) {
     console.warn(
       `${prefix} ⚠  duplicate distractor class(es): [${wrongClasses.join(', ')}] ` +
-      `— all three wrong answers may route to the same intervention`,
+        `— all three wrong answers may route to the same intervention`
     );
   }
 }
@@ -506,7 +515,7 @@ async function main() {
     process.exit(1);
   }
 
-  const supabase  = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(supabaseUrl, supabaseKey);
   const anthropic = new Anthropic({ apiKey: anthropicKey, timeout: 90_000 });
 
   // ── Banner ──────────────────────────────────────────────────────────────────
@@ -524,14 +533,26 @@ async function main() {
 
   let query = supabase
     .from('intervention_passages')
-    .select([
-      'id', 'classification', 'paragraph_text', 'word_count',
-      'source_title', 'source_author', 'source_year',
-      'intervention_tier', 'target_signal',
-      'supporting_evidence', 'non_supporting_evidence',
-      'dominant_concept', 'plausible_distractors', 'craft_features',
-      'discrimination_item_type', 'tier_rationale',
-    ].join(', '))
+    .select(
+      [
+        'id',
+        'classification',
+        'paragraph_text',
+        'word_count',
+        'source_title',
+        'source_author',
+        'source_year',
+        'intervention_tier',
+        'target_signal',
+        'supporting_evidence',
+        'non_supporting_evidence',
+        'dominant_concept',
+        'plausible_distractors',
+        'craft_features',
+        'discrimination_item_type',
+        'tier_rationale',
+      ].join(', ')
+    )
     .in('approval_status', ['approved', 'pending_review'])
     .in('pipeline_version', ['v3', 'v4'])
     .or('question_generated.is.null,question_generated.eq.false')
@@ -548,7 +569,7 @@ async function main() {
     process.exit(1);
   }
 
-  const passages = (data ?? []) as PassageRecord[];
+  const passages = (data ?? []) as unknown as PassageRecord[];
 
   if (passages.length === 0) {
     console.log('Promotion queue is empty — nothing to do.\n');
@@ -557,8 +578,8 @@ async function main() {
 
   console.log(`Found ${passages.length} passage(s) in promotion queue.\n`);
 
-  const correctSlotSequence:     Array<'A' | 'B' | 'C' | 'D'>              = [];
-  const correctSlotDistribution: Record<'A' | 'B' | 'C' | 'D', number>    = { A: 0, B: 0, C: 0, D: 0 };
+  const correctSlotSequence: Array<'A' | 'B' | 'C' | 'D'> = [];
+  const correctSlotDistribution: Record<'A' | 'B' | 'C' | 'D', number> = { A: 0, B: 0, C: 0, D: 0 };
 
   // ── Build correct-slot sequence (forced exact A/B/C/D balance) ──────────────
   //
@@ -579,21 +600,21 @@ async function main() {
 
   // ── Stats ───────────────────────────────────────────────────────────────────
 
-  let promoted        = 0;
-  let failed          = 0;
-  let skipped         = 0;
-  let totalCalls      = 0;
-  let cacheReadTotal  = 0;
-  let inputTotal      = 0;
-  let layerPassed     = 0;
-  let layerViolated   = 0;
+  let promoted = 0;
+  let failed = 0;
+  let skipped = 0;
+  let totalCalls = 0;
+  let cacheReadTotal = 0;
+  let inputTotal = 0;
+  let layerPassed = 0;
+  let layerViolated = 0;
 
   // ── Process ─────────────────────────────────────────────────────────────────
 
   for (let i = 0; i < passages.length; i++) {
-    const p       = passages[i];
+    const p = passages[i];
     const mapping = PRIMITIVE_MAP[p.classification];
-    const prefix  = `  [${i + 1}/${passages.length}]`;
+    const prefix = `  [${i + 1}/${passages.length}]`;
 
     if (!mapping) {
       console.log(`${prefix} ⚠  Unknown classification "${p.classification}" — skipping`);
@@ -602,7 +623,9 @@ async function main() {
     }
 
     if (DRY_RUN) {
-      console.log(`${prefix} DRY RUN — ${p.classification} tier ${p.intervention_tier} | passage ${p.id}`);
+      console.log(
+        `${prefix} DRY RUN — ${p.classification} tier ${p.intervention_tier} | passage ${p.id}`
+      );
       skipped++;
       continue;
     }
@@ -614,8 +637,9 @@ async function main() {
 
     // Pre-assign which wrong-answer slot maps to each diagnostic layer.
     // Removes Claude's discretion over layer selection — it fills content, not layer.
-    const wrongOpts = (['A', 'B', 'C', 'D'] as Array<'A' | 'B' | 'C' | 'D'>)
-      .filter((o) => o !== correctOptionTarget);
+    const wrongOpts = (['A', 'B', 'C', 'D'] as Array<'A' | 'B' | 'C' | 'D'>).filter(
+      (o) => o !== correctOptionTarget
+    );
     for (let j = wrongOpts.length - 1; j > 0; j--) {
       const k = Math.floor(Math.random() * (j + 1));
       [wrongOpts[j], wrongOpts[k]] = [wrongOpts[k], wrongOpts[j]];
@@ -627,14 +651,14 @@ async function main() {
     };
 
     const variableBlock = buildVariableBlock(p, mapping, correctOptionTarget, slotAssignments);
-    const userMessage   = buildUserMessage(p);
+    const userMessage = buildUserMessage(p);
     let parsed: OMCResponse | null = null;
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
         totalCalls++;
         const msg = await anthropic.messages.create({
-          model:      'claude-sonnet-4-6',
+          model: 'claude-sonnet-4-6',
           max_tokens: 2048,
           system: [
             { type: 'text', text: stableSystem, cache_control: { type: 'ephemeral' } },
@@ -644,17 +668,18 @@ async function main() {
         });
 
         const usage = msg.usage as {
-          input_tokens: number; output_tokens: number;
-          cache_read_input_tokens?: number; cache_creation_input_tokens?: number;
+          input_tokens: number;
+          output_tokens: number;
+          cache_read_input_tokens?: number;
+          cache_creation_input_tokens?: number;
         };
         cacheReadTotal += usage.cache_read_input_tokens ?? 0;
-        inputTotal     += usage.input_tokens
-                        + (usage.cache_read_input_tokens  ?? 0)
-                        + (usage.cache_creation_input_tokens ?? 0);
+        inputTotal +=
+          usage.input_tokens +
+          (usage.cache_read_input_tokens ?? 0) +
+          (usage.cache_creation_input_tokens ?? 0);
 
-        parsed = parseJson<OMCResponse>(
-          (msg.content[0] as { type: string; text: string }).text,
-        );
+        parsed = parseJson<OMCResponse>((msg.content[0] as { type: string; text: string }).text);
         break;
       } catch (err) {
         if (attempt === MAX_RETRIES) {
@@ -682,10 +707,10 @@ async function main() {
       const violations = checkLayerViolations(
         { a: parsed.option_a, b: parsed.option_b, c: parsed.option_c, d: parsed.option_d },
         parsed.correct_option,
-        slotAssignments,
+        slotAssignments
       );
       if (violations.length > 0) {
-        const detail  = violations.join('; ');
+        const detail = violations.join('; ');
         const logLine = `[${new Date().toISOString()}] passage ${p.id} (${p.classification}): ${detail}\n`;
         fs.appendFileSync('.promotion-violations.log', logLine, 'utf8');
         console.log(`${prefix} ❌  Layer violation — ${detail} — dropped`);
@@ -711,9 +736,7 @@ async function main() {
         (parsed.vocabulary_pre_teach.length
           ? `\nVOCABULARY_PRE_TEACH: ${parsed.vocabulary_pre_teach.join(', ')}`
           : '') +
-        (parsed.schema_pre_activate
-          ? `\nSCHEMA_PRE_ACTIVATE: ${parsed.schema_pre_activate}`
-          : '')
+        (parsed.schema_pre_activate ? `\nSCHEMA_PRE_ACTIVATE: ${parsed.schema_pre_activate}` : '')
       : '';
 
     const questionBlock =
@@ -735,29 +758,31 @@ async function main() {
 
     const { data: inserted, error: insertErr } = await supabase
       .from('questions')
-      .insert([{
-        standard_id:              R1_1_STANDARD.id,
-        content:                  p.paragraph_text + questionBlock,
-        title:                    p.source_title,
-        author:                   p.source_author,
-        pub_year:                 p.source_year?.toString() ?? null,
-        cognitive_skill_targeted: parsed.cognitive_skill_targeted,
-        difficulty_level:         p.intervention_tier,
-        option_a_text:            parsed.option_a.text,
-        option_b_text:            parsed.option_b.text,
-        option_c_text:            parsed.option_c.text,
-        option_d_text:            parsed.option_d.text,
-        option_a_class:           parsed.option_a.classification,
-        option_b_class:           parsed.option_b.classification,
-        option_c_class:           parsed.option_c.classification,
-        option_d_class:           parsed.option_d.classification,
-        correct_option:           parsed.correct_option,
-        rationale:                parsed.rationale,
-        approved:                 false,
-        flagged:                  false,
-        pipeline_source:          'v3_promoted',
-        source_classification:    p.classification,
-      }])
+      .insert([
+        {
+          standard_id: R1_1_STANDARD.id,
+          content: p.paragraph_text + questionBlock,
+          title: p.source_title,
+          author: p.source_author,
+          pub_year: p.source_year?.toString() ?? null,
+          cognitive_skill_targeted: parsed.cognitive_skill_targeted,
+          difficulty_level: p.intervention_tier,
+          option_a_text: parsed.option_a.text,
+          option_b_text: parsed.option_b.text,
+          option_c_text: parsed.option_c.text,
+          option_d_text: parsed.option_d.text,
+          option_a_class: parsed.option_a.classification,
+          option_b_class: parsed.option_b.classification,
+          option_c_class: parsed.option_c.classification,
+          option_d_class: parsed.option_d.classification,
+          correct_option: parsed.correct_option,
+          rationale: parsed.rationale,
+          approved: false,
+          flagged: false,
+          pipeline_source: 'v3_promoted',
+          source_classification: p.classification,
+        },
+      ])
       .select('id')
       .single();
 
@@ -783,11 +808,11 @@ async function main() {
 
     console.log(
       `${prefix} ✅  Generated question for passage ${p.id} ` +
-      `(${p.classification}, tier ${p.intervention_tier}) → question ${inserted.id}`,
+        `(${p.classification}, tier ${p.intervention_tier}) → question ${inserted.id}`
     );
     console.log(
       `         ${R1_1_STANDARD.code} | correct=${parsed.correct_option} | ` +
-      `${parsed.question_stem.slice(0, 70)}${parsed.question_stem.length > 70 ? '…' : ''}`,
+        `${parsed.question_stem.slice(0, 70)}${parsed.question_stem.length > 70 ? '…' : ''}`
     );
     correctSlotDistribution[parsed.correct_option]++;
     promoted++;
@@ -795,9 +820,7 @@ async function main() {
 
   // ── Summary ─────────────────────────────────────────────────────────────────
 
-  const hitRate = totalCalls > 0
-    ? ((cacheReadTotal / inputTotal) * 100).toFixed(1)
-    : '—';
+  const hitRate = totalCalls > 0 ? ((cacheReadTotal / inputTotal) * 100).toFixed(1) : '—';
 
   const layerTotal = layerPassed + layerViolated;
 
@@ -816,7 +839,9 @@ async function main() {
   console.log(`  Cache hit rate:   ${hitRate}%`);
   console.log(`  Total input tokens (approx): ${inputTotal.toLocaleString()}`);
   if (layerTotal > 0) {
-    console.log(`  Layer validation: ${layerPassed}/${layerTotal} passed. ${layerViolated} violation(s) logged.`);
+    console.log(
+      `  Layer validation: ${layerPassed}/${layerTotal} passed. ${layerViolated} violation(s) logged.`
+    );
     if (layerViolated > 0) console.log(`  Violations log:   .promotion-violations.log`);
   }
   if (DRY_RUN) console.log('\n  [DRY RUN — no writes performed]');
