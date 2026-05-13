@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { getGutenbergStandardBlueprint } from '@/pipeline/standardBlueprints';
+import { getOfficialFastPipelineSeedsForStandard } from '@/lib/reading-wins/officialFastSources';
 
 export const runtime = 'nodejs';
 
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
 
     const max = numberBetween(body.max, 12, 1, 40);
     const maxBooks = numberBetween(body.max_books, 5, 1, 12);
+    const officialSeeds = getOfficialFastPipelineSeedsForStandard(standardCode);
     const dryRun = Boolean(body.dry_run);
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const logDir = path.join('/tmp', 'gogi-standard-harvest');
@@ -99,7 +101,13 @@ export async function POST(req: NextRequest) {
       standard_code: standardCode,
       classifications: blueprint.classifications,
       coverage_strands: blueprint.coverageStrands ?? [],
-      message: `${standardCode} harvest started. Return to this page in a few minutes to review pending passages.`,
+      official_sources: {
+        priority_seed_count: officialSeeds?.priorityModels.length ?? 0,
+        reference_count: officialSeeds?.referenceModels.length ?? 0,
+        priority_titles: officialSeeds?.priorityModels.map((model) => model.title) ?? [],
+        reference_titles: officialSeeds?.referenceModels.map((model) => model.title) ?? [],
+      },
+      message: `${standardCode} official-source harvest started. Return to this page in a few minutes to review pending passages.`,
     });
   } catch (err) {
     console.error('[api/reading-wins/gutenberg/standard-harvest] error:', err);

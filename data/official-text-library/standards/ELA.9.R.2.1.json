@@ -1,0 +1,445 @@
+{
+  "generated_at": "2026-05-09T22:16:12.697Z",
+  "standard": "ELA.9.R.2.1",
+  "stored_texts": 10,
+  "mapped_texts": 18,
+  "entries": [
+    {
+      "title": "A Modest Proposal",
+      "author": "Jonathan Swift",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/a-modest-proposal-jonathan-swift.txt",
+      "char_count": 19493,
+      "word_count": 3420,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Animal Farm",
+      "author": "George Orwell",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "Antigone",
+      "author": "Sophocles",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/antigone-sophocles.txt",
+      "char_count": 207903,
+      "word_count": 37439,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Choice: A Tribute to Dr. Martin Luther King, Jr.",
+      "author": "Alice Walker",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "Do People Need Small Talk to Be Happy?",
+      "author": "Stephanie Hayes",
+      "access": "copyright_permission",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.V.1.2",
+        "ELA.9.V.1.3"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official FAST paired-informational reference. Use to model opposing-argument, central-idea, and vocabulary item design; rights limit reusable passage harvesting."
+    },
+    {
+      "title": "Electra",
+      "author": "Sophocles",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [
+        14484
+      ],
+      "discovered_gutenberg_id": 14484,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/electra-sophocles.txt",
+      "char_count": 67362,
+      "word_count": 12370,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Letter from Birmingham Jail",
+      "author": "Martin Luther King, Jr.",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "Letter to the Grand Duchess Christina of Tuscany",
+      "author": "Galileo Galilei",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/letter-to-the-grand-duchess-christina-of-tuscany-galileo-galilei.txt",
+      "char_count": 206827,
+      "word_count": 37600,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Medea",
+      "author": "Euripides",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/medea-euripides.txt",
+      "char_count": 113337,
+      "word_count": 20794,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Nobel Prize Acceptance Speech",
+      "author": "William Faulkner",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "Old Greek Stories",
+      "author": "James Baldwin",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.3",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/old-greek-stories-james-baldwin.txt",
+      "char_count": 225671,
+      "word_count": 43522,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Small Talk Is Overrated",
+      "author": null,
+      "access": "educational_purpose",
+      "pipeline_use": "style_model_only",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "reference_only",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official FAST informational style model. Use for structure, pairing, and stem logic; do not harvest as reusable source text."
+    },
+    {
+      "title": "Speech to the Troops at Tilbury",
+      "author": "Queen Elizabeth I",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "St. Crispin’s Day Speech",
+      "author": "William Shakespeare",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [
+        2253
+      ],
+      "discovered_gutenberg_id": 2253,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/st-crispin-s-day-speech-william-shakespeare.txt",
+      "char_count": 2195,
+      "word_count": 419,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Aeneid",
+      "author": "Virgil",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [
+        228
+      ],
+      "discovered_gutenberg_id": 228,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-aeneid-virgil.txt",
+      "char_count": 627717,
+      "word_count": 107551,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Face of Science",
+      "author": "Sam Kean",
+      "access": "public_domain",
+      "pipeline_use": "style_model_only",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "reference_only",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official FAST informational model. Use for central idea and rhetoric item shape; not a Gutenberg seed because the source is not a Gutenberg book."
+    },
+    {
+      "title": "The Love Song of J. Alfred Prufrock",
+      "author": "T.S. Eliot",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [
+        72472
+      ],
+      "discovered_gutenberg_id": 72472,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-love-song-of-j-alfred-prufrock-t-s-eliot.txt",
+      "char_count": 5984,
+      "word_count": 1109,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Talented Tenth",
+      "author": "W.E.B. Du Bois",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [
+        15041
+      ],
+      "discovered_gutenberg_id": 15041,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-talented-tenth-w-e-b-du-bois.txt",
+      "char_count": 43029,
+      "word_count": 7318,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    }
+  ]
+}

@@ -25,10 +25,12 @@ import {
 import {
   buildDailyReadingWinAssignment,
   parseDailyResponseEvidence,
+  type AvailableReadingWinContent,
   type DailyResponseEvidence,
 } from '@/lib/reading-wins/dailyQueue';
 import {
   analyzeReadingWinCoverage,
+  extractReadingWinQuestionTaxonomy,
   type PromotedReadingWinQuestion,
 } from '@/lib/reading-wins/sessionBuilder';
 
@@ -248,6 +250,9 @@ export default function StudentDashboardContent({ studentId, studentName, standa
   const [profileComplete, setProfileComplete] = useState<boolean>(false);
   const [fastProfile, setFastProfile] = useState<FastProfileSummary | null>(null);
   const [readyReadingWinCodes, setReadyReadingWinCodes] = useState<string[]>([]);
+  const [readyReadingWinContent, setReadyReadingWinContent] = useState<AvailableReadingWinContent[]>(
+    []
+  );
   const [recentReadingWinEvidence, setRecentReadingWinEvidence] = useState<DailyResponseEvidence[]>(
     []
   );
@@ -375,21 +380,56 @@ export default function StudentDashboardContent({ studentId, studentName, standa
             ).map(parseDailyResponseEvidence)
           );
           const questionRows = (questionData ?? []) as QuestionBankRow[];
+          const readyContent: AvailableReadingWinContent[] = [];
           const readyCodes = FAST_GRADE9_READING_DEMANDS.filter((demand) => {
             const matchingQuestions = questionRows.filter(
               (question) =>
                 question.cognitive_skill_targeted === demand.standardCode ||
                 question.source_classification === demand.standardCode
             );
-            return analyzeReadingWinCoverage({
+            const coverage = analyzeReadingWinCoverage({
               demand,
               questions: matchingQuestions,
-            }).ready;
+            });
+            if (coverage.ready) {
+              const strandGroups = matchingQuestions.reduce<
+                Record<string, { strandId: string | null; strandLabel: string; count: number }>
+              >((map, question) => {
+                const taxonomy = extractReadingWinQuestionTaxonomy(question);
+                const label = taxonomy.targetSkill ?? demand.teacherTitle;
+                const key = label.toLowerCase();
+                map[key] = map[key] ?? {
+                  strandId: null,
+                  strandLabel: label,
+                  count: 0,
+                };
+                map[key].count += 1;
+                return map;
+              }, {});
+              readyContent.push({
+                standardCode: demand.standardCode,
+                readyStrands: Object.values(strandGroups)
+                  .map((strand) => ({
+                    strandId: strand.strandId,
+                    strandLabel: strand.strandLabel,
+                    readyQuestionCount: strand.count,
+                    estimatedFreshSessions: Math.max(1, Math.floor(strand.count / 6)),
+                  }))
+                  .sort(
+                    (a, b) =>
+                      b.estimatedFreshSessions - a.estimatedFreshSessions ||
+                      b.readyQuestionCount - a.readyQuestionCount
+                  ),
+              });
+            }
+            return coverage.ready;
           }).map((demand) => demand.standardCode);
           setReadyReadingWinCodes(readyCodes);
+          setReadyReadingWinContent(readyContent);
         } catch {
           // Table/column not yet migrated — default false so card shows
           setReadyReadingWinCodes([]);
+          setReadyReadingWinContent([]);
         }
 
         setData({
@@ -479,6 +519,7 @@ export default function StudentDashboardContent({ studentId, studentName, standa
     layer0Complete,
     standardStatuses: richData,
     availableStandardCodes: readyReadingWinCodes,
+    availableContent: readyReadingWinContent,
     recentResponses: recentReadingWinEvidence,
   });
   const dailyRecommendedCode = dailyAssignment.standardCode ?? fastRecommendedCode;
@@ -704,6 +745,23 @@ export default function StudentDashboardContent({ studentId, studentName, standa
                 <div style={{ fontSize: 13, color: C.gray, marginTop: 4, lineHeight: 1.45 }}>
                   Every day should move one real gap: check it, learn the move, prove it.
                 </div>
+                {dailyAssignment.kind === 'reading_win' && dailyAssignment.strandLabel ? (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      marginTop: 8,
+                      border: `1px solid ${C.blueMid}`,
+                      background: C.blueLight,
+                      color: C.navy,
+                      borderRadius: 999,
+                      padding: '5px 9px',
+                      fontSize: 11,
+                      fontWeight: 900,
+                    }}
+                  >
+                    Today&apos;s skill strand: {dailyAssignment.strandLabel}
+                  </div>
+                ) : null}
               </div>
               {layer0Complete && (
                 <button

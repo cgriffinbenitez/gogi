@@ -55,6 +55,8 @@ export async function persistFastReportAndGenerateProfile(
         category_code: category.category_code,
         category_name: category.category_name,
         achievement_level: category.achievement_level,
+        achievement_level_description: category.achievement_level_description ?? null,
+        next_steps: category.next_steps ?? null,
       }))
     );
 

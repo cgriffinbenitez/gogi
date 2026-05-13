@@ -16,15 +16,20 @@ import type {
   Paragraph,
   PipelineOptions,
   SourceConfig,
+  TagResultV3,
   TierKey,
 } from './types';
 import { fetchBooksForClassification } from './stages/fetch';
 import { extractPassageUnits, stripBookFrontMatter } from './stages/extract';
 import { filterParagraph, getFilterCacheStats, resetFilterCacheStats } from './stages/filter';
 import { tagParagraph, getTagCacheStats } from './stages/tag';
+import { certifyPassageForPipeline } from './stages/certify';
+import { mineTeachingMoment } from './stages/mineTeachingMoments';
+import { applyOfficialFastSourcePriority } from './officialSourcePriority';
 import {
   appendCSV,
   initCSV,
+  attachStandardMetadataToExistingPassage,
   isDuplicateV3,
   writePassageV3,
   fetchDiversityCounts,
@@ -151,6 +156,7 @@ function parseArgs(argv: string[]): PipelineOptions | null {
 
   const dryRun = args.includes('--dry-run');
   const writeAllPassed = args.includes('--write-all-passed');
+  const expandBeyondOfficial = args.includes('--expand-beyond-official');
   const standardIdx = args.indexOf('--standard');
   const coverageStrandIdx = args.indexOf('--coverage-strand');
   const coverageLabelIdx = args.indexOf('--coverage-label');
@@ -178,6 +184,7 @@ function parseArgs(argv: string[]): PipelineOptions | null {
     maxBooks: isNaN(maxBooks) ? 5 : maxBooks,
     dryRun,
     writeAllPassed,
+    expandBeyondOfficial,
     perSourceCapOverride:
       perSourceCapOverride !== undefined && !isNaN(perSourceCapOverride)
         ? perSourceCapOverride
@@ -209,14 +216,10 @@ function applyCoverageFocus(criteria: CriteriaConfig, opts: PipelineOptions): Cr
       `STANDARD-FIRST COVERAGE FOCUS: This run is specifically harvesting for ${
         opts.standardCode ?? 'the selected standard'
       } / ${opts.coverageStrandLabel ?? opts.coverageStrandId ?? 'coverage strand'}.`,
-      `The passage should provide teachable evidence for this strand, not merely a generic example of ${criteria.classification}.`,
-      `Harvest signals to seek: ${signals}.`,
+      'OFFICIAL CONTENT LIBRARY MODE: prioritize benchmark-aligned, instructionally usable excerpts from official/sample texts.',
+      'Do not reject an otherwise strong official-text excerpt solely because this exact micro-strand is not yet dominant. The exact FAST-style question gate will be strict later.',
+      `Opportunity signals to label when present: ${signals}.`,
     ].join('\n'),
-    mustHave: [
-      ...criteria.mustHave,
-      `Coverage strand match: ${opts.coverageStrandLabel ?? opts.coverageStrandId}.`,
-      `At least one of these strand-specific harvest signals must be present and pointable: ${signals}.`,
-    ],
   };
 }
 
@@ -257,6 +260,49 @@ type SuitableParagraph = Paragraph & {
   tierKey: TierKey;
 };
 
+function isOfficialLibraryCandidate(filterResult: FilterResult) {
+  return filterResult.q5_patterns_supported?.includes('official_content_library') ?? false;
+}
+
+function buildOfficialLibraryFilterResult(reasons: string[], warnings: string[] = []): FilterResult {
+  return {
+    suitable: true,
+    reasoning: [
+      `Official benchmark-aligned content candidate: ${reasons.join('; ')}`,
+      warnings.length ? `Warnings before question generation: ${warnings.join('; ')}` : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
+    q1: 'pass',
+    q2: 'pass',
+    q3: 'pass',
+    q4: 'pass',
+    q5: 'pass',
+    q5_patterns_supported: ['official_content_library'],
+    q5_flag_5e_compatible: false,
+    evidence_preview: {
+      pointable_target_supporting: [],
+      pointable_non_supporting: [],
+    },
+  };
+}
+
+function buildOfficialLibraryTagResult(tier: 1 | 2 | 3 | 4): TagResultV3 {
+  return {
+    target_signal: 'official_text_candidate',
+    item_patterns_supported: ['official_content_library'],
+    supporting_evidence: [],
+    non_supporting_evidence: [],
+    dominant_concept: 'official benchmark-aligned content',
+    plausible_distractors: [],
+    craft_features: [],
+    discrimination_item_type: 'paragraph_level',
+    intervention_tier: tier,
+    tier_rationale:
+      'Official B.E.S.T./FAST-aligned text candidate captured for library curation. FAST-style question package must be generated and certified later.',
+  };
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -265,7 +311,15 @@ async function main() {
     process.exit(1);
   }
 
-  const { classification, max, maxBooks, dryRun, writeAllPassed, perSourceCapOverride } = opts;
+  const {
+    classification,
+    max,
+    maxBooks,
+    dryRun,
+    writeAllPassed,
+    perSourceCapOverride,
+    expandBeyondOfficial,
+  } = opts;
 
   // ── Process lock (prevents parallel pipeline instances) ───────────────────
   const LOCK_FILE = '/tmp/gogi-pipeline.lock';
@@ -310,7 +364,11 @@ async function main() {
   console.log(`═══════════════════════════════════════════════════════\n`);
 
   const criteria = applyCoverageFocus(loadCriteria(classification), opts);
-  const sources = loadSources(classification);
+  const officialSourcePriority = applyOfficialFastSourcePriority(loadSources(classification), opts.standardCode, {
+    expandBeyondOfficial,
+  });
+  const sources = officialSourcePriority.sources;
+  for (const line of officialSourcePriority.logLines) console.log(line);
   const harvestScope = {
     standardCode: opts.standardCode,
     coverageStrandId: opts.coverageStrandId,
@@ -340,6 +398,10 @@ async function main() {
   let filtered = 0;
   let tagged = 0;
   let tagRejected = 0;
+  let certificationRejected = 0;
+  let teachingMomentsMined = 0;
+  let teachingMomentRejected = 0;
+  let existingUpdated = 0;
   let inserted = 0;
   let duplicates = 0;
   let skipped = 0;
@@ -473,9 +535,39 @@ async function main() {
           }
         }
 
-        const filterResult = await filterParagraph(unit, criteria);
-        filtered++;
-        bookFilterCalls++;
+        const miningResult = mineTeachingMoment(unit, opts);
+        if (!miningResult.accepted) {
+          skipped++;
+          teachingMomentRejected++;
+          appendCSV(csvPath, {
+            classification,
+            gutenberg_id: unit.gutenbergId,
+            title: unit.sourceTitle,
+            author: unit.sourceAuthor,
+            paragraph_text: unit.text,
+            word_count: unit.wordCount,
+            paragraph_count: unit.paragraphCount,
+            suitable: false,
+            reasoning: miningResult.reasons.join('; '),
+            canonical_answer: '',
+            distractors: '',
+            keyword_flags: '',
+            difficulty_tier: '',
+            tier: '',
+            pipeline_version: PIPELINE_VERSION,
+            status: 'rejected_by_teaching_moment_miner',
+          });
+          continue;
+        }
+        if (miningResult.targetEvidence) teachingMomentsMined++;
+
+        const filterResult = opts.standardCode
+          ? buildOfficialLibraryFilterResult(miningResult.reasons, miningResult.warnings)
+          : await filterParagraph(unit, criteria);
+        if (!opts.standardCode) {
+          filtered++;
+          bookFilterCalls++;
+        }
 
         const csvBase = {
           classification,
@@ -548,7 +640,7 @@ async function main() {
 
       while (poolToWrite.length > 0) {
         // Diversity: run cap (checked before selecting next passage)
-        if (inserted >= (sources.maxApprovedPerRun ?? 80)) {
+        if (inserted + existingUpdated >= (sources.maxApprovedPerRun ?? 80)) {
           console.log(
             `  [diversity] run cap reached (${sources.maxApprovedPerRun ?? 80}) — stopping Phase 2`
           );
@@ -560,7 +652,7 @@ async function main() {
         if (writeAllPassed) {
           para = poolToWrite.shift()!;
         } else {
-          if (inserted >= max) break;
+          if (inserted + existingUpdated >= max) break;
 
           const eligible = poolToWrite.filter((p) => {
             if ((writtenPerSource[p.sourceTitle] ?? 0) >= perSourceCap) return false;
@@ -624,10 +716,15 @@ async function main() {
           continue;
         }
 
-        // Duplicate check — use extract-stage tier (para.tierKey → integer)
+        const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
+        const isLibraryCandidate = isOfficialLibraryCandidate(para.filterResult);
+
+        // Duplicate check — use extract-stage tier (para.tierKey → integer).
+        // Official library runs are allowed through so an existing row can be upgraded
+        // with the current standard/strand metadata instead of being discarded.
         const extractTier = parseInt(para.tierKey.slice(1), 10) as 1 | 2 | 3 | 4;
         const dup = await isDuplicateV3(para.gutenbergId, para.hash, extractTier);
-        if (dup) {
+        if (dup && !isLibraryCandidate) {
           appendCSV(csvPath, { ...csvBase, status: 'duplicate' });
           duplicates++;
           continue;
@@ -648,9 +745,9 @@ async function main() {
           }
         }
 
-        // Tag
-        const q5Patterns = para.filterResult.q5_patterns_supported ?? [];
-        const tagResult = await tagParagraph(para, criteria, q5Patterns);
+        const tagResult = isLibraryCandidate
+          ? buildOfficialLibraryTagResult(extractTier)
+          : await tagParagraph(para, criteria, q5Patterns);
 
         if (!tagResult) {
           appendCSV(csvPath, { ...csvBase, status: 'tagging_failed' });
@@ -664,6 +761,30 @@ async function main() {
           continue;
         }
         tagged++;
+
+        if (opts.standardCode && !isLibraryCandidate) {
+          const certification = certifyPassageForPipeline({
+            paragraph: para,
+            filterResult: para.filterResult,
+            tagResult,
+            opts,
+          });
+
+          if (!certification.certified) {
+            console.log(
+              `  [certify] ${certification.status.toUpperCase()} ${certification.confidence}` +
+                ` (${certification.score}/8): ${certification.reasons.slice(0, 3).join('; ')}`
+            );
+            appendCSV(csvPath, {
+              ...csvBase,
+              tier: tagResult.intervention_tier,
+              status: `rejected_by_certification: ${certification.reasons.join('; ')}`,
+            });
+            certificationRejected++;
+            skipped++;
+            continue;
+          }
+        }
 
         // Write v3 row
         const row = {
@@ -715,15 +836,19 @@ async function main() {
           approval_status: 'pending_review' as const,
         };
 
-        const writeResult = await writePassageV3(row);
+        let writeResult = await writePassageV3(row);
+        if (writeResult.status === 'duplicate' && isLibraryCandidate) {
+          writeResult = await attachStandardMetadataToExistingPassage(row);
+        }
         appendCSV(csvPath, {
           ...csvBase,
           tier: tagResult.intervention_tier,
           status: writeResult.status,
         });
 
-        if (writeResult.status === 'inserted') {
-          inserted++;
+        if (writeResult.status === 'inserted' || writeResult.status === 'updated_existing') {
+          if (writeResult.status === 'inserted') inserted++;
+          if (writeResult.status === 'updated_existing') existingUpdated++;
           writtenPerSource[para.sourceTitle] = (writtenPerSource[para.sourceTitle] ?? 0) + 1;
           const gIdx = authorGroupIndex(para.sourceAuthor, sources.authorGroupCaps ?? []);
           if (gIdx !== -1) writtenPerAuthorGroup[gIdx]++;
@@ -749,7 +874,7 @@ async function main() {
 
           const insertedLabel = writeAllPassed ? String(inserted) : `${inserted}/${max}`;
           console.log(
-            `  [Stage 5] inserted ${insertedLabel} [T${tagResult.intervention_tier}]` +
+            `  [Stage 5] ${writeResult.status === 'inserted' ? 'inserted' : 'updated existing'} ${insertedLabel} [T${tagResult.intervention_tier}]` +
               ` [${para.sourceTitle.slice(0, 35)}]: "${para.text.slice(0, 55)}…"`
           );
         } else if (writeResult.status === 'duplicate') {
@@ -782,6 +907,9 @@ async function main() {
   Books fetched:           ${fetched}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${suitablePool.length} / ${filtered} (${filtered > 0 ? ((suitablePool.length / filtered) * 100).toFixed(1) : 0}%)
+  Teaching moments mined:  ${teachingMomentsMined}
+  Miner rejected locally:  ${teachingMomentRejected}
+  Existing rows updated:   ${existingUpdated}
   Suitable pool size:      ${suitablePool.length}
   Per-source cap (write):  ${perSourceCap}
   Pool cap/book/tier:      ${poolCapPerBookPerTier}
@@ -821,9 +949,13 @@ ${frontMatterLines || '    (none stripped)'}
   Max books:               ${maxBooks}
   Claude filter calls:     ${filtered}
   Claude YES rate:         ${inserted} / ${filtered} (${filtered > 0 ? ((inserted / filtered) * 100).toFixed(1) : 0}%)
+  Teaching moments mined:  ${teachingMomentsMined}
+  Miner rejected locally:  ${teachingMomentRejected}
   Claude tag calls:        ${tagged}
   Tag-stage rejected:      ${tagRejected}
+  Certification rejected:  ${certificationRejected}
   Inserted:                ${inserted}${writeAllPassed ? ' (all pending_review)' : ''}
+  Existing rows updated:   ${existingUpdated}
   Per-source cap applied:  ${writeAllPassed ? 'N/A (write-all-passed)' : perSourceCap}
   Pool cap/book/tier:      ${writeAllPassed ? 'N/A (write-all-passed)' : poolCapPerBookPerTier}
   Duplicates skipped:      ${duplicates}
@@ -836,7 +968,7 @@ ${frontMatterLines || '    (none stripped)'}
     T4: ${existingTierCounts.T4 + inRunTierCounts.T4}/${tierTargets.T4}${existingTierCounts.T4 + inRunTierCounts.T4 >= tierTargets.T4 ? ' ✓ saturated' : ` — underfilled by ${tierTargets.T4 - existingTierCounts.T4 - inRunTierCounts.T4}`}  (+${inRunTierCounts.T4} this run)
   Rejected for tier saturation: ${rejectedForTierSaturation}
 
-  Inserted by source:
+  Rows inserted/updated by source:
 ${writtenBySource || '    (none)'}
 
   Author-group cap tracking:

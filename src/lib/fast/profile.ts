@@ -7,6 +7,10 @@ import {
   type BenchmarkClassificationMapRow,
   type ParsedFastItemResponse,
 } from './constants';
+import {
+  buildFastAldCategoryInsights,
+  type FastAldCategoryInsight,
+} from './achievementLevelDescriptions';
 import { buildFastGrowthGoal, type FastGrowthGoal } from './growth';
 import { getFastRecommendedStandardCode } from './routing';
 
@@ -20,8 +24,17 @@ type FastAssessmentRow = {
   achievement_level: number | null;
 };
 
+type FastCategoryPerformanceRow = {
+  category_code: 'RP' | 'RI' | 'RGV';
+  category_name: string;
+  achievement_level: 'Below the Standard' | 'At/Near the Standard' | 'Above the Standard';
+  achievement_level_description?: string | null;
+  next_steps?: string | null;
+};
+
 type ProfileInput = {
   assessments: FastAssessmentRow[];
+  categoryPerformance?: FastCategoryPerformanceRow[];
   itemResponses: (ParsedFastItemResponse & { fast_assessment_id: string })[];
   classificationMap: BenchmarkClassificationMapRow[];
 };
@@ -69,6 +82,7 @@ type FastProfileInterpretation = {
     attempts: number;
     evidence_label: string;
   }>;
+  achievement_level_guidance: FastAldCategoryInsight[];
   recommended_next_step: {
     route: 'diagnostic' | 'layer0_calibration' | 'teacher_review';
     label: string;
@@ -110,6 +124,7 @@ function buildFastInterpretation(args: {
   classificationScores: Record<string, number>;
   summaries: BenchmarkSummary[];
   latest: FastAssessmentRow | null;
+  categoryPerformance: FastCategoryPerformanceRow[];
 }): Pick<BuiltFastProfile, 'confidence_label' | 'interpretation'> {
   const scored = Object.entries(args.classificationScores)
     .filter(([, score]) => score > 0)
@@ -155,7 +170,14 @@ function buildFastInterpretation(args: {
           : benchmark.pct_correct < 0.4
             ? 'Low accuracy'
             : 'Mixed accuracy',
-    }));
+      }));
+  const weakBenchmarkCodes = args.summaries
+    .filter((benchmark) => benchmark.pct_correct < 0.7)
+    .map((benchmark) => benchmark.benchmark_code);
+  const achievementLevelGuidance = buildFastAldCategoryInsights({
+    categories: args.categoryPerformance,
+    weakBenchmarkCodes,
+  });
 
   const primary = topBarriers[0];
   const recommendedStandardCode = getFastRecommendedStandardCode(primary?.code);
@@ -207,6 +229,7 @@ function buildFastInterpretation(args: {
             : 'The report did not provide enough consistent missed-item evidence for a strong recommendation.',
       top_barriers: topBarriers,
       benchmark_evidence: benchmarkEvidence,
+      achievement_level_guidance: achievementLevelGuidance,
       recommended_next_step,
       growth_goal,
     },
@@ -283,6 +306,7 @@ export function buildFastColdStartProfile(input: ProfileInput): BuiltFastProfile
     classificationScores,
     summaries,
     latest,
+    categoryPerformance: input.categoryPerformance ?? [],
   });
 
   return {
@@ -332,6 +356,15 @@ export async function generateFastProfileForStudent(
 
   if (itemError) throw new Error(itemError.message);
 
+  const { data: categoryPerformance, error: categoryError } = await supabase
+    .from('fast_category_performance')
+    .select(
+      'category_code, category_name, achievement_level, achievement_level_description, next_steps'
+    )
+    .in('fast_assessment_id', assessmentIds);
+
+  if (categoryError) throw new Error(categoryError.message);
+
   const { data: classificationMap, error: mapError } = await supabase
     .from('fast_benchmark_classification_map')
     .select('benchmark_code, classification_code, weight, rationale');
@@ -340,6 +373,7 @@ export async function generateFastProfileForStudent(
 
   const profile = buildFastColdStartProfile({
     assessments,
+    categoryPerformance: categoryPerformance ?? [],
     itemResponses: itemResponses ?? [],
     classificationMap: classificationMap ?? [],
   });

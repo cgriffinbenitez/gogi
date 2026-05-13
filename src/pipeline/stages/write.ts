@@ -98,6 +98,50 @@ export async function writePassageV3(row: PassageRowV3): Promise<WriteResult> {
   return { status: 'inserted' };
 }
 
+export async function attachStandardMetadataToExistingPassage(
+  row: PassageRowV3
+): Promise<WriteResult> {
+  const supabase = getSupabase();
+  const updates = {
+    classification: row.classification,
+    standard_code: row.standard_code,
+    coverage_strand_id: row.coverage_strand_id,
+    coverage_strand_label: row.coverage_strand_label,
+    coverage_strand_signals: row.coverage_strand_signals,
+    target_signal: row.target_signal,
+    item_patterns_supported: row.item_patterns_supported,
+    dominant_concept: row.dominant_concept,
+    plausible_distractors: row.plausible_distractors,
+    craft_features: row.craft_features,
+    discrimination_item_type: row.discrimination_item_type,
+    intervention_tier: row.intervention_tier,
+    tagger_tier: row.tagger_tier,
+    word_count_tier: row.word_count_tier,
+    tier_rationale: row.tier_rationale,
+    q5_flag_5e_compatible: row.q5_flag_5e_compatible,
+    approval_status: row.approval_status,
+  };
+
+  const { error } = await supabase
+    .from('intervention_passages')
+    .update(updates)
+    .eq('source_gutenberg_id', row.source_gutenberg_id)
+    .eq('paragraph_hash', row.paragraph_hash);
+
+  if (error) {
+    if (
+      /standard_code|coverage_strand_id|coverage_strand_label|coverage_strand_signals/i.test(
+        error.message
+      )
+    ) {
+      return { status: 'duplicate' };
+    }
+    return { status: 'error', error: error.message };
+  }
+
+  return { status: 'updated_existing' };
+}
+
 // ── Tier counts (cumulative across scoped runs — used for harvest targets) ─────
 
 export type HarvestCountScope = {

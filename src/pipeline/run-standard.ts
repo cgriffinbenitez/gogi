@@ -28,6 +28,10 @@ Options:
   --per-source-cap   Max insertions per source title.
   --dry-run          Run harvest/filter only. No DB write.
   --write-all-passed Write every filter-passed passage as pending_review.
+  --question-ready   Run every strand/classification as a strict question-ready harvest.
+                     Default is official-library capture once per standard.
+  --expand-beyond-official
+                     Also search old broad author/topic source lists after official seeds.
   --help             Show this help.
 
 Supported standards:
@@ -66,18 +70,32 @@ function main() {
   const perSourceCap = readArg(args, '--per-source-cap');
   const dryRun = args.includes('--dry-run');
   const writeAllPassed = args.includes('--write-all-passed');
+  const questionReady = args.includes('--question-ready');
+  const expandBeyondOfficial = args.includes('--expand-beyond-official');
 
   console.log('\n═══════════════════════════════════════════════════════');
   console.log(`  GOGI Standard Harvest  |  ${blueprint.standardCode}`);
   console.log(`  ${blueprint.teacherLabel}`);
   console.log('═══════════════════════════════════════════════════════');
-  console.log(`  Student move: ${blueprint.studentMove}`);
+  console.log(`  Benchmark focus: ${blueprint.studentMove}`);
   console.log(`  Harvest goal: ${blueprint.harvestGoal}`);
-  console.log(`  Coverage strands: ${blueprint.coverageStrands?.length ?? 0}`);
+  console.log(`  Mode: ${questionReady ? 'question-ready strand harvest' : 'official content-library capture'}`);
+  console.log(`  Source scope: ${expandBeyondOfficial ? 'official texts + expansion search' : 'official texts only'}`);
+  console.log(`  Coverage strands tracked: ${blueprint.coverageStrands?.length ?? 0}`);
   console.log(`  Fallback classifications: ${blueprint.classifications.join(', ')}`);
   console.log('═══════════════════════════════════════════════════════\n');
 
-  const strandRuns = blueprint.coverageStrands?.length
+  const strandRuns = !questionReady
+    ? [
+        {
+          id: 'standard-library',
+          label: blueprint.teacherLabel,
+          studentCanDo: blueprint.studentMove,
+          harvestSignals: [blueprint.harvestGoal],
+          classifications: [blueprint.classifications[0]],
+        },
+      ]
+    : blueprint.coverageStrands?.length
     ? blueprint.coverageStrands
     : [
         {
@@ -95,8 +113,8 @@ function main() {
       : blueprint.classifications;
 
     console.log(`\n[strand] ${blueprint.standardCode} → ${strand.label}`);
-    console.log(`  can-do: ${strand.studentCanDo}`);
-    console.log(`  signals: ${strand.harvestSignals.join('; ')}`);
+    console.log(`  possible can-do: ${strand.studentCanDo}`);
+    console.log(`  opportunity signals: ${strand.harvestSignals.join('; ')}`);
 
     for (const classification of classifications) {
       const commandArgs = [
@@ -121,6 +139,7 @@ function main() {
       if (perSourceCap) commandArgs.push('--per-source-cap', perSourceCap);
       if (dryRun) commandArgs.push('--dry-run');
       if (writeAllPassed) commandArgs.push('--write-all-passed');
+      if (expandBeyondOfficial) commandArgs.push('--expand-beyond-official');
 
       console.log(`\n[standard] ${blueprint.standardCode} / ${strand.id} → ${classification}`);
       console.log(`npx ${commandArgs.join(' ')}\n`);

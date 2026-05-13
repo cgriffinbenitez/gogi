@@ -1,0 +1,94 @@
+{
+  "Electra::Sophocles::ELA.9.R.1.1::Characterization adds meaning::5 paragraphs · T4 candidate 6": {
+    "reason": "Excerpt looks like editorial or biographical material, not the teachable source text.",
+    "quarantinedAt": "2026-05-12T13:16:56.433Z",
+    "card": {
+      "id": "electra-ela-9-r-1-1-characterization-layer-5-paragraphs-t4-candidate-6",
+      "textTitle": "Electra",
+      "textAuthor": "Sophocles",
+      "standardCode": "ELA.9.R.1.1",
+      "standardTitle": "Key literary elements add layers of meaning",
+      "subSkillId": "characterization-layer",
+      "subSkillLabel": "Characterization adds meaning",
+      "location": "5 paragraphs · T4 candidate 6",
+      "excerpt": "EL. O gladsome day! Dear only saviour of our father's house, How earnest thou hither? Art thou he indeed, That didst preserve Orestes and myself From many sorrows? O dear hands, kind feet, Swift in our service,--how couldst thou so long Be near, nor show one gleam, but didst destroy My heart with words, hiding the loveliest deeds? Father!--in thee methinks I see my father. O welcome! thou of all the world to me Most hated and most loved in one short hour.\n\nOLD M. Enough, dear maiden! Many nights and days Are circling hitherward, that shall reveal In clear recountment all that came between. But to you two that stand beside I tell, Now is your moment, with the Queen alone, And none of men within; but if you pause, Know that with others of profounder skill You'll have to strive, more than your present foes.\n\nOR. Then, Pylades, we need no more to dwell On words, but enter on this act with speed, First worshipping the holy shrines o' the Gods That were my father's, harboured at the gate. [_They pass within_. ELECTRA _remains in an attitude of prayer_\n\nEL. O King Apollo! hear them graciously, And hear me too, that with incessant hand Honoured thee richly from my former store! And now, fierce slayer, I importune thee, And woo thee with such gifts as I can give, Be kindly aidant to this enterprise, And make the world take note, what meed of bane Heaven still bestows on man's iniquity. [ELECTRA _goes within_\n\nCH. Lo, where the War-god moves 1 With soft, sure footstep, on to his design, Breathing hot slaughter of an evil feud! Even now the inevitable hounds that track Dark deeds of hideous crime Are gone beneath the covert of the domes. Not long in wavering suspense shall hang The dreaming presage of my wistful soul.",
+      "wordCount": 311,
+      "whyThisWorks": "Electra's prayer to Apollo—calling herself a devoted worshipper yet now addressing him as 'fierce slayer' and demanding divine punishment—reveals her character as someone whose grief has transformed piety into a hunger for vengeance, adding moral complexity to her role.",
+      "skillStrategy": "When a character speaks, look at the exact words they choose and ask what those words reveal about who they are and what they want beneath the surface.",
+      "evidencePoints": [
+        "And now, fierce slayer, I importune thee, / And woo thee with such gifts as I can give",
+        "make the world take note, what meed of bane / Heaven still bestows on man's iniquity"
+      ],
+      "question": "In her prayer to Apollo, Electra shifts from calling herself his devoted worshipper to addressing him as 'fierce slayer' and demanding that heaven punish 'man's iniquity.' What does this shift in her speech reveal about her character?",
+      "choices": [
+        {
+          "label": "A",
+          "text": "Her prayer shows that she doubts Apollo's power and fears the gods will abandon Orestes before he can act.",
+          "correct": false
+        },
+        {
+          "label": "B",
+          "text": "Her prayer reveals that her devotion to the gods is now inseparable from her desire for vengeance, showing that grief has made justice and retribution the same thing in her mind.",
+          "correct": true
+        },
+        {
+          "label": "C",
+          "text": "Her prayer demonstrates that she is more concerned with her own reputation before the gods than with whether Orestes succeeds.",
+          "correct": false
+        },
+        {
+          "label": "D",
+          "text": "Her prayer shows she is performing a traditional religious ritual out of obligation rather than genuine feeling.",
+          "correct": false
+        }
+      ],
+      "auditLabel": "claude-ready"
+    }
+  },
+  "Electra::Sophocles::ELA.9.R.2.1::Paragraph or section job::5 paragraphs · T4 candidate 8": {
+    "reason": "Excerpt looks like editorial or biographical material, not the teachable source text.",
+    "quarantinedAt": "2026-05-12T13:17:43.919Z",
+    "card": {
+      "id": "electra-ela-9-r-2-1-paragraph-job-5-paragraphs-t4-candidate-8",
+      "textTitle": "Electra",
+      "textAuthor": "Sophocles",
+      "standardCode": "ELA.9.R.2.1",
+      "standardTitle": "Text structure and feature purpose",
+      "subSkillId": "paragraph-job",
+      "subSkillLabel": "Paragraph or section job",
+      "location": "5 paragraphs · T4 candidate 8",
+      "excerpt": "EL. O gladsome day! Dear only saviour of our father's house, How earnest thou hither? Art thou he indeed, That didst preserve Orestes and myself From many sorrows? O dear hands, kind feet, Swift in our service,--how couldst thou so long Be near, nor show one gleam, but didst destroy My heart with words, hiding the loveliest deeds? Father!--in thee methinks I see my father. O welcome! thou of all the world to me Most hated and most loved in one short hour.\n\nOLD M. Enough, dear maiden! Many nights and days Are circling hitherward, that shall reveal In clear recountment all that came between. But to you two that stand beside I tell, Now is your moment, with the Queen alone, And none of men within; but if you pause, Know that with others of profounder skill You'll have to strive, more than your present foes.\n\nOR. Then, Pylades, we need no more to dwell On words, but enter on this act with speed, First worshipping the holy shrines o' the Gods That were my father's, harboured at the gate. [_They pass within_. ELECTRA _remains in an attitude of prayer_\n\nEL. O King Apollo! hear them graciously, And hear me too, that with incessant hand Honoured thee richly from my former store! And now, fierce slayer, I importune thee, And woo thee with such gifts as I can give, Be kindly aidant to this enterprise, And make the world take note, what meed of bane Heaven still bestows on man's iniquity. [ELECTRA _goes within_\n\nCH. Lo, where the War-god moves 1 With soft, sure footstep, on to his design, Breathing hot slaughter of an evil feud! Even now the inevitable hounds that track Dark deeds of hideous crime Are gone beneath the covert of the domes. Not long in wavering suspense shall hang The dreaming presage of my wistful soul.",
+      "wordCount": 311,
+      "whyThisWorks": "The Chorus's final stanza functions as a concluding section that shifts from dramatic action to prophetic commentary, giving students a clear example of a paragraph whose job is to signal imminent resolution through figurative language rather than advance plot directly.",
+      "skillStrategy": "Ask yourself: does this paragraph start something new, push an idea further, prove a point, or wrap up and reflect — then find the exact words that show that job.",
+      "evidencePoints": [
+        "Lo, where the War-god moves / With soft, sure footstep, on to his design, / Breathing hot slaughter of an evil feud!",
+        "Not long in wavering suspense shall hang / The dreaming presage of my wistful soul."
+      ],
+      "question": "What is the primary job of the Chorus's final speech, beginning 'Lo, where the War-god moves'?",
+      "choices": [
+        {
+          "label": "A",
+          "text": "The speech introduces the conflict between Orestes and the Queen by naming the War-god as the cause of their feud.",
+          "correct": false
+        },
+        {
+          "label": "B",
+          "text": "The speech concludes the scene by shifting from the characters' urgent actions to a prophetic reflection that the long-awaited revenge is now inevitable.",
+          "correct": true
+        },
+        {
+          "label": "C",
+          "text": "The speech contrasts the Chorus's hope for justice with Electra's earlier despair, showing that the two characters disagree about the outcome.",
+          "correct": false
+        },
+        {
+          "label": "D",
+          "text": "The speech extends the Old Man's warning about timing by urging Orestes and Pylades to move even faster before new enemies arrive.",
+          "correct": false
+        }
+      ],
+      "auditLabel": "claude-ready"
+    }
+  }
+}

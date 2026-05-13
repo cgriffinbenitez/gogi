@@ -1,0 +1,1290 @@
+{
+  "A Modest Proposal::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:06:23.501Z"
+  },
+  "A Very Old Man with Enormous Wings::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:06:31.313Z"
+  },
+  "A White Heron::ELA.9.R.1.2::Evidence that proves theme::3 paragraphs · T3 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:06:40.590Z"
+  },
+  "Animal Farm::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 13": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:06:48.077Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:07:06.295Z"
+  },
+  "Electra::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:07:14.784Z"
+  },
+  "Icarus and Daedalus::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:07:23.899Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:07:32.309Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:07:41.176Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:08:00.124Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:08:20.481Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:08:49.919Z"
+  },
+  "The Prince::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:08:58.606Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::5 paragraphs · T4 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:10:33.568Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:10:50.025Z"
+  },
+  "Animal Farm::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:10:58.453Z"
+  },
+  "Letter from Birmingham Jail::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:11:23.033Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 1": {
+    "reason": "The excerpt does not match the supplied source. The passage attributed to Galileo's 'Letter to the Grand Duchess Christina of Tuscany' contains text about cruelty to animals and a domestic scene with 'Sir Charles and his Lady' — neither of which appears in Galileo's letter. The excerpt appears to be from an entirely different, unidentified work. Because the source and excerpt are mismatched, no rigorous FAST-style item can be written that accurately ties the standard to the named source text.",
+    "rejectedAt": "2026-05-12T00:11:27.326Z"
+  },
+  "The Aeneid::ELA.9.R.1.1::Characterization adds meaning::1 paragraph · T2 candidate 12": {
+    "reason": "Request timed out.",
+    "rejectedAt": "2026-05-12T00:19:15.858Z"
+  },
+  "A Modest Proposal::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:19:58.513Z"
+  },
+  "A Very Old Man with Enormous Wings::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:20:07.721Z"
+  },
+  "A White Heron::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:20:17.460Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:20:34.309Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is a scholarly philological commentary on Old English textual emendations in Beowulf — it contains no narrative, character action, conflict, or thematic development. It is a meta-text about word choices and editorial disputes, not a literary passage. There is no theme to identify, no character perspective to analyze, and no story moment to anchor evidence-based theme questions. A rigorous FAST-style ELA.9.R.1.2 item cannot be constructed from this material.",
+    "rejectedAt": "2026-05-12T00:20:38.418Z"
+  },
+  "Electra::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:20:48.247Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:08.790Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:19.192Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:27.775Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:37.506Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:47.437Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:21:56.548Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:22:23.379Z"
+  },
+  "Icarus and Daedalus::ELA.9.R.1.3::Perspective effect with evidence::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:23:00.379Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:23:37.101Z"
+  },
+  "Animal Farm::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 13": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:24:18.120Z"
+  },
+  "Electra::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:24:35.168Z"
+  },
+  "Letter from Birmingham Jail::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:24:43.687Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 2": {
+    "reason": "The excerpt is from Mary Wollstonecraft's 'Original Stories from Real Life' (or a similar 18th-century narrative), not from Galileo Galilei's 'Letter to the Grand Duchess Christina of Tuscany.' The source label is incorrect, and the excerpt itself — a domestic scene involving John, ale, and a chaise — cannot support a rigorous FAST ELA.9.R.2.1 item tied to that source. Additionally, the two paragraphs do not present a clear enough structural contrast (introduce/contrast/extend/prove/shift/conclude) to anchor a defensible, passage-specific multiple-choice question without risking ambiguity or misattribution.",
+    "rejectedAt": "2026-05-12T00:24:48.168Z"
+  },
+  "Icarus and Daedalus::ELA.9.R.1.1::Setting adds meaning or style::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:26:00.471Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.1::Characterization adds meaning::2 paragraphs · T2 candidate 3": {
+    "reason": "Question must be a real question.",
+    "rejectedAt": "2026-05-12T00:26:18.521Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.1::Characterization adds meaning::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:34:14.292Z"
+  },
+  "A Modest Proposal::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:34:50.763Z"
+  },
+  "A White Heron::ELA.9.R.1.2::Evidence that proves theme::3 paragraphs · T3 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:35:11.070Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:35:31.954Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 1": {
+    "reason": "This excerpt is a scholarly footnote and textual apparatus discussing editorial conjectures, manuscript lacunae, and translation variants for Beowulf — it contains no narrative moments, character actions, or thematic content from the literary text itself. There are no story moments from which a theme can be tracked or developed, making it impossible to write a rigorous FAST ELA.9.R.1.2 item tied to theme development across literary moments.",
+    "rejectedAt": "2026-05-12T00:35:35.762Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::3 paragraphs · T3 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:36:14.164Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:36:23.727Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:36:35.416Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:36:44.352Z"
+  },
+  "The Lincoln-Douglas Debates::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:36:54.385Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:37:03.603Z"
+  },
+  "The Prince::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:37:11.689Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::1 paragraph · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:38:19.099Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:38:37.197Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:38:55.016Z"
+  },
+  "Antigone::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:39:37.829Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:40:04.521Z"
+  },
+  "Nobel Prize Acceptance Speech::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:40:42.112Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:41:36.919Z"
+  },
+  "Speech to the Troops at Tilbury::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:41:46.314Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Characterization adds meaning::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is a scholarly philological commentary on textual emendations to Beowulf — it debates word choices, manuscript readings, and translation variants among editors (B., H.-So., Gr., Kl.). It contains no narrative scene, character action, speech, thought, or description from the poem itself that a student could analyze for characterization. The passage cannot support a rigorous FAST-style characterization item because there is no character moment to interpret — only editorial debate about how to translate one.",
+    "rejectedAt": "2026-05-12T00:44:45.882Z"
+  },
+  "A Modest Proposal::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:46:19.850Z"
+  },
+  "Animal Farm::ELA.9.R.1.2::Topic vs. theme statement::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:46:45.393Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:46:55.175Z"
+  },
+  "Electra::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:47:13.620Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:47:41.250Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:47:49.651Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:47:58.336Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:48:07.775Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Elevated style and epic simile::2 paragraphs · T2 candidate 3": {
+    "reason": "This excerpt is entirely editorial and scholarly apparatus — footnotes, textual conjectures, manuscript lacuna discussions, and translation variants from editors (H.-So., W., B., S.). It contains no actual epic poetry, no characters speaking or acting, no elevated diction in context, no invocation, no epic simile, and no formal narrative language from Beowulf itself. A rigorous FAST-style item on elevated style and epic simile cannot be constructed from editorial commentary about translation choices.",
+    "rejectedAt": "2026-05-12T00:49:17.953Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:49:45.709Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:50:01.847Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:50:33.899Z"
+  },
+  "Nobel Prize Acceptance Speech::ELA.9.R.2.1::Recognize structure types::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:50:50.371Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:50:58.982Z"
+  },
+  "The Face of Science::ELA.9.R.2.1::Paragraph or section job::3 paragraphs · T3 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:51:15.476Z"
+  },
+  "A Very Old Man with Enormous Wings::ELA.9.R.1.2::Theme through conflict or consequence::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:53:44.776Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:54:11.345Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 3": {
+    "reason": "The excerpt is not suitable for a rigorous FAST-style theme-development item. The first paragraph is a single isolated scene (carrying Grendel's head to Hrothgar's hall) with no second distinct story moment in the excerpt to track alongside it for theme development. The second paragraph is a scholarly philological footnote about Old English grammar, not a narrative moment at all. Without two or more story moments from which a student can track theme development, the subskill—tracking how two or more story moments develop the same theme—cannot be assessed from this excerpt alone.",
+    "rejectedAt": "2026-05-12T00:54:15.403Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:54:35.564Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::3 paragraphs · T3 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:54:44.985Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 18": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:55:12.001Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:55:21.965Z"
+  },
+  "The Lincoln-Douglas Debates::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:55:31.683Z"
+  },
+  "The Prince::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:55:50.047Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Elevated style and epic simile::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is a scholarly philological commentary on textual variants and editorial disputes in Beowulf — it is not the epic poem itself. It contains no elevated diction, epic similes, invocations, repeated phrasing, or formal narrative language from the poem. Students cannot analyze epic style or extended comparison from a passage that is entirely academic footnote material debating word choices like 'cyn' vs. 'hám' and adverbial vs. adjectival readings. The subskill requires the actual epic text, not a scholar's gloss on it.",
+    "rejectedAt": "2026-05-12T00:56:35.271Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:56:45.244Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:56:52.577Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::1 paragraph · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:57:03.572Z"
+  },
+  "The Odyssey::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:57:13.366Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:57:21.383Z"
+  },
+  "Electra::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:57:40.505Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:57:47.767Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:58:03.853Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:58:11.430Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T00:58:44.028Z"
+  },
+  "Animal Farm::ELA.9.R.1.1::Point of view adds meaning::1 paragraph · T2 candidate 5": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 852 (line 10 column 142)",
+    "rejectedAt": "2026-05-12T00:59:12.669Z"
+  },
+  "A White Heron::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:01:16.696Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 4": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 865 (line 10 column 99)",
+    "rejectedAt": "2026-05-12T01:01:36.848Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:01:55.461Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:02:04.067Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:02:14.025Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:02:22.009Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 19": {
+    "reason": "This excerpt is a dense academic footnote from a scholarly introduction to The Epic of Gilgamesh, consisting entirely of philological and etymological analysis of the hero's name (citing Professor Clay's works, linguistic derivations, and cuneiform determinatives). It contains no narrative, character action, conflict, imagery, or thematic development whatsoever. There is no theme present in this passage, no character moment to anchor theme evidence, and no way to distinguish 'details that develop theme' from 'true details that only match topic' because the passage has no literary theme — only scholarly citation. A rigorous FAST ELA.9.R.1.2 item cannot be built from this excerpt.",
+    "rejectedAt": "2026-05-12T01:02:26.910Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:02:37.084Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:02:55.506Z"
+  },
+  "The Prince::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:03:05.269Z"
+  },
+  "The Odyssey::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:04:22.719Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:04:30.622Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:04:58.837Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:05:16.909Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:05:28.990Z"
+  },
+  "The Face of Science::ELA.9.R.2.1::Recognize structure types::3 paragraphs · T3 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:05:37.387Z"
+  },
+  "The Talented Tenth::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:05:45.578Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:05:53.668Z"
+  },
+  "Animal Farm::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 15": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:06:01.691Z"
+  },
+  "Animal Farm::ELA.9.R.1.1::Setting adds meaning or style::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:06:39.165Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Plot or conflict adds meaning::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is entirely editorial and scholarly apparatus — footnotes, textual conjectures, manuscript lacuna discussions, and translation variants from editors (H.-So., W., B., S.). It contains no narrative events, conflicts, decisions, reversals, or consequences from the literary text of Beowulf itself. There is no plot or conflict present to analyze for deeper meaning, making it impossible to write a rigorous FAST ELA.9.R.1.1 (Plot or conflict adds meaning) item from this passage.",
+    "rejectedAt": "2026-05-12T01:06:51.734Z"
+  },
+  "A Modest Proposal::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:08:23.112Z"
+  },
+  "A Very Old Man with Enormous Wings::ELA.9.R.1.2::Universal theme::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:08:32.196Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:08:51.134Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T1 candidate 5": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 862 (line 10 column 99)",
+    "rejectedAt": "2026-05-12T01:09:00.343Z"
+  },
+  "Electra::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T2 candidate 3": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 784 (line 10 column 73)",
+    "rejectedAt": "2026-05-12T01:09:09.567Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:09:17.072Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:09:26.653Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:09:36.100Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 20": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:09:53.189Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:10:03.426Z"
+  },
+  "The Lincoln-Douglas Debates::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:10:13.364Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T3 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:10:21.615Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.3::Perspective effect with evidence::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:10:59.738Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::1 paragraph · T2 candidate 7": {
+    "reason": "Question must be a real question.",
+    "rejectedAt": "2026-05-12T01:11:28.278Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Divine intervention::4 paragraphs · T4 candidate 12": {
+    "reason": "This excerpt is a philological and etymological analysis of the name 'Gilgamesh' drawn from cuneiform sign lists, syllabaries, and linguistic scholarship. It contains no narrative action, no divine intervention, no god or goddess acting upon characters, no prayer, no prophecy, and no supernatural force shaping plot or theme. It cannot support a rigorous FAST-style item aligned to ELA.9.R.1.4 subskill: Divine intervention.",
+    "rejectedAt": "2026-05-12T01:11:32.000Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:11:41.523Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Recognize structure types::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:11:57.829Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:12:23.137Z"
+  },
+  "Medea::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:12:32.368Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:12:39.893Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:12:48.391Z"
+  },
+  "The Talented Tenth::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:13:06.956Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:13:15.629Z"
+  },
+  "Antigone::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:13:23.821Z"
+  },
+  "Electra::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:13:33.758Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Plot or conflict adds meaning::2 paragraphs · T2 candidate 5": {
+    "reason": "This excerpt is a scholarly philological commentary on textual variants and word-choice disputes in Beowulf—not a narrative passage containing plot events, conflicts, decisions, reversals, or consequences. There is no story moment, character action, or dramatic conflict present that a student could analyze for deeper meaning under ELA.9.R.1.1 (Plot or conflict adds meaning). The excerpt cannot support a rigorous FAST-style literary item tied to this subskill.",
+    "rejectedAt": "2026-05-12T01:14:13.892Z"
+  },
+  "A White Heron::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 2": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 1077 (line 10 column 363)",
+    "rejectedAt": "2026-05-12T01:16:01.314Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T3 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:16:10.774Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:16:40.021Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:16:48.725Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:16:57.888Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:17:23.466Z"
+  },
+  "The Lincoln-Douglas Debates::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:17:32.592Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::4 paragraphs · T4 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:17:42.306Z"
+  },
+  "The Prince::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:17:51.192Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.3::Perspective effect with evidence::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:18:18.156Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Recognize structure types::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:19:22.738Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:19:49.480Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:20:04.978Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:20:13.243Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:20:39.947Z"
+  },
+  "Antigone::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:20:47.994Z"
+  },
+  "Electra::ELA.9.R.2.2::Central idea identification::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:20:55.139Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.1::Plot or conflict adds meaning::2 paragraphs · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:22:36.705Z"
+  },
+  "The Iliad::ELA.9.R.1.1::Characterization adds meaning::1 paragraph · T2 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:22:53.599Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:23:59.116Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:24:07.206Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:24:16.058Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Evidence that proves theme::4 paragraphs · T4 candidate 22": {
+    "reason": "This excerpt is a dense philological and etymological analysis of cuneiform sign variants and the linguistic derivation of the name 'Gilgamesh.' It contains no narrative, character development, conflict, or thematic content. There is no literary theme to develop or support with evidence — only scholarly linguistic argument. The subskill requires students to distinguish details that develop a theme from true details that only match a topic, which is impossible here because the passage presents no theme whatsoever. A FAST-style ELA.9.R.1.2 item cannot be constructed from this excerpt.",
+    "rejectedAt": "2026-05-12T01:24:30.145Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 10": {
+    "reason": "This excerpt is a scholarly footnote from a commentary on The Iliad — it is not a literary passage from the narrative itself. It contains no characters, conflict, narrator voice, or story events that could develop a literary theme. The passage is purely academic annotation (citations, historical interpretation, archaeological observation), which cannot support a rigorous FAST ELA.9.R.1.2 theme-development item requiring students to distinguish theme-developing details from topic-only details within a literary text.",
+    "rejectedAt": "2026-05-12T01:24:34.695Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::4 paragraphs · T4 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:24:50.544Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.3::Perspective effect with evidence::1 paragraph · T1 candidate 6": {
+    "reason": "Choices sound like item-frame/meta language instead of passage-specific answer choices.",
+    "rejectedAt": "2026-05-12T01:25:28.206Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Elevated style and epic simile::1 paragraph · T1 candidate 8": {
+    "reason": "This excerpt is scholarly editorial commentary and textual apparatus about disputed words in Beowulf — it is not a passage of epic poetry itself. It contains no elevated diction, epic simile, invocation, repeated phrasing, or any other feature of epic style that students could analyze. The subskill requires students to explain how formal language, extended comparison, or other epic conventions create style within the poem; this excerpt offers none of those features and cannot support a rigorous FAST-style item on ELA.9.R.1.4.",
+    "rejectedAt": "2026-05-12T01:25:41.350Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:25:51.355Z"
+  },
+  "The Iliad::ELA.9.R.1.4::Divine intervention::4 paragraphs · T4 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:09.582Z"
+  },
+  "The Odyssey::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:17.771Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Recognize structure types::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:28.239Z"
+  },
+  "Antigone::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:36.408Z"
+  },
+  "Electra::ELA.9.R.2.1::Recognize structure types::5 paragraphs · T4 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:45.016Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 9": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:26:52.277Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:09.994Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:18.097Z"
+  },
+  "The Talented Tenth::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:26.478Z"
+  },
+  "Antigone::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:43.479Z"
+  },
+  "Electra::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:50.624Z"
+  },
+  "Industrial Education for the Negro::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:27:56.916Z"
+  },
+  "Letter from Birmingham Jail::ELA.9.R.2.2::Central idea identification::1 paragraph · T2 candidate 1": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:28:05.104Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:30:49.059Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T1 candidate 8": {
+    "reason": "This excerpt is a scholarly footnote or textual commentary on a disputed sentence in Beowulf — it is not a literary passage with narrative moments, character actions, or thematic development. It contains no story events, no character perspective, and no literary content from which a theme can be tracked across two or more moments. The subskill requires students to trace how multiple story moments develop the same theme, which is impossible with a passage that consists entirely of philological debate about word choices and emendations. No rigorous FAST-style ELA.9.R.1.2 item can be built from this excerpt.",
+    "rejectedAt": "2026-05-12T01:30:53.396Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 12": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:31:58.764Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:32:16.165Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.3::Perspective effect with evidence::1 paragraph · T1 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:32:51.305Z"
+  },
+  "The Aeneid::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:33:17.283Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::2 paragraphs · T2 candidate 3": {
+    "reason": "This excerpt is scholarly literary criticism and analysis of the Gilgamesh Epic — it is not the epic poem itself. It contains no elevated poetic language, no invocation, no repeated phrasing in epic style, and no extended epic simile. The subskill requires students to identify and explain how formal language, repeated phrasing, invocation, or extended comparison creates epic style within the epic text. A prose academic summary of narrative currents and character origins cannot support a rigorous FAST-style item on elevated style and epic simile.",
+    "rejectedAt": "2026-05-12T01:33:21.281Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Recognize structure types::1 paragraph · T2 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:33:49.283Z"
+  },
+  "Antigone::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:33:58.373Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 10": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:17.404Z"
+  },
+  "Medea::ELA.9.R.2.1::Paragraph or section job::5 paragraphs · T4 candidate 16": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:26.534Z"
+  },
+  "Old Greek Stories::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:33.290Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 7": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:41.382Z"
+  },
+  "The Talented Tenth::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T2 candidate 6": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:49.061Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.2::How support develops the idea::2 paragraphs · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:34:59.403Z"
+  },
+  "Electra::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:35:14.452Z"
+  },
+  "Industrial Education for the Negro::ELA.9.R.2.2::Central idea identification::1 paragraph · T2 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:35:21.408Z"
+  },
+  "Letter from Birmingham Jail::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:35:28.784Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Plot or conflict adds meaning::1 paragraph · T1 candidate 8": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:36:05.150Z"
+  },
+  "Electra::ELA.9.R.1.1::Plot or conflict adds meaning::1 paragraph · T2 candidate 5": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:36:15.699Z"
+  },
+  "The Iliad::ELA.9.R.1.1::Characterization adds meaning::5 paragraphs · T4 candidate 12": {
+    "reason": "This excerpt is a scholarly apparatus — footnotes, bibliographic citations, Greek quotations, and editorial commentary on ancient texts. It contains no characters performing actions, speaking, thinking, or being described in a narrative sense. There is no characterization to analyze, and no passage moment exists that would allow a student to explain how a character action, thought, speech, contrast, or description reveals meaning or style. The subskill cannot be assessed from this material.",
+    "rejectedAt": "2026-05-12T01:37:18.255Z"
+  },
+  "A Modest Proposal::ELA.9.R.1.2::Theme through conflict or consequence::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:37:37.821Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 11": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:37:56.455Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme through conflict or consequence::2 paragraphs · T2 candidate 1": {
+    "reason": "The excerpt is not suitable for a rigorous FAST-style theme-through-conflict-or-consequence item. The first paragraph is a brief, isolated action scene (carrying Grendel's head to the hall) without sufficient context to trace how conflict, consequence, realization, or change develops a theme across the text. The second paragraph is a scholarly philological footnote about Old English grammar, entirely unrelated to literary theme development. Together, these two paragraphs do not provide enough literary substance—no character realization, no thematic statement, no developed consequence—to write a defensible, passage-grounded multiple-choice item that meets the standard's rigor without importing outside knowledge of the full epic.",
+    "rejectedAt": "2026-05-12T01:38:01.696Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 11": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:38:18.721Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 11": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:38:36.788Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T2 candidate 3": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:38:54.783Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T2 candidate 13": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:39:04.940Z"
+  },
+  "The Odyssey::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 12": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:39:23.165Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Plot or conflict adds meaning::1 paragraph · T1 candidate 9": {
+    "reason": "This excerpt is a scholarly footnote debating textual emendations and word-level translations of a single disputed sentence from Beowulf. It contains no narrative events, conflicts, decisions, reversals, or consequences from the poem's plot. There is no literary action or story moment that a student could analyze for deeper meaning under ELA.9.R.1.1 (Plot or conflict adds meaning). The passage is entirely metalinguistic commentary, not a literary text.",
+    "rejectedAt": "2026-05-12T01:40:14.915Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T3 candidate 12": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:42:31.017Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme through conflict or consequence::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is entirely editorial and scholarly apparatus — footnotes, textual conjectures, manuscript lacuna discussions, and translation variants from Beowulf editors. It contains no narrative, no characters in conflict, no consequences, no realizations, and no thematic development. It cannot support a rigorous FAST-style item tied to ELA.9.R.1.2 (theme through conflict or consequence) because there is no literary text present — only philological commentary about the text.",
+    "rejectedAt": "2026-05-12T01:42:34.646Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 12": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:43:02.432Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Epic hero traits::2 paragraphs · T2 candidate 3": {
+    "reason": "This excerpt is a scholarly philological commentary debating Old English textual emendations and word interpretations — it is not a narrative passage from Beowulf itself. It contains no direct depiction of Beowulf's actions, speech, or character traits that students can analyze as evidence of epic hero qualities. A FAST-style item on epic hero traits requires a passage where the hero's courage, pride, loyalty, cleverness, endurance, or leadership is shown through action, dialogue, or description — none of which is present here.",
+    "rejectedAt": "2026-05-12T01:45:59.686Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 1": {
+    "reason": "The excerpt does not match the stated source. The passage is not from Galileo Galilei's Letter to the Grand Duchess Christina of Tuscany. It appears to be from an 18th-century moral or domestic text discussing cruelty to animals and the sanctity of truth. Additionally, the two paragraphs present two loosely connected ideas (cruelty and its consequences; truth and reverence) without a unified central idea that can be clearly identified and supported with two strong evidence points from the excerpt alone. The mismatch between source and excerpt, combined with the thematic fragmentation, makes it impossible to write a rigorous, defensible FAST-style central idea item tied to the named standard and subskill.",
+    "rejectedAt": "2026-05-12T01:50:12.719Z"
+  },
+  "The Death of Ivan Ilyich::ELA.9.R.1.2::Topic vs. theme statement::1 paragraph · T1 candidate 2": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:53:50.769Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 15": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:54:18.644Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::1 paragraph · T2 candidate 5": {
+    "reason": "This excerpt is scholarly academic prose analyzing the etymology of the name 'Gilgamesh' — it is not a passage from the Epic of Gilgamesh itself. It contains no elevated diction, epic simile, invocation, repeated phrasing, or any other feature of epic style. No rigorous FAST-style item on ELA.9.R.1.4 (elevated style and epic simile) can be built from this text because the subskill requires students to analyze language features within the epic poem, not in secondary academic commentary about it.",
+    "rejectedAt": "2026-05-12T01:55:56.236Z"
+  },
+  "Industrial Education for the Negro::ELA.9.R.2.2::Central idea identification::1 paragraph · T1 candidate 4": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T01:59:14.292Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Point of view adds meaning::2 paragraphs · T2 candidate 1": {
+    "reason": "This excerpt is a scholarly philological commentary on textual emendations to Beowulf — it debates word choices, manuscript readings, and translation variants among editors (B., H.-So., Gr., Kl.). It contains no narrative point of view, no narrator voice, no character perspective, and no story moment that a student could analyze for how 'who tells or sees the moment shapes meaning, tone, mood, or reader understanding.' The subskill requires a passage with an identifiable narrative or character perspective; this excerpt offers only academic editorial debate and cannot support a rigorous FAST-style point-of-view item.",
+    "rejectedAt": "2026-05-12T02:00:29.898Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Theme through conflict or consequence::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is a scholarly philological commentary on textual emendations and word-choice disputes in Beowulf—it contains no narrative conflict, consequence, realization, or character change from which a theme can be traced. It is a critical apparatus, not a literary passage, and cannot support a rigorous FAST-style item tied to ELA.9.R.1.2 Theme through conflict or consequence.",
+    "rejectedAt": "2026-05-12T02:02:27.350Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T1 candidate 8": {
+    "reason": "This excerpt is scholarly literary criticism about the composition and source history of the Gilgamesh Epic, not a narrative literary passage. It contains no story moments, character actions, conflicts, or narrative events from which a theme can be tracked across two or more moments. The standard ELA.9.R.1.2 requires students to trace theme development through story moments within a literary text, but this paragraph offers only academic analysis of textual origins and calendar correspondences. No rigorous FAST-style theme-development item can be built from this excerpt.",
+    "rejectedAt": "2026-05-12T02:03:33.499Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::1 paragraph · T2 candidate 6": {
+    "reason": "This excerpt is scholarly critical prose analyzing the Gilgamesh Epic — it is not a passage from the epic itself. It contains no elevated diction, invocation, epic simile, repeated phrasing, or any other feature of epic style. The subskill requires students to identify and explain how formal language, repeated phrasing, invocation, or extended comparison creates epic style within the epic poem. A rigorous FAST-style item on ELA.9.R.1.4 (elevated style and epic simile) cannot be built from academic literary criticism about the epic; it requires an actual passage from the epic poem containing those stylistic features.",
+    "rejectedAt": "2026-05-12T02:05:57.779Z"
+  },
+  "A Modest Proposal::ELA.9.R.2.1::Text feature purpose::1 paragraph · T1 candidate 1": {
+    "reason": "This excerpt is a single prose paragraph from Jonathan Swift's 'A Modest Proposal' and contains no text features — no headings, captions, charts, illustrations, or annotations — that could support a rigorous FAST-style item aligned to ELA.9.R.2.1 (Text feature purpose / Subskill: Explain how headings, captions, charts, illustrations, annotations, or other features help convey meaning). The subskill requires an identifiable non-prose feature to analyze; this excerpt offers none.",
+    "rejectedAt": "2026-05-12T02:06:19.405Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Point of view adds meaning::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is a scholarly footnote and textual apparatus discussing manuscript lacunae, editorial conjectures, and variant readings of Beowulf — not a literary passage with a narrator, character perspective, or narrative moment. There is no point of view, tone, mood, or reader experience to analyze in the literary sense required by ELA.9.R.1.1. No rigorous FAST-style item on 'point of view adds meaning' can be built from editorial commentary about competing translations.",
+    "rejectedAt": "2026-05-12T02:10:24.345Z"
+  },
+  "Antigone::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 15": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T02:12:36.136Z"
+  },
+  "The Lincoln-Douglas Debates::ELA.9.R.1.2::Evidence that proves theme::1 paragraph · T1 candidate 16": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T02:14:58.675Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.2::Central idea identification::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is from a fictional narrative letter (likely Maria Edgeworth's 'The Parent's Assistant' or similar), not from Galileo Galilei's 'Letter to the Grand Duchess Christina of Tuscany.' The supplied text does not match the named source, and the narrative scene—Charles receiving four guineas and debating how to spend them—does not contain an identifiable central idea in the informational/argumentative sense required by ELA.9.R.2.2 (Central idea and supporting evidence). The passage presents a story moment, not a sustained claim or argument, making it impossible to write a rigorous FAST-style central idea identification item tied to the stated standard and source.",
+    "rejectedAt": "2026-05-12T02:19:20.757Z"
+  },
+  "Old Greek Stories::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 16": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T02:24:08.804Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.1::Plot or conflict adds meaning::4 paragraphs · T4 candidate 32": {
+    "reason": "This excerpt is a dense philological and etymological analysis of the name 'Gilgamesh' drawn from scholarly linguistic documentation. It contains no narrative events, conflicts, decisions, reversals, or consequences — the core elements required by ELA.9.R.1.1 (Plot or conflict adds meaning). There is no story moment, character action, or dramatic tension that a student could analyze for deeper meaning. The passage cannot support a rigorous FAST-style item tied to this subskill.",
+    "rejectedAt": "2026-05-12T02:32:45.285Z"
+  },
+  "Beowulf::ELA.9.R.1.2::Topic vs. theme statement::2 paragraphs · T2 candidate 3": {
+    "reason": "The excerpt is not suitable for a rigorous FAST-style theme development item. The first paragraph is a fragmentary action scene (carrying Grendel's head to the mead-hall) that lacks sufficient narrative context, character reflection, or authorial commentary to support a defensible universal theme statement. The second paragraph is a scholarly philological footnote about Old English grammar, not literary content. Together, these two paragraphs do not provide enough textual evidence to distinguish a topic from a theme statement in a way that is fair, passage-grounded, and free from speculation.",
+    "rejectedAt": "2026-05-12T02:33:52.507Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T2 candidate 11": {
+    "reason": "This excerpt is a dense academic footnote about philological and etymological scholarship on the name 'Gilgamesh.' It contains no narrative moments, character development, conflict, or thematic progression — only citation of scholarly sources and linguistic analysis of a hero's name. The subskill requires tracking two or more story moments that develop the same theme, but this passage has zero story moments. No rigorous FAST-style theme-development item can be built from this excerpt.",
+    "rejectedAt": "2026-05-12T02:35:00.623Z"
+  },
+  "Beowulf::ELA.9.R.1.4::In medias res::2 paragraphs · T2 candidate 1": {
+    "reason": "This excerpt is a scholarly footnote and textual apparatus discussing manuscript lacunae, editorial conjectures, and variant readings of Beowulf — not the epic poem itself. It contains no narrative action, characters in conflict, or story structure that would allow a student to analyze in medias res or any other literary subskill. A rigorous FAST-style item on ELA.9.R.1.4 cannot be built from editorial commentary about translation choices.",
+    "rejectedAt": "2026-05-12T02:36:42.451Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::4 paragraphs · T4 candidate 18": {
+    "reason": "This excerpt is a philological and etymological scholarly analysis of the name 'Gilgamesh' drawn from cuneiform sign lists, syllabaries, and linguistic notation. It contains no epic poetry, no narrative action, no characters in conflict, no invocation of a muse, no extended epic simile, no formal elevated poetic language, and no repeated heroic phrasing. It cannot support a rigorous FAST ELA.9.R.1.4 item on elevated style and epic simile because it is academic prose about linguistic sign values, not an excerpt from the epic itself.",
+    "rejectedAt": "2026-05-12T02:37:05.379Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Point of view adds meaning::1 paragraph · T1 candidate 5": {
+    "reason": "This excerpt is a scholarly footnote or textual commentary on a disputed line in Beowulf, not a narrative passage with a narrator, character perspective, or storytelling point of view. It presents academic debate about word meanings and emendations, offering no character voice, narrative stance, or moment of story experience through which point of view could shape meaning, tone, mood, or reader understanding in a literary sense. The subskill requires a passage where who tells or sees a moment shapes meaning — this excerpt has no such moment, only philological dispute. A rigorous FAST-style item on point of view cannot be built from this material.",
+    "rejectedAt": "2026-05-12T02:41:26.409Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.1::Plot or conflict adds meaning::1 paragraph · T2 candidate 34": {
+    "reason": "This excerpt is a scholarly footnote discussing the etymology and academic debate over Gilgamesh's name. It contains no plot events, conflicts, decisions, reversals, or consequences from the Epic of Gilgamesh itself. The subskill requires explaining how a narrative event or conflict adds a deeper layer of meaning, but this passage presents only philological and bibliographic analysis. No FAST-style item targeting 'plot or conflict adds meaning' can be built from this material.",
+    "rejectedAt": "2026-05-12T02:42:29.789Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::5 paragraphs · T4 candidate 20": {
+    "reason": "This excerpt is a scholarly apparatus — footnotes, bibliographic citations, Greek quotations, and editorial commentary on Homeric biography — not a literary narrative. It contains no character development, conflict, narrator voice, or thematic arc that could support a rigorous FAST ELA.9.R.1.2 item asking students to distinguish theme-developing evidence from true-but-topical details. No defensible theme can be extracted from this passage, making the subskill untestable here.",
+    "rejectedAt": "2026-05-12T02:44:44.951Z"
+  },
+  "Beowulf::ELA.9.R.1.4::In medias res::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt does not contain a clear in medias res opening. The passage depicts a reward ceremony after battle — Hrothgar gifting Beowulf horses and weapons — with no moment of plunging the reader into the middle of ongoing action. The scholarly footnote appended to the excerpt further disrupts any coherent narrative entry point. There is no structural feature here that would allow a student to explain how beginning in the middle of action affects tension, structure, or reader understanding, making a rigorous FAST-style in medias res item impossible from this excerpt alone.",
+    "rejectedAt": "2026-05-12T02:46:01.503Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::2 paragraphs · T2 candidate 19": {
+    "reason": "This excerpt is scholarly literary criticism and analysis about the Epic of Gilgamesh — it is not drawn from the epic poem itself. It contains no elevated diction, epic similes, invocations, repeated phrasing, or formal poetic structures characteristic of epic style. The subskill requires students to identify and explain how formal language, extended comparison, or invocation creates epic style within the poem; this passage offers none of those features. A FAST-style item on ELA.9.R.1.4 cannot be responsibly built from a critical essay about the epic rather than from the epic itself.",
+    "rejectedAt": "2026-05-12T02:46:17.632Z"
+  },
+  "The Aeneid::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 14": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T02:47:53.062Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T1 candidate 9": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 866 (line 10 column 87)",
+    "rejectedAt": "2026-05-12T02:54:09.795Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 19": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T02:54:27.101Z"
+  },
+  "Beowulf::ELA.9.R.1.4::In medias res::2 paragraphs · T2 candidate 3": {
+    "reason": "The excerpt does not contain a clear in medias res opening. The passage depicts warriors carrying Grendel's head to Hrothgar's hall — an action scene, but it is not the beginning of the epic and does not itself demonstrate the structural technique of beginning in the middle of action in a way students can analyze from these two paragraphs alone. Additionally, the second paragraph is a scholarly philological note entirely unrelated to the narrative, making it impossible to construct a rigorous FAST-style item on in medias res from this excerpt without importing outside knowledge of the epic's structure. A valid in medias res item requires an excerpt that opens mid-action so students can explain how that entry point creates tension or shapes reader understanding — this excerpt does neither.",
+    "rejectedAt": "2026-05-12T02:56:20.563Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::1 paragraph · T1 candidate 22": {
+    "reason": "This excerpt is scholarly literary criticism and analysis of the Epic of Gilgamesh, not a passage from the epic itself. It contains no elevated diction, epic similes, invocations, repeated phrasing, or formal epic style features. It cannot support a rigorous FAST-style item on ELA.9.R.1.4 subskill 'Elevated style and epic simile' because there is no epic language, extended comparison, or structural epic feature present for students to analyze.",
+    "rejectedAt": "2026-05-12T02:56:41.349Z"
+  },
+  "The Odyssey::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 18": {
+    "reason": "These two paragraphs depict Telemachus hosting a guest with courteous hospitality rituals (seating, handwashing, food, wine) but contain no god, goddess, prophecy, prayer, or supernatural force that shapes action or theme. Minerva appears only as a named guest being escorted to a seat — her divine identity is not revealed, invoked, or acted upon in any way that demonstrates divine intervention within this excerpt. The passage cannot support a rigorous FAST-style item on the subskill of divine intervention without importing context from outside the supplied text.",
+    "rejectedAt": "2026-05-12T02:57:02.442Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T1 candidate 22": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 808 (line 10 column 119)",
+    "rejectedAt": "2026-05-12T03:04:55.432Z"
+  },
+  "Medea::ELA.9.R.2.1::Text feature purpose::1 paragraph · T2 candidate 1": {
+    "reason": "This excerpt is a single continuous dramatic monologue from Euripides' Medea with no headings, captions, charts, illustrations, annotations, or other text features present. The subskill requires explaining how a specific text feature (such as a heading, caption, or annotation) conveys meaning, but this prose/verse passage contains none of those features. A rigorous FAST-style item on text feature purpose cannot be constructed from this excerpt alone.",
+    "rejectedAt": "2026-05-12T03:07:46.134Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme developed through moments::4 paragraphs · T4 candidate 31": {
+    "reason": "This excerpt is a philological and etymological analysis of the name 'Gilgamesh' drawn from scholarly cuneiform documentation. It contains no narrative moments, character actions, conflicts, or story events. ELA.9.R.1.2 requires tracking theme development across two or more story moments in a literary text. This passage has no story moments whatsoever — it is academic linguistic commentary — and therefore cannot support a rigorous FAST-style item on theme development through moments.",
+    "rejectedAt": "2026-05-12T03:14:41.213Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Elevated style and epic simile::1 paragraph · T1 candidate 27": {
+    "reason": "This excerpt is scholarly prose commentary about the Gilgamesh Epic — it analyzes the epic's structure and sources from an academic perspective. It contains no elevated diction, epic similes, invocations, repeated heroic epithets, or extended comparisons characteristic of epic poetry style. The subskill requires students to identify and explain formal language, repeated phrasing, invocation, or extended comparison as features of epic style within an epic text itself. This passage cannot support a rigorous FAST-style item on ELA.9.R.1.4 elevated style and epic simile.",
+    "rejectedAt": "2026-05-12T03:16:15.651Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Theme developed through moments::2 paragraphs · T3 candidate 13": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 913 (line 10 column 76)",
+    "rejectedAt": "2026-05-12T03:34:10.324Z"
+  },
+  "Beowulf::ELA.9.R.1.4::In medias res::1 paragraph · T1 candidate 7": {
+    "reason": "This excerpt is a scholarly footnote or textual commentary on disputed words in Beowulf — it is not a passage of epic poetry and contains no narrative action, characters in conflict, or structural features of in medias res. It cannot support a rigorous FAST-style item on how beginning in the middle of action affects structure, tension, or reader understanding, because no story action, tension, or narrative structure is present in the text.",
+    "rejectedAt": "2026-05-12T03:35:50.959Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Style technique adds meaning::2 paragraphs · T2 candidate 1": {
+    "reason": "This excerpt is a scholarly footnote and textual apparatus discussing manuscript lacunae, editorial conjectures, and variant readings of Beowulf — not the literary text itself. It contains no diction, syntax, figurative language, or authorial voice choices that belong to a literary work. There is no writer's style to analyze for meaning; the passage is purely philological commentary. A rigorous FAST-style item on ELA.9.R.1.1 (style technique adds meaning) cannot be built from editorial notes about competing manuscript emendations.",
+    "rejectedAt": "2026-05-12T03:41:08.011Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Theme developed through moments::3 paragraphs · T3 candidate 14": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 813 (line 10 column 124)",
+    "rejectedAt": "2026-05-12T03:43:37.339Z"
+  },
+  "The Iliad::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 26": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T03:44:22.363Z"
+  },
+  "Romeo and Juliet::ELA.9.R.1.2::Theme developed through moments::3 paragraphs · T3 candidate 15": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 857 (line 10 column 72)",
+    "rejectedAt": "2026-05-12T03:52:58.396Z"
+  },
+  "The Aeneid::ELA.9.R.1.2::Evidence that proves theme::2 paragraphs · T2 candidate 25": {
+    "reason": "Question does not clearly point back to the excerpt.",
+    "rejectedAt": "2026-05-12T03:53:16.397Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.2::Theme through conflict or consequence::4 paragraphs · T4 candidate 8": {
+    "reason": "This excerpt is a philological and etymological analysis of the name 'Gilgamesh' drawn from cuneiform sign lists, syllabaries, and linguistic scholarship. It contains no narrative conflict, consequence, realization, or character change — the core elements required to develop theme under ELA.9.R.1.2 (Theme through conflict or consequence). There is no literary text, no protagonist experiencing tension, and no thematic arc that a student could trace. A rigorous FAST-style item on this standard cannot be constructed from this passage.",
+    "rejectedAt": "2026-05-12T03:53:20.295Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Quest or journey structure::2 paragraphs · T2 candidate 1": {
+    "reason": "This excerpt is entirely editorial and scholarly apparatus — footnotes, textual variants, manuscript lacunae discussions, and translator conjectures — not actual epic narrative. It contains no journey stage, obstacle, test, return, or recognition moment from the Beowulf story itself. There is no character action, no narrative event, and no structural epic element that a student could track to develop understanding of quest or journey structure. A rigorous FAST-style item on ELA.9.R.1.4 cannot be built from this material.",
+    "rejectedAt": "2026-05-12T03:54:30.402Z"
+  },
+  "Beowulf::ELA.9.R.1.4::Quest or journey structure::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is a scholarly philological commentary on textual emendations and word-choice disputes in Beowulf—it is not a passage of epic poetry itself. It contains no journey stage, obstacle, test, return, or recognition moment that a student can track as a narrative event. The excerpt cannot support a rigorous FAST-style item tied to quest or journey structure because there is no epic narrative action, character interaction, or structural moment present—only academic debate about Old English word forms and their translations.",
+    "rejectedAt": "2026-05-12T04:03:56.658Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Epic hero traits::1 paragraph · T2 candidate 7": {
+    "reason": "This excerpt is a scholarly linguistic analysis of the etymology of Gilgamesh's name, discussing academic sources, determinatives, and Semitic word origins. It contains no narrative content, no depiction of Gilgamesh as a character in action, and no evidence of epic hero traits such as courage, pride, loyalty, cleverness, endurance, or leadership. A student cannot use this passage to explain any hero trait with textual evidence, making a rigorous FAST-style item on ELA.9.R.1.4 (Epic hero traits) impossible from this excerpt alone.",
+    "rejectedAt": "2026-05-12T04:04:10.021Z"
+  },
+  "Beowulf::ELA.9.R.1.1::Style technique adds meaning::2 paragraphs · T2 candidate 4": {
+    "reason": "This excerpt is a scholarly philological commentary on Old English textual variants and editorial disputes in Beowulf—not a literary passage from Beowulf itself. It contains no diction, syntax, figurative language, or stylistic features that a Grade 9 student could connect to a writer's voice or literary effect. The 'style technique adds meaning' subskill requires an actual literary text where authorial choices shape meaning for a reader; this excerpt is a translator's/editor's technical footnote debating word emendations. No rigorous FAST-style item on ELA.9.R.1.1 style technique can be built from this material.",
+    "rejectedAt": "2026-05-12T04:08:34.507Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Epic hero traits::1 paragraph · T1 candidate 9": {
+    "reason": "This excerpt is scholarly commentary about the literary and historical origins of the Gilgamesh Epic — it discusses tablet organization, mythological cycles, and source texts. It contains no depiction of Gilgamesh as a character in action and provides no evidence of his courage, pride, loyalty, cleverness, endurance, or leadership. A rigorous FAST-style item on epic hero traits requires a passage moment where the hero's behavior, speech, or choices can be analyzed; this excerpt offers none.",
+    "rejectedAt": "2026-05-12T04:12:56.967Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.4::Epic hero traits::4 paragraphs · T4 candidate 16": {
+    "reason": "This excerpt is a philological and etymological analysis of the name 'Gilgamesh' drawn from cuneiform sign lists, syllabaries, and linguistic scholarship. It contains no narrative action, no character behavior, no depicted scene, and no story moment from which a student could use evidence to explain a hero's courage, pride, loyalty, cleverness, endurance, or leadership. The passage discusses what the name may mean ('the father-hero,' 'the original hero') but does not portray Gilgamesh as a character doing anything. A FAST-style item on epic hero traits requires a passage moment where the hero acts, speaks, or is described in context — none of which exists here. Generating a question from this excerpt would require students to interpret abstract etymology as character evidence, which is not a valid application of ELA.9.R.1.4.",
+    "rejectedAt": "2026-05-12T04:22:20.274Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.1::Point of view adds meaning::4 paragraphs · T4 candidate 27": {
+    "reason": "This excerpt is a dense philological and etymological analysis written in a detached, scholarly third-person academic voice with no narrative perspective, character consciousness, or identifiable narrator whose point of view shapes tone, mood, or reader understanding. The subskill requires examining how 'who tells or sees the moment' adds meaning — but this passage has no 'moment,' no character perspective, and no shift in point of view. It is a reference text cataloguing cuneiform sign variants and linguistic derivations. No rigorous FAST-style point-of-view item can be built from this excerpt without fabricating meaning not present in the text.",
+    "rejectedAt": "2026-05-12T04:29:05.163Z"
+  },
+  "The Epic of Gilgamesh::ELA.9.R.1.1::Point of view adds meaning::1 paragraph · T2 candidate 31": {
+    "reason": "This excerpt is a dense academic footnote presenting a scholar's philological argument about the etymology of the name 'Gilgamesh.' It contains no narrative voice, no character perspective, no scene or moment, and no literary point of view that shapes tone, mood, or reader understanding in a literary sense. The passage is expository and argumentative, not literary, making it impossible to construct a rigorous FAST ELA.9.R.1.1 point-of-view item grounded in actual passage evidence without fabricating meaning not present in the text.",
+    "rejectedAt": "2026-05-12T04:38:10.341Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 30": {
+    "reason": "This excerpt is from a personal letter describing a child's gardening activity and has no connection to Galileo Galilei's 'Letter to the Grand Duchess Christina of Tuscany,' which argues for the compatibility of science and scripture. The passage cannot support a rigorous FAST-style item tied to ELA.9.R.2.1 because it is a single narrative paragraph with no discernible argumentative or expository structure (no contrasting, proving, shifting, or concluding of an idea) — it only narrates a sequence of events. There is also a source mismatch that makes this item unusable in a standards-aligned assessment context.",
+    "rejectedAt": "2026-05-12T04:51:16.114Z"
+  },
+  "Letter to the Grand Duchess Christina of Tuscany::ELA.9.R.3.4::Rhetorical device effect::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is from Mary Wollstonecraft's 'A Vindication of the Rights of Woman' or a travel narrative — not Galileo's 'Letter to the Grand Duchess Christina of Tuscany.' The content (John, dame, chaise, Harry, Dr. Bartlett) has no connection to Galileo's text, and the excerpt contains no identifiable rhetorical devices (repetition, analogy, contrast, rhetorical question, or figurative language) that could support a rigorous FAST ELA.9.R.3.4 item on rhetorical device effect. The excerpt also lacks the argumentative or persuasive structure required to assess rhetoric and reader effect at the Grade 9 level.",
+    "rejectedAt": "2026-05-12T04:53:29.849Z"
+  },
+  "The Aeneid::Virgil::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 18": {
+    "reason": "Choices sound like item-frame/meta language instead of passage-specific answer choices.",
+    "rejectedAt": "2026-05-12T13:25:13.030Z"
+  },
+  "The Aeneid::Virgil::ELA.9.R.1.4::Divine intervention::1 paragraph · T2 candidate 29": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T11:41:24.202Z"
+  },
+  "The Aeneid::Virgil::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 16": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T11:44:07.616Z"
+  },
+  "The Aeneid::Virgil::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 24": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:05:27.256Z"
+  },
+  "Antigone::Sophocles::ELA.9.R.2.1::Paragraph or section job::1 paragraph · T1 candidate 20": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T12:09:54.698Z"
+  },
+  "Antigone::Sophocles::ELA.9.R.1.1::Plot or conflict adds meaning::1 paragraph · T1 candidate 8": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:26:29.886Z"
+  },
+  "A White Heron::Sarah Orne Jewett::ELA.9.R.1.3::Satire and exaggeration::2 paragraphs · T2 candidate 1": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T12:34:11.262Z"
+  },
+  "A White Heron::Sarah Orne Jewett::ELA.9.R.3.1::Mood effect with evidence::2 paragraphs · T2 candidate 2": {
+    "reason": "Question must be a real question.",
+    "rejectedAt": "2026-05-12T12:55:39.477Z"
+  },
+  "A White Heron::Sarah Orne Jewett::ELA.9.R.1.1::Point of view adds meaning::3 paragraphs · T3 candidate 9": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T12:50:15.477Z"
+  },
+  "The Aeneid::Virgil::ELA.9.R.1.4::Divine intervention::2 paragraphs · T2 candidate 25": {
+    "reason": "Question must be a real question.",
+    "rejectedAt": "2026-05-12T12:51:36.763Z"
+  },
+  "Old Greek Stories::James Baldwin::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 15": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:14:52.977Z"
+  },
+  "Old Greek Stories::James Baldwin::ELA.9.R.2.1::Paragraph or section job::2 paragraphs · T2 candidate 17": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:21:24.204Z"
+  },
+  "The Odyssey::Homer::ELA.9.R.1.4::Divine intervention::1 paragraph · T1 candidate 27": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:10:59.415Z"
+  },
+  "The Odyssey::Homer::ELA.9.R.1.2::Theme developed through moments::1 paragraph · T2 candidate 10": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:11:20.420Z"
+  },
+  "Electra::Sophocles::ELA.9.R.1.1::Characterization adds meaning::5 paragraphs · T4 candidate 6": {
+    "reason": "Excerpt looks like editorial or biographical material, not the teachable source text.",
+    "rejectedAt": "2026-05-12T13:16:56.433Z"
+  },
+  "Electra::Sophocles::ELA.9.R.2.1::Paragraph or section job::5 paragraphs · T4 candidate 8": {
+    "reason": "Excerpt looks like editorial or biographical material, not the teachable source text.",
+    "rejectedAt": "2026-05-12T13:17:43.919Z"
+  },
+  "The Iliad::Homer::ELA.9.R.1.4::Divine intervention::3 paragraphs · T4 candidate 10": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:23:43.113Z"
+  },
+  "The Iliad::Homer::ELA.9.R.1.1::Characterization adds meaning::3 paragraphs · T3 candidate 21": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:24:30.901Z"
+  },
+  "The Iliad::Homer::ELA.9.R.1.1::Characterization adds meaning::2 paragraphs · T2 candidate 26": {
+    "reason": "Correct answer is much longer than the distractors.",
+    "rejectedAt": "2026-05-12T13:31:31.779Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:33:16.758Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 2": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:10:12.970Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 3": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:10:39.590Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 4": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:11:07.190Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 6": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:12:00.724Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T2 candidate 7": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:12:16.868Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T2 candidate 8": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:12:34.636Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T2 candidate 10": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:13:01.528Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T3 candidate 12": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:13:27.683Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Preserve original meaning::1 paragraph · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:13:44.883Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Preserve original meaning::2 paragraphs · T2 candidate 2": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:13:59.795Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Preserve original meaning::2 paragraphs · T2 candidate 3": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:14:27.278Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Preserve original meaning::2 paragraphs · T2 candidate 6": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:15:01.285Z"
+  },
+  "Democracy in America::Alexis de Tocqueville::ELA.9.R.3.2::Preserve original meaning::3 paragraphs · T3 candidate 7": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:15:19.299Z"
+  },
+  "Antigone::Sophocles::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:28:06.656Z"
+  },
+  "The Epic of Gilgamesh::::ELA.9.R.3.2::Chunk complex syntax::2 paragraphs · T2 candidate 1": {
+    "reason": "Expected ',' or '}' after property value in JSON at position 85 (line 4 column 41)",
+    "rejectedAt": "2026-05-12T23:29:12.776Z"
+  },
+  "The Prince::Niccolò Machiavelli::ELA.9.R.3.2::Chunk complex syntax::2 paragraphs · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:30:04.450Z"
+  },
+  "The Talented Tenth::W.E.B. Du Bois::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:30:21.549Z"
+  },
+  "Antigone::Sophocles::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 2": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:30:46.010Z"
+  },
+  "Beowulf::::ELA.9.R.3.2::Chunk complex syntax::2 paragraphs · T2 candidate 2": {
+    "reason": "This excerpt is a scholarly footnote discussing textual variants, manuscript lacunae, and editorial conjectures about the Old English poem Beowulf. It contains no literary prose or complex syntax from the poem itself that a Grade 9 student could paraphrase as a meaningful reading comprehension task. The passage is metalinguistic commentary aimed at editors and translators, not a grade-level text chunk with a restatable claim or sentence appropriate for ELA.9.R.3.2 paraphrase practice.",
+    "rejectedAt": "2026-05-12T23:30:50.074Z"
+  },
+  "The Lincoln-Douglas Debates::Stephen Douglas and Abraham Lincoln::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 2": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:32:08.333Z"
+  },
+  "The Epic of Gilgamesh::::ELA.9.R.3.2::Preserve original meaning::2 paragraphs · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:33:55.678Z"
+  },
+  "The Lincoln-Douglas Debates::Stephen Douglas and Abraham Lincoln::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T2 candidate 3": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:34:21.577Z"
+  },
+  "The Odyssey::Homer::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:34:39.437Z"
+  },
+  "Antigone::Jean Anouilh::ELA.9.R.3.2::Paraphrase claim or theme::2 paragraphs · T2 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:41:39.842Z"
+  },
+  "St. Crispin’s Day Speech::William Shakespeare::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 1": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:42:08.681Z"
+  },
+  "St. Crispin’s Day Speech::William Shakespeare::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 2": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:44:32.314Z"
+  },
+  "Choice: A Tribute to Dr. Martin Luther King, Jr.::Alice Walker::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 3": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:46:54.108Z"
+  },
+  "St. Crispin’s Day Speech::William Shakespeare::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 3": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:47:11.143Z"
+  },
+  "Choice: A Tribute to Dr. Martin Luther King, Jr.::Alice Walker::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 4": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:49:53.307Z"
+  },
+  "Choice: A Tribute to Dr. Martin Luther King, Jr.::Alice Walker::ELA.9.R.3.2::Paraphrase claim or theme::1 paragraph · T1 candidate 6": {
+    "reason": "R.3.2 question must ask students to paraphrase, restate, or preserve meaning.",
+    "rejectedAt": "2026-05-12T23:55:25.969Z"
+  }
+}

@@ -95,6 +95,8 @@ describe('Reading Win session builder', () => {
 
     expect(session?.benchmarkCode).toBe('ELA.9.R.3.1');
     expect(session?.items).toHaveLength(5);
+    expect(session?.items[0].scaffold).toContain("Today's skill:");
+    expect(session?.items[0].scaffold).toContain('Mastery means:');
     expect(session?.transferItem.transfer).toBe(true);
     expect(session?.sourcePattern).toContain('Promoted GOGI question bank');
   });

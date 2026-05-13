@@ -1,0 +1,24 @@
+{
+  "grade": 9,
+  "lesson_minutes": 90,
+  "deck_slide_count": 30,
+  "pause_slides": [6, 10, 14, 17, 20, 24, 26],
+  "priority_note": "Pilot map favors standards that produce the most teachable FAST-style leverage. Adjust after released-test tagging and class data review.",
+  "standards": [
+    { "code": "ELA.9.R.1.1", "lessons": 5, "priority": "high", "notes": "Key literary elements and layers of meaning/style." },
+    { "code": "ELA.9.R.1.2", "lessons": 6, "priority": "highest", "notes": "Theme development is high-yield and requires repeated evidence work." },
+    { "code": "ELA.9.R.1.3", "lessons": 6, "priority": "highest", "notes": "Perspective, irony, and satire need explicit scaffolding." },
+    { "code": "ELA.9.R.1.4", "lessons": 3, "priority": "supporting", "notes": "Epic poetry needs targeted convention lessons, not overbuilt volume." },
+    { "code": "ELA.9.R.2.1", "lessons": 5, "priority": "high", "notes": "Text structure often requires longer paragraph windows." },
+    { "code": "ELA.9.R.2.2", "lessons": 6, "priority": "highest", "notes": "Central idea and support is a core FAST lift." },
+    { "code": "ELA.9.R.2.3", "lessons": 5, "priority": "high", "notes": "Purpose through appeals/devices/figurative language." },
+    { "code": "ELA.9.R.2.4", "lessons": 6, "priority": "highest", "notes": "Opposing arguments need paired excerpts and DBQ-style scaffolds." },
+    { "code": "ELA.9.R.3.1", "lessons": 5, "priority": "high", "notes": "Figurative language and mood/effect." },
+    { "code": "ELA.9.R.3.2", "lessons": 2, "priority": "embedded", "notes": "Paraphrase is embedded in every lesson routine." },
+    { "code": "ELA.9.R.3.3", "lessons": 6, "priority": "highest", "notes": "Adaptations and source comparison need explicit cross-text practice." },
+    { "code": "ELA.9.R.3.4", "lessons": 5, "priority": "high", "notes": "Rhetoric and reader effect." },
+    { "code": "ELA.9.V.1.1", "lessons": 2, "priority": "embedded", "notes": "Academic vocabulary is embedded in every deck." },
+    { "code": "ELA.9.V.1.2", "lessons": 4, "priority": "high", "notes": "Morphology and derivation." },
+    { "code": "ELA.9.V.1.3", "lessons": 4, "priority": "high", "notes": "Context, connotation, denotation." }
+  ]
+}

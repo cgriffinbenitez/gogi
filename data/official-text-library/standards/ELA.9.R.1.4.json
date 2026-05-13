@@ -1,0 +1,126 @@
+{
+  "generated_at": "2026-05-09T22:16:12.697Z",
+  "standard": "ELA.9.R.1.4",
+  "stored_texts": 5,
+  "mapped_texts": 5,
+  "entries": [
+    {
+      "title": "Beowulf",
+      "author": null,
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/beowulf-unknown.txt",
+      "char_count": 242966,
+      "word_count": 39170,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Aeneid",
+      "author": "Virgil",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [
+        228
+      ],
+      "discovered_gutenberg_id": 228,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-aeneid-virgil.txt",
+      "char_count": 627717,
+      "word_count": 107551,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Epic of Gilgamesh",
+      "author": null,
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-epic-of-gilgamesh-unknown.txt",
+      "char_count": 225068,
+      "word_count": 37440,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Iliad",
+      "author": "Homer",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-iliad-homer.txt",
+      "char_count": 1096894,
+      "word_count": 189218,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Odyssey",
+      "author": "Homer",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-odyssey-homer.txt",
+      "char_count": 678589,
+      "word_count": 129571,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    }
+  ]
+}

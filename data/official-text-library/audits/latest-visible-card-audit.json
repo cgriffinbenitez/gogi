@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-05-12T20:48:00.650Z",
+  "summary": {
+    "visibleCards": 1066,
+    "findings": 3,
+    "blockers": 0,
+    "major": 0,
+    "watch": 3,
+    "claudeVisibleCards": 972,
+    "goldVisibleCards": 94
+  },
+  "byType": [
+    {
+      "type": "question-anchor",
+      "count": 3
+    }
+  ],
+  "byLayer": [
+    {
+      "layer": "gold",
+      "count": 3
+    }
+  ],
+  "findings": [
+    {
+      "severity": "watch",
+      "type": "question-anchor",
+      "note": "Question may not point students clearly enough back into the excerpt.",
+      "layer": "gold",
+      "textTitle": "The Talented Tenth",
+      "textAuthor": "W.E.B. Du Bois",
+      "standardCode": "ELA.9.R.2.1",
+      "subSkillLabel": "Chronological or sequence structure",
+      "location": "paragraphs 2-4",
+      "question": "How does the numbered sequence help Du Bois develop his purpose?"
+    },
+    {
+      "severity": "watch",
+      "type": "question-anchor",
+      "note": "Question may not point students clearly enough back into the excerpt.",
+      "layer": "gold",
+      "textTitle": "Icarus and Daedalus",
+      "textAuthor": "Josephine Preston Peabody",
+      "standardCode": "ELA.9.R.1.3",
+      "subSkillLabel": "Irony through contrast or reversal",
+      "location": "paragraph 4",
+      "question": "How does the contrast between Icarus’s joy and the danger create irony?"
+    },
+    {
+      "severity": "watch",
+      "type": "question-anchor",
+      "note": "Question may not point students clearly enough back into the excerpt.",
+      "layer": "gold",
+      "textTitle": "The Iliad",
+      "textAuthor": "Homer",
+      "standardCode": "ELA.9.R.1.4",
+      "subSkillLabel": "Divine intervention",
+      "location": "paragraph 384",
+      "question": "How does Minerva’s intervention help develop the epic action?"
+    }
+  ]
+}

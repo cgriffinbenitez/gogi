@@ -102,7 +102,13 @@ Return this exact shape:
   "achievement_level": 1,
   "percentile_rank": 12,
   "category_performance": [
-    {"category_code":"RP|RI|RGV","category_name":"string","achievement_level":"Below the Standard|At/Near the Standard|Above the Standard"}
+    {
+      "category_code":"RP|RI|RGV",
+      "category_name":"string",
+      "achievement_level":"Below the Standard|At/Near the Standard|Above the Standard",
+      "achievement_level_description":"the full What These Results Mean / For example, your learner may be able to text for this category, or null",
+      "next_steps":"the full Next Steps text for this category, or null"
+    }
   ],
   "item_responses": [
     {
@@ -117,7 +123,7 @@ Return this exact shape:
   ]
 }
 
-Use the benchmark/item table from the report. Preserve every item response you can read. assessment_grade is the grade level printed on the FAST report itself, not the student's current enrolled grade. If a scalar field is not visible, use null except test_year and assessment_grade, which should be inferred from the test administration label when possible.`,
+Use the benchmark/item table from the report. Preserve every item response you can read. For each reporting category, preserve the Achievement Level Description column text and Next Steps text when present; this is instructional evidence, not parent-facing fluff. assessment_grade is the grade level printed on the FAST report itself, not the student's current enrolled grade. If a scalar field is not visible, use null except test_year and assessment_grade, which should be inferred from the test administration label when possible.`,
             },
           ],
         },

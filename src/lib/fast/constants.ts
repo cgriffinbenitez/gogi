@@ -39,6 +39,8 @@ export type ParsedFastCategoryPerformance = {
   category_code: FastCategoryCode;
   category_name: string;
   achievement_level: FastCategoryAchievement;
+  achievement_level_description?: string | null;
+  next_steps?: string | null;
 };
 
 export type ParsedFastItemResponse = {
@@ -79,7 +81,7 @@ export type FastProfileSignal = {
 };
 
 export const FAST_SIGNAL_LABELS: Record<string, string> = {
-  figurative_language_failure: 'Figurative language and mood',
+  figurative_language_failure: 'Figurative and symbolic meaning',
   mood_misreading: 'Mood from word choice and details',
   tone_misreading: 'Tone and speaker attitude',
   inferencing_literal: 'Literal reading when inference is needed',

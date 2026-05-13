@@ -1,0 +1,3327 @@
+{
+  "generatedAt": "2026-05-12T21:29:55.679Z",
+  "skippedStandards": [
+    "ELA.9.R.3.3"
+  ],
+  "totalStrong": 290,
+  "targetStrong": 290,
+  "issueCount": 0,
+  "standards": [
+    {
+      "code": "ELA.9.R.1.1",
+      "title": "Key literary elements add layers of meaning",
+      "strongCount": 30,
+      "target": 30,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "setting-layer",
+          "label": "Setting adds meaning or style",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 69",
+              "words": 111,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the setting description in \"savage and wild\" help develop the conflict in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 23",
+              "words": 174,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the description of the night sky help explain the sailors’ decision to continue their journey?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 71",
+              "words": 108,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the change from a “savage and wild” mountain to a place of “music and song” develop the excerpt’s meaning?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 186",
+              "words": 106,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the forest setting make the hunt feel more dangerous for the heroes?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 323",
+              "words": 79,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the setting description in \"Meanwhile great Ajax (his broad shield display’d) Guards the dead hero with the dreadful shad...\" help shape the mood of the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "plot-conflict-layer",
+          "label": "Plot or conflict adds meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 153",
+              "words": 131,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Perseus’s action against the sea monster affect the conflict?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 186",
+              "words": 106,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the beast’s arrival change the conflict in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 69",
+              "words": 111,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the conflict involving the Python help develop the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 164",
+              "words": 97,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the accident with the quoit affect the plot of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 116",
+              "words": 102,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Cadmus’s fight with the beast develop the conflict in the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "characterization-layer",
+          "label": "Characterization adds meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 80",
+              "words": 144,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does Juliet’s speech to Friar Lawrence reveal about her?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 240",
+              "words": 83,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does Theseus’s treatment of the robber reveal about him?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 75",
+              "words": 172,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does Capulet’s response to Juliet reveal about him?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 137",
+              "words": 169,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does Perseus’s reaction to his promise reveal about him?",
+              "issues": []
+            },
+            {
+              "selection": "The Death of Ivan Ilyich — Leo Tolstoy",
+              "location": "paragraph 78",
+              "words": 68,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does the character evidence in \"Then he felt some one was kissing his hand.\" help reveal?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "point-of-view-layer",
+          "label": "Point of view adds meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 104",
+              "words": 138,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Ulysses’s first-person narration shape the reader’s understanding of this moment?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 22",
+              "words": 86,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Romeo’s point of view shape the reader’s understanding of Juliet in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 84",
+              "words": 75,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Juliet’s point of view build tension in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 106",
+              "words": 121,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the first-person narration affect the reader’s understanding of the return to the ships?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 116",
+              "words": 99,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Ulysses’s point of view affect the way the reader understands the crew’s danger?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "theme-tone-layer",
+          "label": "Theme or tone layer",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 254",
+              "words": 88,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the people’s response to Daedalus help develop a theme?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 7",
+              "words": 102,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Romeo’s language help develop the tone of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 84",
+              "words": 120,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the description of AEsculapius help develop a theme?",
+              "issues": []
+            },
+            {
+              "selection": "Medea — Euripides",
+              "location": "paragraph 45",
+              "words": 104,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the image of death help develop the tone of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 203",
+              "words": 154,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Coon’s grief for his brother develop the tone of the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "style-technique-layer",
+          "label": "Style technique adds meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 148",
+              "words": 105,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the author’s description of the riverbank and shield affect the passage?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 61",
+              "words": 154,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the comparison to “a heap of dry chaff tossed about by a whirlwind” affect the passage?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 69",
+              "words": 111,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the author’s word choice in \"savage and wild\" affect the passage?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 71",
+              "words": 108,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated contrast “no longer... but...” affect the passage?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 7",
+              "words": 102,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do Romeo’s contradictory phrases affect the passage?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.1.2",
+      "title": "Theme development across a literary text",
+      "strongCount": 15,
+      "target": 15,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "universal-theme",
+          "label": "Universal theme",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 7",
+              "words": 102,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which universal theme is developed through Romeo’s description of love?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 8",
+              "words": 87,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which universal theme is developed through Romeo’s description of love?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 254",
+              "words": 88,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which universal theme is best supported by the people’s response to Daedalus?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 97",
+              "words": 75,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which universal theme is best developed by the response to Admetus’s illness?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 15",
+              "words": 129,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which universal theme is developed through Lady Capulet’s description of Paris?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "theme-development-moments",
+          "label": "Theme developed through moments",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 5",
+              "words": 62,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Icarus’s realization develop the theme of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 22",
+              "words": 65,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the changes in human behavior help develop the theme of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 71",
+              "words": 108,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the change in the mountain and valley help develop the theme?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 201",
+              "words": 176,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the people’s changing response to Cecrops help develop the theme?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 81",
+              "words": 159,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Apollo’s reaction to the report about Coronis help develop the theme?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "theme-through-conflict",
+          "label": "Theme through conflict or consequence",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 107,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the opening conflict between the two households develop a theme?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 69",
+              "words": 111,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the conflict with the Python help develop a theme in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Old Greek Stories — James Baldwin",
+              "location": "paragraph 75",
+              "words": 60,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the conflict with the Python help develop a theme in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 75",
+              "words": 172,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Juliet’s conflict with Capulet help develop a theme?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 86",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Capulet’s reaction to Juliet’s apparent death develop a theme?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.1.3",
+      "title": "Narrator perspective, irony, and satire",
+      "strongCount": 15,
+      "target": 15,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "narrator-perspective",
+          "label": "Narrator perspective shapes understanding",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 5",
+              "words": 62,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the narrator’s perspective shape the reader’s understanding of Icarus?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 8",
+              "words": 120,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the narrator’s access to Sylvia’s memory help shape the reader’s understanding?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 13",
+              "words": 167,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the narrator’s focus on Sylvia’s climb shape the reader’s understanding?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 19",
+              "words": 103,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the narrator’s shift to the guest’s expectation shape the reader’s understanding?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 21",
+              "words": 95,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the narrator’s focus on Sylvia’s thoughts shape the reader’s understanding of her choice?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "irony-reversal-contrast",
+          "label": "Irony through contrast or reversal",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 5",
+              "words": 62,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the contrast between Icarus’s joy and the danger create irony?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 7",
+              "words": 55,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s calm wording create irony in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 9",
+              "words": 103,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s phrase “collateral advantage” create irony?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 20",
+              "words": 76,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s claim of public concern create irony?",
+              "issues": []
+            },
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 4",
+              "words": 117,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the contrast between Icarus’s joy and the danger create irony?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "satire-exaggeration-ridicule",
+          "label": "Satire through exaggeration or false logic",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 7",
+              "words": 55,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s description of children as food create satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 8",
+              "words": 173,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does comparing children to livestock create satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 9",
+              "words": 103,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the phrase “collateral advantage” help create satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 16",
+              "words": 138,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s description of families and profit create satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 20",
+              "words": 76,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s final claim about his motive sharpen the satire?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.1.4",
+      "title": "Epic poetry",
+      "strongCount": 35,
+      "target": 35,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "in-medias-res",
+          "label": "In medias res",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 2",
+              "words": 136,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the opening of The Aeneid begin in the middle of a larger conflict?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 11",
+              "words": 123,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Aeneas’s speech place the reader inside an earlier conflict?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 12",
+              "words": 113,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the opening of The Odyssey begin in the middle of Ulysses’s journey?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 12",
+              "words": 151,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the warning about Troy’s fall create an in medias res effect?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 13",
+              "words": 110,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the opening situation create an in medias res effect in The Odyssey?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "divine-intervention",
+          "label": "Divine intervention",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 172",
+              "words": 220,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Jove’s action shape the epic events in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 157",
+              "words": 61,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Jove’s action shape the epic events in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 36",
+              "words": 159,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Minerva’s intervention help develop the epic action?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 5",
+              "words": 95,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the god’s mission to Carthage develop the epic action?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 384",
+              "words": 204,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Minerva’s intervention help develop the epic action?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "epic-hero-traits",
+          "label": "Epic hero traits",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 281",
+              "words": 96,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What heroic trait is shown through Hector and Ajax in this battle moment?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 196",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What epic hero trait is suggested by \"With these words he scared the women, and they went off into the body of the house.\"?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 206",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What heroic trait is shown when Ulysses and his men rush forward?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 380",
+              "words": 123,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What epic hero trait is suggested by \"glory\"?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 18",
+              "words": 128,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What epic hero trait is suggested by \"Is that so?\"?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "quest-journey-structure",
+          "label": "Quest or journey structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 2",
+              "words": 136,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Aeneas’s exile from Troy establish the epic quest structure?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 12",
+              "words": 113,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the opening description of Ulysses help establish the epic’s quest structure?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 13",
+              "words": 110,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Ulysses’s delay with Calypso establish the quest structure?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 20",
+              "words": 218,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the sailing directions help develop the epic quest structure?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 96",
+              "words": 158,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does reaching the Cyclops’s land develop the quest structure?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "ritual-speech-oath",
+          "label": "Ritual, speech, or oath",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 173",
+              "words": 183,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does hospitality and seeking Jove’s will develop epic values here?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 36",
+              "words": 159,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the feast and sacrifice develop epic values in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 101",
+              "words": 184,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the formal welcome scene develop epic values?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 197",
+              "words": 73,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the formal moment connected to \"wine\" help develop epic values?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 199",
+              "words": 81,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the feast and sacrifice develop epic values in this excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "theme-through-heroic-action",
+          "label": "Theme through heroic action",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 237",
+              "words": 163,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Aeneas’s rush toward battle develop an epic theme?",
+              "issues": []
+            },
+            {
+              "selection": "Beowulf",
+              "location": "paragraph 43",
+              "words": 73,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the description of Hrunting develop a theme of heroic action?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 387",
+              "words": 59,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the heroic action in this excerpt help develop an epic theme?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 11",
+              "words": 123,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the heroic action in this excerpt help develop an epic theme?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 380",
+              "words": 123,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the heroic action in this excerpt help develop an epic theme?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "elevated-style-epic-simile",
+          "label": "Elevated style and epic simile",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 12",
+              "words": 113,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the invocation create an elevated epic style?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "paragraph 2",
+              "words": 136,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the invocation create an elevated epic style?",
+              "issues": []
+            },
+            {
+              "selection": "The Iliad — Homer",
+              "location": "paragraph 337",
+              "words": 82,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the elevated language in \"like ardour fierce Atrides flew\" affect the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 59",
+              "words": 61,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the elevated language in \"like a sea-gull from the waves\" affect the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Odyssey — Homer",
+              "location": "paragraph 60",
+              "words": 145,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the elevated language in \"like a sea-gull and vanished beneath the dark blue waters\" affect the excerpt?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.2.1",
+      "title": "Text structure and feature purpose",
+      "strongCount": 30,
+      "target": 30,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "chronological-sequence",
+          "label": "Chronological or sequence structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 2-4",
+              "words": 270,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the numbered sequence help Du Bois develop his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 11-13",
+              "words": 285,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use time order to develop his point about college access?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 13-15",
+              "words": 240,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s numbered organization develop the speaker’s proposal?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 14-16",
+              "words": 291,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s numbered organization develop the speaker’s proposal?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 15-17",
+              "words": 304,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s numbered organization develop the speaker’s proposal?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "cause-effect-structure",
+          "label": "Cause and effect structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 9-10",
+              "words": 217,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the cause-and-effect reasoning in this section sharpen Swift’s satire?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use cause and effect to answer criticism of higher education?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 14-16",
+              "words": 291,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s cause-and-effect structure develop the speaker’s economic argument?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 15-17",
+              "words": 304,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s cause-and-effect structure develop the speaker’s economic argument?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 21-22",
+              "words": 301,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use cause and effect in the carpenters-and-teachers section?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "compare-contrast-structure",
+          "label": "Compare and contrast structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift use contrast to frame the social problem at the beginning of the proposal?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 3-5",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the contrast between a limited plan and a wider plan develop Swift’s argument?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 7-9",
+              "words": 324,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use the contrast between “bottom upward” and “top downward” to develop his argument?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 8-9",
+              "words": 276,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s comparison of children to livestock develop the satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 9-10",
+              "words": 217,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift contrast the cost of raising a child with the profit from selling one?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "problem-solution-structure",
+          "label": "Problem and solution structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s problem-solution structure set up the satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 2-4",
+              "words": 294,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s problem-solution structure set up the satire?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 8-9",
+              "words": 204,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois’s problem-solution structure develop his argument about leadership?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 12-14",
+              "words": 318,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the problem-solution structure guide the reader through Swift’s proposal?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 19-21",
+              "words": 294,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use problem-solution structure to address schooling?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "example-evidence-structure",
+          "label": "Example or evidence structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 9-11",
+              "words": 380,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use institutional evidence to support his argument?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 12-14",
+              "words": 340,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use statistics about graduates to develop his point?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use evidence about occupations to answer a challenge?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 14-15",
+              "words": 347,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use evidence about occupations to answer a challenge?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 17-19",
+              "words": 261,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s example develop the satire in this section?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "opening-closing-shift",
+          "label": "Opening, closing, or shift structure",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 2-4",
+              "words": 270,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does this section help organize Du Bois’s argument?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 8-9",
+              "words": 204,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the question-and-answer shift guide the reader in this section?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 9-11",
+              "words": 380,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the question-and-answer shift guide the reader in this section?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use the question at the start of this section?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 19-20",
+              "words": 183,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the final shift in Swift’s proposal affect the satire?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.2.2",
+      "title": "Central idea and supporting evidence",
+      "strongCount": 30,
+      "target": 30,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "strong-vs-weak-evidence",
+          "label": "Central idea with strong evidence",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 9-11",
+              "words": 380,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence best supports Du Bois’s claim that college education produced practical results?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 12-14",
+              "words": 340,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 14-15",
+              "words": 347,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 19-21",
+              "words": 294,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence best supports Du Bois’s point about proper training?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "central-idea-stated-implied",
+          "label": "Central idea stated or implied",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which central idea does Swift’s speaker develop in this section?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 2-4",
+              "words": 270,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which central idea is introduced by Du Bois’s list of “three tasks”?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 21-22",
+              "words": 301,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which central idea is developed by the example of improved teachers?",
+              "issues": []
+            },
+            {
+              "selection": "The Prince — Niccolò Machiavelli",
+              "location": "paragraphs 100-101",
+              "words": 346,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which central idea does Machiavelli develop about a secure state?",
+              "issues": []
+            },
+            {
+              "selection": "The Prince — Niccolò Machiavelli",
+              "location": "paragraphs 165-167",
+              "words": 321,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which central idea does Machiavelli develop about fortune and human behavior?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "evidence-develops-central-idea",
+          "label": "Evidence develops central idea",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 9-11",
+              "words": 380,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the figures about institutions and graduates develop Du Bois’s central idea?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 9-10",
+              "words": 217,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the “collateral advantage” detail develop the speaker’s proposal?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 12-14",
+              "words": 340,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the figures about institutions and graduates develop Du Bois’s central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the figures about institutions and graduates develop Du Bois’s central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 14-15",
+              "words": 347,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the figures about institutions and graduates develop Du Bois’s central idea?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "best-evidence-for-claim",
+          "label": "Best evidence for a claim",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 9-11",
+              "words": 380,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence best supports Du Bois’s claim that college education produced practical results?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 12-14",
+              "words": 340,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 14-15",
+              "words": 347,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evidence most directly supports Du Bois’s claim about the function of college-trained Black leaders?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 14-16",
+              "words": 291,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which detail most strongly supports the speaker’s economic logic in the proposal?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "detail-vs-central-idea",
+          "label": "Detail versus central idea",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 9-10",
+              "words": 217,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best explains why a true detail may still be weak support for the central idea?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 10-11",
+              "words": 290,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best explains why a true detail may still be weak support for the central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 12-14",
+              "words": 340,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best explains why a true detail may still be weak support for the central idea?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 17-19",
+              "words": 261,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best explains why a true detail may still be weak support for the central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Prince — Niccolò Machiavelli",
+              "location": "paragraphs 101-102",
+              "words": 357,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best explains why a true detail may still be weak support for the central idea?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "central-idea-development-across-paragraphs",
+          "label": "Central idea across paragraphs",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 2-4",
+              "words": 270,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the listed “three tasks” develop Du Bois’s central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 8-9",
+              "words": 204,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do these paragraphs work together to develop Du Bois’s central idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 13-14",
+              "words": 263,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the second paragraph develop the question raised in the first paragraph?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 14-15",
+              "words": 347,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the paragraph beginning “These figures illustrate” develop the previous evidence?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "paragraphs 18-20",
+              "words": 353,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois’s contrast about “carpenters” develop the central idea?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.2.3",
+      "title": "Rhetorical appeals and author purpose",
+      "strongCount": 35,
+      "target": 35,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "logos-ethos-pathos",
+          "label": "Rhetorical appeal connected to purpose",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 1-3",
+              "words": 217,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s appeal connect work to his larger purpose?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s opening appeal help prepare the reader for the satire?",
+              "issues": []
+            },
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 404,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Henry’s appeal to honor fit his purpose in the speech?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 3-5",
+              "words": 299,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s appeal connect work to his larger purpose?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 11-12",
+              "words": 164,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations help achieve Swift’s satirical purpose?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "logos-evidence-reasoning",
+          "label": "Logos: evidence and reasoning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 4-5",
+              "words": 220,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s factual reasoning support his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraph 7",
+              "words": 310,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s factual reasoning support his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 10-12",
+              "words": 267,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations affect the proposal?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 16-18",
+              "words": 240,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations affect the proposal?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 17-19",
+              "words": 291,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations affect the proposal?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "ethos-credibility-authority",
+          "label": "Ethos: credibility and authority",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraph 6",
+              "words": 228,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s careful qualification help his argument?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 7-9",
+              "words": 300,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s reference to “our merchants” affect the argument?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 11-13",
+              "words": 318,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s careful qualification help his argument?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 12-13",
+              "words": 295,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the description of the “very worthy person” affect the speaker’s credibility?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 24-25",
+              "words": 341,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s claim of public concern affect the satire?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "pathos-emotional-appeal",
+          "label": "Pathos: emotional appeal",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s opening description help establish the speaker’s purpose?",
+              "issues": []
+            },
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 404,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Henry’s emotional language motivate his soldiers?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 2-4",
+              "words": 294,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the emotional language about poor children affect the reader?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 3-5",
+              "words": 299,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s loaded language about labor affect the reader?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 5-6",
+              "words": 319,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the emotional language about poor children affect the reader?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "rhetorical-question-repetition",
+          "label": "Rhetorical question or repetition",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 404,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Henry’s repetition of “this day” and “Crispian” affect the speech?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 3-5",
+              "words": 299,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s repeated phrase “It has been necessary” shape the argument?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 6-7",
+              "words": 332,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s question about how children will be “provided for” shape the satire?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 24-25",
+              "words": 341,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated list structure affect the proposal?",
+              "issues": []
+            },
+            {
+              "selection": "The Prince — Niccolò Machiavelli",
+              "location": "paragraph 74",
+              "words": 328,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Machiavelli’s repeated list structure shape the advice?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "figurative-language-purpose",
+          "label": "Figurative language for purpose",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 1-3",
+              "words": 260,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the phrase “melancholy object” support the speaker’s purpose at the opening?",
+              "issues": []
+            },
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 404,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the figurative language in Henry’s speech support his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 3-5",
+              "words": 299,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s “foundation” language support his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraphs 11-13",
+              "words": 318,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s “foundation” language support his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "Letter to the Grand Duchess Christina of Tuscany — Galileo Galilei",
+              "location": "paragraphs 50-52",
+              "words": 239,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the figurative language about science and nature support the author’s purpose?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "purpose-fit-rhetorical-choice",
+          "label": "Rhetorical choice fits purpose",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "paragraph 1",
+              "words": 404,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Henry’s appeal to honor fit his purpose in the speech?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 9-10",
+              "words": 276,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s formal proposal language help achieve the satire’s purpose?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 11-12",
+              "words": 164,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations help achieve Swift’s satirical purpose?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "paragraph 20",
+              "words": 205,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Washington’s closing claim fit his purpose?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraphs 24-25",
+              "words": 341,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the speaker’s calculations help achieve Swift’s satirical purpose?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.2.4",
+      "title": "Opposing arguments, claims, evidence, and validity",
+      "strongCount": 25,
+      "target": 25,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "identify-opposing-claims",
+          "label": "Identify opposing claims",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: house-divided claim / Douglas criticism",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which choice best compares Lincoln’s claim with Douglas’s criticism of that claim?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: Nebraska Act / Dred Scott response",
+              "words": 56,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best identifies the opposing claims about popular sovereignty?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: Declaration equality / equality ideal",
+              "words": 50,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What disagreement about equality is developed in these excerpts?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: industrial foundation / work plus ideals",
+              "words": 64,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best identifies the difference between Washington’s and Du Bois’s claims?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: practical schooling / higher education",
+              "words": 50,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the central disagreement between these two excerpts?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "compare-evidence-development",
+          "label": "Compare evidence development",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: Nebraska Act / Dred Scott",
+              "words": 43,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Lincoln use evidence to challenge the claim of popular sovereignty?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: founders’ actions / limited claim",
+              "words": 45,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Lincoln’s qualification in Passage B affect the support in Passage A?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: trade list / college-trained staff list",
+              "words": 46,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which comparison best explains how both writers develop their claims?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: city migration / higher education data",
+              "words": 47,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How is the evidence in the two passages different?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: Missouri Compromise / natural rights",
+              "words": 48,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best explains how the evidence develops Lincoln’s position?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "evaluate-validity",
+          "label": "Evaluate claim validity",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: popular sovereignty / Dred Scott",
+              "words": 36,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which answer best evaluates the validity of the popular sovereignty claim?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: practical need / teacher need",
+              "words": 49,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evaluation of the two claims is best supported?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: equality exceptions / equality ideal",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Why is Lincoln’s defense of equality logically valid in these excerpts?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: economic foundation / work plus intelligence",
+              "words": 35,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois’s claim affect the validity of Washington’s claim?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: house-divided claim / Douglas criticism",
+              "words": 42,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which evaluation best explains the validity of Douglas’s criticism?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "evaluate-effectiveness",
+          "label": "Evaluate argument effectiveness",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: founders’ evidence / qualification",
+              "words": 45,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Why does Lincoln’s combination of evidence and qualification make his argument more effective?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: trade examples / Tuskegee staff examples",
+              "words": 33,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which argument is more effective against the idea that higher education is unnecessary?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: popular sovereignty claim / legal rebuttal",
+              "words": 37,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which argument is more effective for challenging popular sovereignty?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: moral claim / rights limitation",
+              "words": 37,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Why might this argument be effective for Lincoln’s audience?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: economic foundation / leadership claim",
+              "words": 42,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best evaluates the effectiveness of the two arguments?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "response-counterclaim",
+          "label": "Response to counterclaim",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: Douglas criticism / Lincoln clarification",
+              "words": 48,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Lincoln respond to Douglas’s criticism?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "paired debate excerpts: local choice claim / Dred Scott rebuttal",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Lincoln’s reference to Dred Scott function as a response?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: work as foundation / work alone is incomplete",
+              "words": 45,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois respond to the claim that work is the main path upward?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: practical schooling concern / Tuskegee rebuttal",
+              "words": 40,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois use Tuskegee as a response to criticism of higher education?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington / The Talented Tenth — W.E.B. Du Bois",
+              "location": "paired excerpts: practical education claim / higher education qualification",
+              "words": 37,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Du Bois qualify Washington’s argument for practical education?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.3.1",
+      "title": "Figurative language effect",
+      "strongCount": 25,
+      "target": 25,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "metaphor-simile",
+          "label": "Metaphor and simile",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "paragraph 11",
+              "words": 45,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the simile in \"Like a patient etherized upon a table\" shape the mood at the beginning of the poem?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "paragraph 16",
+              "words": 87,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the metaphor in \"Love is a smoke made with the fume of sighs; Being purg’d, a fire sparkling in lovers’ eyes;...\" help show Romeo’s view of love?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 20",
+              "words": 146,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the comparison in \"like a pale star\" affect the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 27",
+              "words": 86,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the comparison in \"like a pale star\" affect the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 28",
+              "words": 93,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the comparison in \"as soft as moths\" affect the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "personification-effect",
+          "label": "Personification effect",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "fog personification excerpt",
+              "words": 73,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the personification of the fog affect the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "fog asleep excerpt",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the fog “falling asleep” help shape the reader’s understanding of the scene?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "pine tree climbing excerpt",
+              "words": 58,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the personification of the tree affect the climbing scene?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "old pine support excerpt",
+              "words": 72,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the personification of the old pine contribute to the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "night sky excerpt",
+              "words": 56,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the personification of night affect the epic setting?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "imagery-sensory-language",
+          "label": "Imagery and sensory language",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 1",
+              "words": 86,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the imagery in \"woods were already filled with shadows one June evening, just before eight o’clock, though a...\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 11",
+              "words": 120,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the imagery in \"bright green swamp grass, away over at the other side of the woods\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "paragraph 11",
+              "words": 55,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the imagery in \"yellow fog that rubs its back upon the window-panes, The yellow smoke that rubs its muzzle on...\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "paragraph 13",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the imagery in \"yellow smoke that slides along the street, Rubbing its back upon the window-panes; There will...\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 27",
+              "words": 49,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the imagery in \"woods were already filled with shadows one June evening, just before eight o’clock, though a...\" help create the mood of the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "symbol-object-meaning",
+          "label": "Symbol or object meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 10",
+              "words": 83,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated image of the \"white heron\" add meaning to the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 13",
+              "words": 89,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated image of the \"white heron\" add meaning to the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 14",
+              "words": 196,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated image of the \"white heron\" add meaning to the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 21",
+              "words": 208,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated image of the \"white heron\" add meaning to the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "paragraph 23",
+              "words": 103,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the repeated image of the \"white heron\" add meaning to the excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "mood-shift-effect",
+          "label": "Mood shift through language",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 6",
+              "words": 117,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the phrase \"terror in the joy\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 10",
+              "words": 87,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the phrase \"terror in the joy\" help create the mood of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 11",
+              "words": 87,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the language in \"forgot everything in the world but joy\" help create or shift the mood?",
+              "issues": []
+            },
+            {
+              "selection": "The Death of Ivan Ilyich — Leo Tolstoy",
+              "location": "paragraph 127",
+              "words": 65,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the language in \"There was no terror\" shift the mood near the end of the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Icarus and Daedalus — Josephine Preston Peabody",
+              "location": "paragraph 4",
+              "words": 117,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the phrase \"terror in the joy\" help create the mood of the excerpt?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.3.2",
+      "title": "Paraphrase grade-level text",
+      "strongCount": 20,
+      "target": 20,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "chunk-complex-syntax",
+          "label": "Chunk complex syntax",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "paragraph 14",
+              "words": 54,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which option best paraphrases the full sentence without losing any key idea?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "house divided excerpt",
+              "words": 46,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which option best paraphrases Lincoln’s full point across these sentences?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "opening claim excerpt",
+              "words": 31,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which option best paraphrases Du Bois’s claim in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "education purpose excerpt",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which option best paraphrases Washington’s full sentence without losing the contrast?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "choice excerpt",
+              "words": 47,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which option best paraphrases Sylvia’s conflict in this excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "preserve-original-meaning",
+          "label": "Preserve original meaning",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "balcony excerpt",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which paraphrase best preserves Juliet’s meaning?",
+              "issues": []
+            },
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "choice excerpt",
+              "words": 47,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which paraphrase best preserves the meaning of this moment?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "closing motive excerpt",
+              "words": 43,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which paraphrase best preserves the speaker’s stated motive?",
+              "issues": []
+            },
+            {
+              "selection": "The Prince — Niccolò Machiavelli",
+              "location": "security excerpt",
+              "words": 64,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which paraphrase best preserves Machiavelli’s meaning?",
+              "issues": []
+            },
+            {
+              "selection": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+              "location": "self-doubt excerpt",
+              "words": 44,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which paraphrase best preserves the speaker’s uncertainty?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "translate-archaic-or-formal-language",
+          "label": "Translate archaic or formal language",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "balcony excerpt",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the best plain-language paraphrase of Juliet’s words?",
+              "issues": []
+            },
+            {
+              "selection": "St. Crispin’s Day Speech — William Shakespeare",
+              "location": "brotherhood excerpt",
+              "words": 48,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the best modern paraphrase of this formal language?",
+              "issues": []
+            },
+            {
+              "selection": "The Aeneid — Virgil",
+              "location": "opening excerpt",
+              "words": 47,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the best plain-language paraphrase of this opening?",
+              "issues": []
+            },
+            {
+              "selection": "Electra — Sophocles",
+              "location": "agreement excerpt",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the best plain-language paraphrase of this statement?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "formal motive excerpt",
+              "words": 48,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What is the best plain-language paraphrase of this formal statement?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "paraphrase-claim-or-theme",
+          "label": "Paraphrase claim or theme",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "A White Heron — Sarah Orne Jewett",
+              "location": "choice excerpt",
+              "words": 47,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best paraphrases the larger idea in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "central claim excerpt",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best paraphrases Du Bois’s claim?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "education purpose excerpt",
+              "words": 38,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best paraphrases Washington’s point about education?",
+              "issues": []
+            },
+            {
+              "selection": "The Lincoln-Douglas Debates — Stephen Douglas and Abraham Lincoln",
+              "location": "house divided excerpt",
+              "words": 46,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best paraphrases Lincoln’s main point?",
+              "issues": []
+            },
+            {
+              "selection": "Romeo and Juliet — William Shakespeare",
+              "location": "balcony excerpt",
+              "words": 39,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which statement best paraphrases Juliet’s concern?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.V.1.1",
+      "title": "Academic vocabulary",
+      "strongCount": 15,
+      "target": 15,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "tier-two-academic-word",
+          "label": "Academic vocabulary in context",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 4-14",
+              "words": 75,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which meaning of “dismal” best fits the context of this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 20-28",
+              "words": 54,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “substantive” mean as it is used in the excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 47-56",
+              "words": 74,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “mundane” mean in this context?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "education foundation excerpt",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which meaning of “confine” best fits Washington’s point?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "opening claim excerpt",
+              "words": 57,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “exceptional” mean as it is used in this claim?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "word-family-relationship",
+          "label": "Word family relationship",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 27-39",
+              "words": 50,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which related word best fits the idea developed by “bonding” in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 33-40",
+              "words": 55,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which word from the same word family best matches “solitude” in this context?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 47-56",
+              "words": 58,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which related noun best matches the academic word “curious” in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "education foundation excerpt",
+              "words": 38,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which related form best fits Washington’s idea about “ownership”?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "education claim excerpt",
+              "words": 42,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which related verb best fits the meaning of “developing” in this excerpt?",
+              "issues": []
+            }
+          ]
+        },
+        {
+          "strandId": "academic-tone-precision",
+          "label": "Academic tone and precision",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 20-32",
+              "words": 62,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which replacement keeps the most precise academic meaning of “correlated”?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 33-40",
+              "words": 54,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which word best preserves the academic tone of “reported” in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 41-46",
+              "words": 76,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which word best keeps the precise meaning of “transaction” in this context?",
+              "issues": []
+            },
+            {
+              "selection": "Industrial Education for the Negro — Booker T. Washington",
+              "location": "education foundation excerpt",
+              "words": 38,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which word best preserves the academic meaning of “foundation” in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "The Talented Tenth — W.E.B. Du Bois",
+              "location": "education claim excerpt",
+              "words": 42,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "Which word best matches the academic meaning of “guide” in this excerpt?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.R.3.4",
+      "title": "Rhetoric and reader effect",
+      "strongCount": 5,
+      "target": 5,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "reader-belief-feeling-notice",
+          "label": "Rhetoric and reader effect",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "I Have a Dream — Martin Luther King, Jr.",
+              "location": "manual upload: dream/character excerpt",
+              "words": 82,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does King’s repeated “I have a dream” language affect the audience?",
+              "issues": []
+            },
+            {
+              "selection": "Letter from Birmingham Jail — Martin Luther King, Jr.",
+              "location": "manual upload: justice network excerpt",
+              "words": 40,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does King’s connected-image language affect the reader?",
+              "issues": []
+            },
+            {
+              "selection": "The Danger of a Single Story — Chimamanda Ngozi Adichie",
+              "location": "manual upload: single-story warning excerpt",
+              "words": 55,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Adichie’s repeated phrase “single story” affect the reader?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "opening poverty excerpt",
+              "words": 79,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does Swift’s opening description affect the reader?",
+              "issues": []
+            },
+            {
+              "selection": "A Modest Proposal — Jonathan Swift",
+              "location": "satirical credibility excerpt",
+              "words": 48,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the speaker’s claim of sincerity affect the reader’s understanding of the proposal?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.V.1.2",
+      "title": "Etymology and derivations",
+      "strongCount": 5,
+      "target": 5,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "prefix-root-suffix",
+          "label": "Word parts in context",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 4-14",
+              "words": 94,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the suffix in “meaningless” help clarify the author’s point about some small talk?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 20-32",
+              "words": 83,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the word part in “substantive” help the reader understand the kind of conversation being described?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 27-39",
+              "words": 89,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the word part in “communication” support the meaning of the sentence?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 33-40",
+              "words": 82,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How do the word parts in “introverts” and “extroverts” help clarify the research result?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 47-56",
+              "words": 95,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "How does the word part in “disclosure” help explain what the supplied questions encouraged?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "ELA.9.V.1.3",
+      "title": "Context and connotation",
+      "strongCount": 5,
+      "target": 5,
+      "issues": [],
+      "skills": [
+        {
+          "strandId": "context-clues",
+          "label": "Word or phrase meaning in context",
+          "strongCount": 5,
+          "target": 5,
+          "status": "ready",
+          "issues": [],
+          "rows": [
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 4-14",
+              "words": 94,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “dismal” mean as it is used in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 20-28",
+              "words": 83,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “substantive” mean in this context?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 33-40",
+              "words": 82,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “rebuffed” mean as it is used in this excerpt?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 41-46",
+              "words": 76,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “sense of belonging” mean in this context?",
+              "issues": []
+            },
+            {
+              "selection": "Do People Need Small Talk to Be Happy? — Stephanie Hayes",
+              "location": "lines 47-56",
+              "words": 95,
+              "confidence": "strong",
+              "quality": "Gold card",
+              "stem": "What does “mundane” mean as it is used in this excerpt?",
+              "issues": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

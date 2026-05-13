@@ -40,6 +40,61 @@ function writeCache(gutenbergId: number, text: string) {
   fs.writeFileSync(cacheFilePath(gutenbergId), text, 'utf8');
 }
 
+function headingPattern(heading: string) {
+  const escaped = heading
+    .trim()
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\s+/g, '\\s+');
+  return new RegExp(`^\\s*(?:#+\\s*)?[_*"'“”‘’\`]*\\s*${escaped}\\s*[_*"'“”‘’\`.,:;!\\-—]*\\s*$`, 'im');
+}
+
+function sliceOfficialSection(
+  text: string,
+  seed: NonNullable<SourceConfig['officialGutenbergSeeds']>[number]
+) {
+  if (!seed.sectionStart) return text;
+
+  const startMatch = headingPattern(seed.sectionStart).exec(text);
+  if (!startMatch) {
+    console.warn(
+      `  [fetch] official section start not found for ${seed.gutenbergId}: "${seed.sectionStart}"`
+    );
+    return text;
+  }
+
+  const afterStart = startMatch.index + startMatch[0].length;
+  let endIndex = text.length;
+  if (seed.sectionEnd) {
+    const endMatch = headingPattern(seed.sectionEnd).exec(text.slice(afterStart));
+    if (endMatch) endIndex = afterStart + endMatch.index;
+    else {
+      console.warn(
+        `  [fetch] official section end not found for ${seed.gutenbergId}: "${seed.sectionEnd}"`
+      );
+    }
+  }
+
+  let sliced = text.slice(afterStart, endIndex).trim();
+  if (sliced.length < 500) {
+    const nextMatch = headingPattern(seed.sectionStart).exec(text.slice(afterStart));
+    if (nextMatch) {
+      const nextStart = afterStart + nextMatch.index + nextMatch[0].length;
+      let nextEnd = text.length;
+      if (seed.sectionEnd) {
+        const nextEndMatch = headingPattern(seed.sectionEnd).exec(text.slice(nextStart));
+        if (nextEndMatch) nextEnd = nextStart + nextEndMatch.index;
+      }
+      const nextSliced = text.slice(nextStart, nextEnd).trim();
+      if (nextSliced.length > sliced.length) sliced = nextSliced;
+    }
+  }
+  console.log(
+    `  [fetch] official section isolated: "${seed.sectionStart}"` +
+      ` (${sliced.length.toLocaleString()} chars)`
+  );
+  return sliced || text;
+}
+
 // ─── Gutenberg boilerplate stripping ─────────────────────────────────────────
 
 function stripBoilerplate(text: string): string {
@@ -128,6 +183,39 @@ async function fetchBookText(book: GutendexBook): Promise<string | null> {
   }
 }
 
+async function fetchOfficialSeedText(seed: NonNullable<SourceConfig['officialGutenbergSeeds']>[number]) {
+  const cached = readCache(seed.gutenbergId);
+  if (cached) {
+    console.log(`  [fetch] official cache hit: ${seed.gutenbergId} "${seed.title.slice(0, 50)}"`);
+    return sliceOfficialSection(cached, seed);
+  }
+
+  const urls = [
+    `${GUTENBERG_BASE}/ebooks/${seed.gutenbergId}.txt.utf-8`,
+    `${GUTENBERG_BASE}/files/${seed.gutenbergId}/${seed.gutenbergId}-0.txt`,
+    `${GUTENBERG_BASE}/files/${seed.gutenbergId}/${seed.gutenbergId}.txt`,
+  ];
+
+  for (const url of urls) {
+    try {
+      console.log(`  [fetch] downloading official seed: ${seed.gutenbergId} "${seed.title.slice(0, 50)}"`);
+      await sleep(BOOK_FETCH_DELAY_MS);
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const raw = await resp.text();
+      const text = stripBoilerplate(raw);
+      writeCache(seed.gutenbergId, text);
+      return sliceOfficialSection(text, seed);
+    } catch (err) {
+      console.warn(`  [fetch] official seed download error for ${seed.gutenbergId}:`, err);
+      return null;
+    }
+  }
+
+  console.warn(`  [fetch] no official seed text format worked: ${seed.gutenbergId} "${seed.title}"`);
+  return null;
+}
+
 // ─── Author name from book ───────────────────────────────────────────────────
 
 function primaryAuthor(book: GutendexBook): string {
@@ -149,8 +237,35 @@ export async function fetchBooksForClassification(
 ): Promise<FetchedBook[]> {
   const seen    = new Set<number>();
   const allMeta: GutendexBook[] = [];
+  const fetched: FetchedBook[] = [];
 
   console.log(`[Stage 1 — Fetch] querying Gutendex…`);
+
+  for (const seed of sources.officialGutenbergSeeds ?? []) {
+    if (seen.has(seed.gutenbergId)) continue;
+    seen.add(seed.gutenbergId);
+    const text = await fetchOfficialSeedText(seed);
+    if (!text) continue;
+
+    fetched.push({
+      gutenbergId: seed.gutenbergId,
+      title: seed.title,
+      author: seed.author,
+      year: seed.year ?? null,
+      text,
+    });
+    console.log(`  [Stage 1] fetched official ${fetched.length}/${maxBooks}: ${seed.title.slice(0, 50)}`);
+    if (fetched.length >= maxBooks) {
+      console.log(`[Stage 1] complete — ${fetched.length} books ready`);
+      return fetched;
+    }
+  }
+
+  if (sources.officialOnly) {
+    console.log(`[Stage 1] official-only mode — skipping broad author/topic search`);
+    console.log(`[Stage 1] complete — ${fetched.length} official books ready`);
+    return fetched;
+  }
 
   // Priority authors first
   for (const author of sources.priorityAuthors) {
@@ -201,8 +316,6 @@ export async function fetchBooksForClassification(
     .filter(b => !selectedIds.has(b.id))
     .sort((a, b) => b.download_count - a.download_count);
   for (const b of remaining) orderedMeta.push(b);
-
-  const fetched: FetchedBook[] = [];
 
   for (const book of orderedMeta.slice(0, maxBooks)) {
     const text = await fetchBookText(book);

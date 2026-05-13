@@ -1,0 +1,1957 @@
+{
+  "periodCount": 1,
+  "studentCount": 25,
+  "periods": [
+    {
+      "periodLabel": "Period 1",
+      "fileName": "Period 1 PM3.xlsx",
+      "studentCount": 25,
+      "averageScaleScore": 230,
+      "levelCounts": {
+        "Level 3": 15,
+        "Level 1": 6,
+        "Level 2": 4
+      },
+      "categorySummaries": [
+        {
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 233,
+          "possible": 415,
+          "accuracy": 0.5614457831325301,
+          "belowCount": 7,
+          "atNearCount": 16,
+          "aboveCount": 2
+        },
+        {
+          "category": "2. Reading Informational Text",
+          "earned": 140,
+          "possible": 301,
+          "accuracy": 0.46511627906976744,
+          "belowCount": 4,
+          "atNearCount": 18,
+          "aboveCount": 3
+        },
+        {
+          "category": "1. Reading Prose and Poetry",
+          "earned": 116,
+          "possible": 282,
+          "accuracy": 0.41134751773049644,
+          "belowCount": 5,
+          "atNearCount": 19,
+          "aboveCount": 1
+        }
+      ],
+      "benchmarkSummaries": [
+        {
+          "benchmark8": "RP|ELA.8.R.1.2",
+          "standard9": "ELA.9.R.1.2",
+          "title": "Theme development across a literary text",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 22,
+          "possible": 81,
+          "accuracy": 0.2716049382716049,
+          "misses": 59,
+          "studentsSeen": 25,
+          "priorityScore": 3.168395061728395,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.2"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.2",
+          "standard9": "ELA.9.R.2.2",
+          "title": "Central idea and supporting evidence",
+          "category": "2. Reading Informational Text",
+          "earned": 27,
+          "possible": 76,
+          "accuracy": 0.35526315789473684,
+          "misses": 49,
+          "studentsSeen": 25,
+          "priorityScore": 2.6847368421052633,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.2"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.R.3.1",
+          "standard9": "ELA.9.R.3.1",
+          "title": "Figurative language effect",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 55,
+          "possible": 103,
+          "accuracy": 0.5339805825242718,
+          "misses": 48,
+          "studentsSeen": 25,
+          "priorityScore": 2.466019417475728,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.1"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.R.3.4",
+          "standard9": "ELA.9.R.3.4",
+          "title": "Rhetoric and reader effect",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 40,
+          "possible": 86,
+          "accuracy": 0.46511627906976744,
+          "misses": 46,
+          "studentsSeen": 25,
+          "priorityScore": 2.4548837209302325,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.4"
+        },
+        {
+          "benchmark8": "RP|ELA.8.R.1.3",
+          "standard9": "ELA.9.R.1.3",
+          "title": "Narrator perspective, irony, and satire",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 39,
+          "possible": 84,
+          "accuracy": 0.4642857142857143,
+          "misses": 45,
+          "studentsSeen": 25,
+          "priorityScore": 2.335714285714286,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.3"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.1",
+          "standard9": "ELA.9.R.2.1",
+          "title": "Text structure and feature purpose",
+          "category": "2. Reading Informational Text",
+          "earned": 30,
+          "possible": 71,
+          "accuracy": 0.4225352112676056,
+          "misses": 41,
+          "studentsSeen": 25,
+          "priorityScore": 2.2974647887323942,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.1"
+        },
+        {
+          "benchmark8": "RP|ELA.8.R.1.1",
+          "standard9": "ELA.9.R.1.1",
+          "title": "Key literary elements add layers of meaning",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 42,
+          "possible": 82,
+          "accuracy": 0.5121951219512195,
+          "misses": 40,
+          "studentsSeen": 25,
+          "priorityScore": 2.1678048780487806,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.1"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.4",
+          "standard9": "ELA.9.R.2.4",
+          "title": "Opposing arguments, claims, evidence, and validity",
+          "category": "2. Reading Informational Text",
+          "earned": 38,
+          "possible": 75,
+          "accuracy": 0.5066666666666667,
+          "misses": 37,
+          "studentsSeen": 25,
+          "priorityScore": 1.9733333333333332,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.4"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.V.1.3",
+          "standard9": "ELA.9.V.1.3",
+          "title": "Context and connotation",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 57,
+          "possible": 91,
+          "accuracy": 0.6263736263736264,
+          "misses": 34,
+          "studentsSeen": 25,
+          "priorityScore": 1.8136263736263738,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.V.1.3"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.3",
+          "standard9": "ELA.9.R.2.3",
+          "title": "Rhetorical appeals and author purpose",
+          "category": "2. Reading Informational Text",
+          "earned": 45,
+          "possible": 79,
+          "accuracy": 0.569620253164557,
+          "misses": 34,
+          "studentsSeen": 25,
+          "priorityScore": 1.790379746835443,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.3"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.R.3.3",
+          "standard9": "ELA.9.R.3.3",
+          "title": "Adaptation across texts",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 40,
+          "possible": 69,
+          "accuracy": 0.5797101449275363,
+          "misses": 29,
+          "studentsSeen": 25,
+          "priorityScore": 1.6602898550724636,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.3"
+        },
+        {
+          "benchmark8": "RP|ELA.8.R.1.4",
+          "standard9": "ELA.9.R.1.4",
+          "title": "Epic poetry",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 13,
+          "possible": 35,
+          "accuracy": 0.37142857142857144,
+          "misses": 22,
+          "studentsSeen": 17,
+          "priorityScore": 1.5085714285714285,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.4"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.V.1.2",
+          "standard9": "ELA.9.V.1.2",
+          "title": "Etymology and derivations",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 41,
+          "possible": 66,
+          "accuracy": 0.6212121212121212,
+          "misses": 25,
+          "studentsSeen": 25,
+          "priorityScore": 1.458787878787879,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.V.1.2"
+        }
+      ],
+      "lessonQueue": [
+        {
+          "benchmark8": "RP|ELA.8.R.1.2",
+          "standard9": "ELA.9.R.1.2",
+          "title": "Theme development across a literary text",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 22,
+          "possible": 81,
+          "accuracy": 0.2716049382716049,
+          "misses": 59,
+          "studentsSeen": 25,
+          "priorityScore": 3.168395061728395,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.2"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.2",
+          "standard9": "ELA.9.R.2.2",
+          "title": "Central idea and supporting evidence",
+          "category": "2. Reading Informational Text",
+          "earned": 27,
+          "possible": 76,
+          "accuracy": 0.35526315789473684,
+          "misses": 49,
+          "studentsSeen": 25,
+          "priorityScore": 2.6847368421052633,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.2"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.R.3.1",
+          "standard9": "ELA.9.R.3.1",
+          "title": "Figurative language effect",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 55,
+          "possible": 103,
+          "accuracy": 0.5339805825242718,
+          "misses": 48,
+          "studentsSeen": 25,
+          "priorityScore": 2.466019417475728,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.1"
+        },
+        {
+          "benchmark8": "RGV|ELA.8.R.3.4",
+          "standard9": "ELA.9.R.3.4",
+          "title": "Rhetoric and reader effect",
+          "category": "3. Reading Across Genres & Vocabulary",
+          "earned": 40,
+          "possible": 86,
+          "accuracy": 0.46511627906976744,
+          "misses": 46,
+          "studentsSeen": 25,
+          "priorityScore": 2.4548837209302325,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.4"
+        },
+        {
+          "benchmark8": "RP|ELA.8.R.1.3",
+          "standard9": "ELA.9.R.1.3",
+          "title": "Narrator perspective, irony, and satire",
+          "category": "1. Reading Prose and Poetry",
+          "earned": 39,
+          "possible": 84,
+          "accuracy": 0.4642857142857143,
+          "misses": 45,
+          "studentsSeen": 25,
+          "priorityScore": 2.335714285714286,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.3"
+        },
+        {
+          "benchmark8": "RI|ELA.8.R.2.1",
+          "standard9": "ELA.9.R.2.1",
+          "title": "Text structure and feature purpose",
+          "category": "2. Reading Informational Text",
+          "earned": 30,
+          "possible": 71,
+          "accuracy": 0.4225352112676056,
+          "misses": 41,
+          "studentsSeen": 25,
+          "priorityScore": 2.2974647887323942,
+          "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.1"
+        }
+      ],
+      "studentGroups": {
+        "urgent": [
+          {
+            "name": "BONILLA, DAMARIS",
+            "studentId": "FL000004032516",
+            "sex": "F",
+            "scaleScore": 184,
+            "achievementLevel": "Level 1",
+            "percentile": 4,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Below the Standard",
+              "2. Reading Informational Text": "Below the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              }
+            ]
+          },
+          {
+            "name": "MCCRAY, SYMONE",
+            "studentId": "FL000002508597",
+            "sex": "F",
+            "scaleScore": 212,
+            "achievementLevel": "Level 1",
+            "percentile": 18,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "Below the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              }
+            ]
+          },
+          {
+            "name": "REESE, OMARI",
+            "studentId": "FL000000236781",
+            "sex": "M",
+            "scaleScore": 211,
+            "achievementLevel": "Level 1",
+            "percentile": 17,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Below the Standard",
+              "2. Reading Informational Text": "Below the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              }
+            ]
+          },
+          {
+            "name": "SANTANA, LISDANIELA",
+            "studentId": "FL000000370814",
+            "sex": "F",
+            "scaleScore": 216,
+            "achievementLevel": "Level 1",
+            "percentile": 21,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              }
+            ]
+          },
+          {
+            "name": "SIERRA-BARAHON, ALLISON",
+            "studentId": "FL000005083524",
+            "sex": "F",
+            "scaleScore": 202,
+            "achievementLevel": "Level 1",
+            "percentile": 11,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Below the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 5,
+                "possible": 5,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              }
+            ]
+          },
+          {
+            "name": "SOCARRAS, ALAIN",
+            "studentId": "FL000000182162",
+            "sex": "M",
+            "scaleScore": 194,
+            "achievementLevel": "Level 1",
+            "percentile": 7,
+            "riskBand": "urgent",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Below the Standard",
+              "2. Reading Informational Text": "Below the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 4,
+                "possible": 5,
+                "accuracy": 0.2
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              }
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "name": "GRUESO, ALEXANDRA",
+            "studentId": "FL000004910346",
+            "sex": "F",
+            "scaleScore": 232,
+            "achievementLevel": "Level 2",
+            "percentile": 40,
+            "riskBand": "watch",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "Below the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "LANZAS, GLADYS",
+            "studentId": "FL000004911292",
+            "sex": "F",
+            "scaleScore": 229,
+            "achievementLevel": "Level 2",
+            "percentile": 36,
+            "riskBand": "watch",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "LEE, MARKEEVIA",
+            "studentId": "FL000005780626",
+            "sex": "F",
+            "scaleScore": 229,
+            "achievementLevel": "Level 2",
+            "percentile": 36,
+            "riskBand": "watch",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              }
+            ]
+          },
+          {
+            "name": "NARANJO, DAMIAN",
+            "studentId": "FL000004028724",
+            "sex": "M",
+            "scaleScore": 220,
+            "achievementLevel": "Level 2",
+            "percentile": 25,
+            "riskBand": "watch",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Below the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              }
+            ]
+          }
+        ],
+        "onTrack": [
+          {
+            "name": "ARQUEZ, KEVIN",
+            "studentId": "FL000000064059",
+            "sex": "M",
+            "scaleScore": 245,
+            "achievementLevel": "Level 3",
+            "percentile": 63,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "Above the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "BALDERAS, LILIA",
+            "studentId": "FL000002509340",
+            "sex": "F",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "BERGOLLA, BRYANT",
+            "studentId": "FL000005552806",
+            "sex": "M",
+            "scaleScore": 244,
+            "achievementLevel": "Level 3",
+            "percentile": 61,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "CLARK, NOAH",
+            "studentId": "FL000002510894",
+            "sex": "M",
+            "scaleScore": 242,
+            "achievementLevel": "Level 3",
+            "percentile": 57,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 1,
+                "possible": 3,
+                "accuracy": 0.6666666666666666
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 1,
+                "possible": 3,
+                "accuracy": 0.6666666666666666
+              }
+            ]
+          },
+          {
+            "name": "FAYYAD, SALMAN",
+            "studentId": "FL000005749575",
+            "sex": "M",
+            "scaleScore": 240,
+            "achievementLevel": "Level 3",
+            "percentile": 54,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "FROMETA, KEVIN",
+            "studentId": "FL000009887415",
+            "sex": "M",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "Above the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "GAMINO, JULISSA",
+            "studentId": "FL000005556172",
+            "sex": "F",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "MARTINEZ, ERIC",
+            "studentId": "FL000005081536",
+            "sex": "M",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 2,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "PANEQUE, LEIDY",
+            "studentId": "FL000006504880",
+            "sex": "F",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "Above the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.4",
+                "title": "Epic poetry",
+                "benchmark8": "RP|ELA.8.R.1.4",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "PASCUAL, MEYLIN",
+            "studentId": "FL000004902101",
+            "sex": "F",
+            "scaleScore": 240,
+            "achievementLevel": "Level 3",
+            "percentile": 54,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 4,
+                "possible": 4,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "PECORA, ISMAEL",
+            "studentId": "FL000005074783",
+            "sex": "M",
+            "scaleScore": 243,
+            "achievementLevel": "Level 3",
+            "percentile": 59,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.3",
+                "title": "Adaptation across texts",
+                "benchmark8": "RGV|ELA.8.R.3.3",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 1,
+                "possible": 3,
+                "accuracy": 0.6666666666666666
+              }
+            ]
+          },
+          {
+            "name": "PEREZ, ADRIAN",
+            "studentId": "FL000004908909",
+            "sex": "M",
+            "scaleScore": 242,
+            "achievementLevel": "Level 3",
+            "percentile": 57,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "Above the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.V.1.2",
+                "title": "Etymology and derivations",
+                "benchmark8": "RGV|ELA.8.V.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 1,
+                "possible": 3,
+                "accuracy": 0.6666666666666666
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 1,
+                "possible": 3,
+                "accuracy": 0.6666666666666666
+              }
+            ]
+          },
+          {
+            "name": "RAMIREZ, DAMARIS",
+            "studentId": "FL000004903668",
+            "sex": "F",
+            "scaleScore": 242,
+            "achievementLevel": "Level 3",
+            "percentile": 57,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "Above the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.4",
+                "title": "Opposing arguments, claims, evidence, and validity",
+                "benchmark8": "RI|ELA.8.R.2.4",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "ROCK, KAITLYN",
+            "studentId": "FL000004903535",
+            "sex": "F",
+            "scaleScore": 238,
+            "achievementLevel": "Level 3",
+            "percentile": 50,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "At/Near the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.2.2",
+                "title": "Central idea and supporting evidence",
+                "benchmark8": "RI|ELA.8.R.2.2",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.1.2",
+                "title": "Theme development across a literary text",
+                "benchmark8": "RP|ELA.8.R.1.2",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              },
+              {
+                "standard9": "ELA.9.R.2.1",
+                "title": "Text structure and feature purpose",
+                "benchmark8": "RI|ELA.8.R.2.1",
+                "missed": 1,
+                "possible": 2,
+                "accuracy": 0.5
+              }
+            ]
+          },
+          {
+            "name": "RUIZ, RIHANNA",
+            "studentId": "FL000000406502",
+            "sex": "F",
+            "scaleScore": 241,
+            "achievementLevel": "Level 3",
+            "percentile": 55,
+            "riskBand": "on-track",
+            "categoryPerformance": {
+              "1. Reading Prose and Poetry": "At/Near the Standard",
+              "2. Reading Informational Text": "Above the Standard",
+              "3. Reading Across Genres & Vocabulary": "At/Near the Standard"
+            },
+            "weakStandards": [
+              {
+                "standard9": "ELA.9.R.1.1",
+                "title": "Key literary elements add layers of meaning",
+                "benchmark8": "RP|ELA.8.R.1.1",
+                "missed": 3,
+                "possible": 3,
+                "accuracy": 0
+              },
+              {
+                "standard9": "ELA.9.R.3.1",
+                "title": "Figurative language effect",
+                "benchmark8": "RGV|ELA.8.R.3.1",
+                "missed": 3,
+                "possible": 4,
+                "accuracy": 0.25
+              },
+              {
+                "standard9": "ELA.9.R.1.3",
+                "title": "Narrator perspective, irony, and satire",
+                "benchmark8": "RP|ELA.8.R.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.V.1.3",
+                "title": "Context and connotation",
+                "benchmark8": "RGV|ELA.8.V.1.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.2.3",
+                "title": "Rhetorical appeals and author purpose",
+                "benchmark8": "RI|ELA.8.R.2.3",
+                "missed": 2,
+                "possible": 3,
+                "accuracy": 0.3333333333333333
+              },
+              {
+                "standard9": "ELA.9.R.3.4",
+                "title": "Rhetoric and reader effect",
+                "benchmark8": "RGV|ELA.8.R.3.4",
+                "missed": 2,
+                "possible": 4,
+                "accuracy": 0.5
+              }
+            ]
+          }
+        ],
+        "extension": []
+      }
+    }
+  ],
+  "allPriorities": [
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.1.2",
+      "title": "Theme development across a literary text",
+      "accuracy": 0.2716049382716049,
+      "misses": 59,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.2"
+    },
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.2.2",
+      "title": "Central idea and supporting evidence",
+      "accuracy": 0.35526315789473684,
+      "misses": 49,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.2"
+    },
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.3.1",
+      "title": "Figurative language effect",
+      "accuracy": 0.5339805825242718,
+      "misses": 48,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.1"
+    },
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.3.4",
+      "title": "Rhetoric and reader effect",
+      "accuracy": 0.46511627906976744,
+      "misses": 46,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.3.4"
+    },
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.1.3",
+      "title": "Narrator perspective, irony, and satire",
+      "accuracy": 0.4642857142857143,
+      "misses": 45,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.1.3"
+    },
+    {
+      "periodLabel": "Period 1",
+      "standard9": "ELA.9.R.2.1",
+      "title": "Text structure and feature purpose",
+      "accuracy": 0.4225352112676056,
+      "misses": 41,
+      "lessonHref": "/teacher-dashboard/teaching-readiness?standard=ELA.9.R.2.1"
+    }
+  ],
+  "updatedAt": "2026-05-09T20:06:51.368Z"
+}

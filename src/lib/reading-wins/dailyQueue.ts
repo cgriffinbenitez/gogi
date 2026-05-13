@@ -1,4 +1,4 @@
-import { getFastRecommendedStandardCode, standardCodeToRouteId } from '../fast/routing';
+import { standardCodeToRouteId } from '../fast/routing';
 import {
   FAST_GRADE9_READING_DEMANDS,
   getPrimaryFastReadingDemand,
@@ -58,6 +58,16 @@ export type DailyResponseEvidence = {
   masteryAchieved: boolean | null;
 };
 
+export type AvailableReadingWinContent = {
+  standardCode: string;
+  readyStrands: Array<{
+    strandId: string | null;
+    strandLabel: string;
+    readyQuestionCount: number;
+    estimatedFreshSessions: number;
+  }>;
+};
+
 type ReadingWinRecentSignal =
   | 'new_gap'
   | 'repeat_for_transfer'
@@ -115,6 +125,8 @@ export type DailyReadingWinAssignment =
       why: string;
       confidence: 'emerging_signal' | 'strong_signal' | 'not_enough_data';
       demand: FastGrade9ReadingDemand;
+      strandId: string | null;
+      strandLabel: string | null;
       sessionPlan: string[];
       nextDecisionRule: string;
       recentSignal: ReadingWinRecentSignal;
@@ -125,6 +137,7 @@ type BuildDailyReadingWinArgs = {
   layer0Complete: boolean;
   standardStatuses: Record<string, DailyStandardStatus | undefined>;
   availableStandardCodes: string[];
+  availableContent?: AvailableReadingWinContent[];
   recentResponses?: DailyResponseEvidence[];
 };
 
@@ -132,6 +145,8 @@ type Candidate = {
   standardCode: string;
   score: number;
   reason: string;
+  strandId?: string | null;
+  strandLabel?: string | null;
 };
 
 const DEFAULT_CONFIDENCE = 'not_enough_data' as const;
@@ -165,6 +180,24 @@ function dedupeCandidates(candidates: Candidate[]) {
     }
   }
   return [...byStandard.values()].sort((a, b) => b.score - a.score);
+}
+
+function bestReadyStrand(
+  availableContent: AvailableReadingWinContent[] | undefined,
+  standardCode: string
+) {
+  return availableContent
+    ?.find((item) => item.standardCode === standardCode)
+    ?.readyStrands.sort(
+      (a, b) =>
+        b.estimatedFreshSessions - a.estimatedFreshSessions ||
+        b.readyQuestionCount - a.readyQuestionCount
+    )[0];
+}
+
+function cleanStandardCode(value: string | null | undefined) {
+  const next = value?.trim();
+  return next && /^ELA\.9\./.test(next) ? next : null;
 }
 
 export function buildDailyReadingWinAssignment(
@@ -249,12 +282,14 @@ export function buildDailyReadingWinAssignment(
   );
 
   args.fastProfile.interpretation?.top_barriers?.forEach((barrier, index) => {
+    const standardFromBarrier = cleanStandardCode(barrier.code) ?? cleanStandardCode(barrier.band);
+    if (!standardFromBarrier) return;
     pushCandidate(
       candidates,
       available,
-      getFastRecommendedStandardCode(barrier.code),
+      standardFromBarrier,
       110 - index * 12 + Math.round((barrier.strength ?? 0) / 10),
-      `${barrier.label} is a top FAST barrier.`
+      `${barrier.label} is connected to ${standardFromBarrier} in the FAST profile.`
     );
   });
 
@@ -294,6 +329,7 @@ export function buildDailyReadingWinAssignment(
     .map((candidate) => {
       const status = args.standardStatuses[candidate.standardCode];
       const recent = latestForStandard(args.recentResponses ?? [], candidate.standardCode);
+      const readyStrand = bestReadyStrand(args.availableContent, candidate.standardCode);
       let adjustment = 0;
       let recentSignal: ReadingWinRecentSignal = 'new_gap';
 
@@ -313,14 +349,26 @@ export function buildDailyReadingWinAssignment(
         recentSignal = 'continue_gap';
       }
 
-      return { ...candidate, score: candidate.score + adjustment, recentSignal };
+      if (readyStrand?.estimatedFreshSessions) {
+        adjustment += Math.min(16, readyStrand.estimatedFreshSessions * 4);
+      }
+
+      return {
+        ...candidate,
+        score: candidate.score + adjustment,
+        recentSignal,
+        strandId: readyStrand?.strandId ?? candidate.strandId ?? null,
+        strandLabel: readyStrand?.strandLabel ?? candidate.strandLabel ?? null,
+      };
     })
     .sort((a, b) => b.score - a.score);
 
   const selected = ranked[0];
   const standardCode = selected?.standardCode ?? 'ELA.9.R.1.1';
   const demand = getPrimaryFastReadingDemand(standardCode) ?? FAST_GRADE9_READING_DEMANDS[0];
-  const route = `/standard/${standardCodeToRouteId(standardCode)}/intervention`;
+  const route = `/standard/${standardCodeToRouteId(standardCode)}/intervention${
+    selected?.strandId ? `?strand=${encodeURIComponent(selected.strandId)}` : ''
+  }`;
   const pointsText =
     args.fastProfile.points_to_next_rung === null ||
     args.fastProfile.points_to_next_rung === undefined
@@ -342,12 +390,20 @@ export function buildDailyReadingWinAssignment(
     standardCode,
     route,
     cta,
-    why: `${selected?.reason ?? 'GOGI selected the best available Grade 9 FAST Reading Win'} This supports ${pointsText}.`,
+    why: `${selected?.reason ?? 'GOGI selected the best available Grade 9 FAST Reading Win'}${
+      selected?.strandLabel ? ` Today’s strand is ${selected.strandLabel}.` : ''
+    } This supports ${pointsText}.`,
     confidence,
     demand,
+    strandId: selected?.strandId ?? null,
+    strandLabel: selected?.strandLabel ?? null,
     sessionPlan: [
-      'Read one FAST-style passage.',
-      'Answer five scaffolded reps on one cognitive move.',
+      selected?.strandLabel
+        ? `Read one FAST-style passage focused on ${selected.strandLabel.toLowerCase()}.`
+        : 'Read one FAST-style passage.',
+      selected?.strandLabel
+        ? `Answer five scaffolded reps on ${selected.strandLabel.toLowerCase()}.`
+        : 'Answer five scaffolded reps on one cognitive move.',
       'Finish with a transfer question on a new passage.',
       'GOGI uses the result to choose tomorrow’s win.',
     ],

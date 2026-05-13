@@ -15,9 +15,11 @@ import {
 } from '@/lib/reading-wins/cognitiveMovesEngine';
 import {
   buildReadingWinSessionFromQuestions,
+  extractReadingWinQuestionTaxonomy,
   type PromotedReadingWinQuestion,
 } from '@/lib/reading-wins/sessionBuilder';
 import type { ReadingWinSession } from '@/lib/reading-wins/r31FigurativeLanguageSession';
+import { getGutenbergStandardBlueprint } from '@/pipeline/standardBlueprints';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -27,8 +29,14 @@ export default function Ela9R11InterventionPage() {
   const searchParams = useSearchParams();
   const standardId = params.standardId;
   const preview = searchParams.get('preview') === '1';
+  const requestedStrandId = searchParams.get('strand');
   const standardCode = standardId.replace(/-/g, '.');
   const readingDemand = getPrimaryFastReadingDemand(standardCode);
+  const requestedStrand = requestedStrandId
+    ? getGutenbergStandardBlueprint(standardCode)?.coverageStrands?.find(
+        (strand) => strand.id === requestedStrandId
+      )
+    : null;
   const cognitiveProfile = getCognitiveMoveProfile(standardCode);
   const cognitiveDifficulty = cognitiveProfile
     ? estimateCognitiveDifficulty(cognitiveProfile)
@@ -169,10 +177,17 @@ export default function Ela9R11InterventionPage() {
             .limit(12);
 
           if (!questionError) {
+            const allQuestions = (questionRows ?? []) as PromotedReadingWinQuestion[];
+            const strandQuestions = requestedStrand
+              ? allQuestions.filter((question) => {
+                  const taxonomy = extractReadingWinQuestionTaxonomy(question);
+                  return taxonomy.targetSkill === requestedStrand.label;
+                })
+              : [];
             setReadingWinSession(
               buildReadingWinSessionFromQuestions({
                 demand: readingDemand,
-                questions: (questionRows ?? []) as PromotedReadingWinQuestion[],
+                questions: strandQuestions.length >= 6 ? strandQuestions : allQuestions,
               })
             );
           }
@@ -186,7 +201,7 @@ export default function Ela9R11InterventionPage() {
     }
 
     init();
-  }, [authLoading, preview, readingDemand?.id, router, standardCode, user]);
+  }, [authLoading, preview, readingDemand?.id, requestedStrand?.label, router, standardCode, user]);
 
   async function saveAttempt(attempt: InferenceAttempt, allAttempts: InferenceAttempt[]) {
     if (preview) return;

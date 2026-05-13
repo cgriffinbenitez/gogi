@@ -1,0 +1,874 @@
+<!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Student workbook · ELA.9.R.1.1 · Key literary elements add layers of meaning</title>
+        <style>
+    :root {
+      --ink: #252525;
+      --muted: #717171;
+      --line: #d8d8d8;
+      --soft: #f5f6f8;
+      --dark: #1f1f1f;
+      --blue: #2f77bb;
+      --gold: #f2c14e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      background: #e9e9e9;
+      line-height: 1.34;
+    }
+    .sheet {
+      background: white;
+      width: 8.5in;
+      min-height: 11in;
+      margin: 24px auto;
+      padding: 0.55in 0.58in;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      position: relative;
+      page-break-after: always;
+    }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 11px;
+      font-weight: 800;
+      border-bottom: 1px dotted #aaa;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 950;
+      letter-spacing: .2px;
+      margin: 4px 0 12px;
+    }
+    .chapter {
+      background: #9e9e9e;
+      color: #191919;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 950;
+      padding: 6px 14px;
+      margin: 8px 0 14px;
+    }
+    .lesson-pill {
+      background: #1f1f1f;
+      border-radius: 7px;
+      color: white;
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 4px 12px;
+      margin: 3px 0 8px;
+    }
+    .standard-line {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin: 0 0 4px;
+    }
+    .skill-box {
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--blue);
+      padding: 10px 12px;
+      margin: 8px 0 12px;
+      background: #fbfcfe;
+      border-radius: 8px;
+    }
+    .skill-box h3, .guide-box h3 {
+      font-size: 13px;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--blue);
+    }
+    .skill-box p, .guide-box p {
+      margin: 3px 0;
+      font-size: 12px;
+    }
+    .passage-card {
+      border-top: 2px solid #1f1f1f;
+      padding-top: 8px;
+      margin-top: 14px;
+      break-inside: avoid;
+    }
+    .source {
+      font-size: 11px;
+      color: var(--blue);
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .passage {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 12.5px;
+      white-space: pre-wrap;
+      margin: 5px 0 9px;
+    }
+    .question {
+      font-size: 12.5px;
+      font-weight: 900;
+      margin: 8px 0 5px;
+    }
+    .choices {
+      display: grid;
+      gap: 2px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 12px;
+    }
+    .choice {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 6px;
+      align-items: start;
+    }
+    .bubble {
+      border: 1.5px solid #333;
+      border-radius: 50%;
+      display: inline-flex;
+      width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .footer {
+      position: absolute;
+      bottom: .28in;
+      left: .58in;
+      right: .58in;
+      display: flex;
+      justify-content: space-between;
+      color: #777;
+      font-size: 10px;
+      border-top: 1px solid #eee;
+      padding-top: 6px;
+    }
+    .guide-box {
+      background: #fff8e1;
+      border: 1px solid #efd27d;
+      border-radius: 8px;
+      margin: 8px 0 10px;
+      padding: 9px 11px;
+      break-inside: avoid;
+    }
+    .answer {
+      color: #2f6f20;
+      font-weight: 950;
+    }
+    .tracker {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 12px;
+    }
+    .tracker th, .tracker td {
+      border: 1px solid var(--line);
+      padding: 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .tracker th { background: var(--soft); }
+    .printbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #101010;
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .printbar button, .printbar a {
+      background: var(--blue);
+      color: white;
+      border: 0;
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    @page { size: letter; margin: 0; }
+    @media print {
+      body { background: white; }
+      .printbar { display: none; }
+      .sheet {
+        width: auto;
+        min-height: 11in;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+    }
+  </style>
+      </head>
+      <body>
+        <div class="printbar">
+          <span>Student workbook · ELA.9.R.1.1 · Key literary elements add layers of meaning</span>
+          <button onclick="window.print()">Print / Save PDF</button>
+          <a href="/teacher-dashboard/workbook-builder">Back to Workbook Builder</a>
+        </div>
+        
+    <section class="sheet">
+      <div class="topline"><span>Name: ____________________________</span><span>Period: ______ Date: __________</span></div>
+      <h1 class="title">GOGI Grade 9 FAST Reading Workbook</h1>
+      <div class="chapter">Student Workbook</div>
+      <div class="skill-box">
+        <h3>ELA.9.R.1.1</h3>
+        <p><strong>Standard:</strong> Explain how key elements enhance or add layers of meaning and/or style in a literary text.</p>
+        <p><strong>Purpose:</strong> Reusable, laminated FAST-aligned practice built from GOGI gold cards.</p>
+        <p><strong>Student routine:</strong> Read, paraphrase, underline evidence, answer, then explain why the correct answer works.</p>
+      </div>
+      <table class="tracker">
+        <thead><tr><th>Lesson</th><th>Skill</th><th>Score</th><th>Reteach Needed?</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>2</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>3</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>4</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>5</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>6</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>7</td><td></td><td>____ / ____</td><td>Yes / No</td></tr><tr><td>8</td><td></td><td>____ / ____</td><td>Yes / No</td></tr>
+        </tbody>
+      </table>
+      <div class="footer"><span>GOGI Grade 9 FAST Reading Workbook</span><span>ELA.9.R.1.1 · Key literary elements add layers of meaning</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 1: Setting adds meaning or style</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Point to the setting detail. Then finish: this place/time detail creates ___ because ___.</p>
+        <p><strong>Common trap:</strong> Student describes where the scene happens but misses why that detail matters.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 69</div>
+              <div class="passage">So Apollo went down to Parnassus, and looked about for a spot in which to lay the foundations of his house. The mountain itself was savage and wild, and the valley below it was lonely and dark. The few people who lived there kept themselves hidden among the rocks as if in dread of some great danger. They told Apollo that near the foot of the mountain where the steep cliff seemed to be split in two there lived a huge serpent called the Python. This serpent often seized sheep and cattle, and sometimes even men and women and children, and carried them up to his dreadful den and devoured them.</div>
+              <p class="question">1. How does the setting description in &quot;savage and wild&quot; help develop the conflict in the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that Apollo is unfamiliar with the land and must depend on the people who live there.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It presents the place as threatening before the Python appears, making Apollo’s decision to build there feel dangerous.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It suggests that the valley is peaceful but misunderstood by the people who live near it.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It emphasizes the size of the mountain more than the danger connected to Apollo’s plan.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">The Aeneid — Virgil · paragraph 23</div>
+              <div class="passage">“Near the Ceraunian rocks our course we bore; The shortest passage to th’ Italian shore. Now had the sun withdrawn his radiant light, And hills were hid in dusky shades of night: We land, and, on the bosom of the ground, A safe retreat and a bare lodging found. Close by the shore we lay; the sailors keep Their watches, and the rest securely sleep. The night, proceeding on with silent pace, Stood in her noon, and view’d with equal face Her steepy rise and her declining race. Then wakeful Palinurus rose, to spy The face of heav’n, and the nocturnal sky; And listen’d ev’ry breath of air to try; Observes the stars, and notes their sliding course, The Pleiads, Hyads, and their wat’ry force; And both the Bears is careful to behold, And bright Orion, arm’d with burnish’d gold. Then, when he saw no threat’ning tempest nigh, But a sure promise of a settled sky, He gave the sign to weigh; we break our sleep, Forsake the pleasing shore, and plow the deep.</div>
+              <p class="question">2. How does the description of the night sky help explain the sailors’ decision to continue their journey?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that the shore offers rest, so the sailors decide to remain there instead of continuing their voyage.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It suggests that Palinurus trusts the beauty of the night more than the practical signs in the sky.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows that the sailors use signs in the setting to decide whether it is safe to continue their journey.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It slows the action to create calm, but it does not affect the sailors’ decision to leave shore.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 71</div>
+              <div class="passage">Close to the foot of the steep cliff, and beneath the spot where Jupiter&#039;s eagles had fallen, he laid the foundations; and soon where had been the lair of the Python, the white walls of Apollo&#039;s temple arose among the rocks. Then the poor people of the land came and built their houses near by; and Apollo lived among them many years, and taught them to be gentle and wise, and showed them how to be happy. The mountain was no longer savage and wild, but was a place of music and song; the valley was no longer dark and lonely, but was filled with beauty and light.</div>
+              <p class="question">3. How does the change from a “savage and wild” mountain to a place of “music and song” develop the excerpt’s meaning?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It mainly shows that Apollo chose a convenient place for a temple, without changing the mood of the land.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It suggests that the people move near the temple because they fear Apollo as much as they feared the Python.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It emphasizes the beauty of the new temple but leaves the earlier fear in the valley unresolved.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that the place has been transformed from fear and danger into safety, beauty, and order.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 186</div>
+              <div class="passage">For nine days the heroes and huntsmen feasted in the halls of King OEneus, and early on the tenth they set out for the forest. Soon the great beast was found, and he came charging out upon his foes. The heroes hid behind the trees or climbed up among the branches, for they had not expected to see so terrible a creature. He stood in the middle of a little open space, tearing up the ground with his tusks. The white foam rolled from his mouth, his eyes glistened red like fire, and he grunted so fiercely that the woods and hills echoed with fearful sounds.</div>
+              <p class="question">4. How does the forest setting make the hunt feel more dangerous for the heroes?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that the forest gives the heroes places to hide, making the beast seem easier to face.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It makes the open space feel like an arena, but the beast’s actions are what create most of the danger.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It suggests that the sounds in the woods exaggerate the danger more than the beast itself does.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It makes the hunt feel dangerous by showing the beast disrupting the open space and filling the woods and hills with fearful sounds.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">The Iliad — Homer · paragraph 323</div>
+              <div class="passage">Meanwhile great Ajax (his broad shield display’d) Guards the dead hero with the dreadful shade; And now before, and now behind he stood: Thus in the centre of some gloomy wood, With many a step, the lioness surrounds Her tawny young, beset by men and hounds; Elate her heart, and rousing all her powers, Dark o’er the fiery balls each hanging eyebrow lours. Fast by his side the generous Spartan glows With great revenge, and feeds his inward woes.</div>
+              <p class="question">5. How does the setting description in &quot;Meanwhile great Ajax (his broad shield display’d) Guards the dead hero with the dreadful shad...&quot; help shape the mood of the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the scene feel quiet and shadowed, helping the reader sense the character’s uncertainty before the action continues.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It suggests the character is surrounded by natural details but does not yet know what choice to make.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It makes the place feel familiar, which reduces some tension while still keeping the scene uncertain.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It emphasizes time of day more than the character’s inner uncertainty.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 1</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 2: Plot or conflict adds meaning</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Name the conflict or event. Then ask: what does this moment reveal, pressure, or change?</p>
+        <p><strong>Common trap:</strong> Student summarizes the event instead of explaining the meaning created by it.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 153</div>
+              <div class="passage">Perseus drew his sharp sword and cut the chain which held her, and then lifted her high up upon the rock. But by this time the sea monster was close at hand, lashing the water with his tail and opening his wide jaws as though he would swallow not only Perseus and the young girl, but even the rock on which they were standing. He was a terrible fellow, and yet not half so terrible as the Gorgon. As he came roaring towards the shore, Perseus lifted the head of Medusa from his pouch and held it up; and when the beast saw the dreadful face he stopped short and was turned into stone; and men say that the stone beast may be seen in that selfsame spot to this day.</div>
+              <p class="question">1. How does Perseus’s action against the sea monster affect the conflict?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It focuses on Perseus freeing the girl, but the monster’s arrival remains only a background threat.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that Medusa’s power matters more than Perseus’s own decision in resolving the danger.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shifts the conflict from rescue to victory by showing Perseus act at the moment the monster threatens the girl.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It makes the rescue feel sudden, but it does not change the central conflict of the scene.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 186</div>
+              <div class="passage">For nine days the heroes and huntsmen feasted in the halls of King OEneus, and early on the tenth they set out for the forest. Soon the great beast was found, and he came charging out upon his foes. The heroes hid behind the trees or climbed up among the branches, for they had not expected to see so terrible a creature. He stood in the middle of a little open space, tearing up the ground with his tusks. The white foam rolled from his mouth, his eyes glistened red like fire, and he grunted so fiercely that the woods and hills echoed with fearful sounds.</div>
+              <p class="question">2. How does the beast’s arrival change the conflict in the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that the heroes are experienced hunters, so the beast’s arrival mainly confirms their confidence.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It emphasizes the beast’s appearance, but the real conflict begins only after the heroes attack.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It makes the hunt feel ceremonial because the heroes have just finished feasting.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It turns the hunt into immediate danger, forcing the heroes to react instead of simply preparing for action.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 69</div>
+              <div class="passage">So Apollo went down to Parnassus, and looked about for a spot in which to lay the foundations of his house. The mountain itself was savage and wild, and the valley below it was lonely and dark. The few people who lived there kept themselves hidden among the rocks as if in dread of some great danger. They told Apollo that near the foot of the mountain where the steep cliff seemed to be split in two there lived a huge serpent called the Python. This serpent often seized sheep and cattle, and sometimes even men and women and children, and carried them up to his dreadful den and devoured them.</div>
+              <p class="question">3. How does the conflict involving the Python help develop the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that Apollo is entering a place controlled by a real threat, which makes his arrival feel purposeful and dangerous.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that Apollo wants to build a house, so the Python is mostly an obstacle to construction.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It suggests that the people’s fear shapes the scene more than the Python’s actions do.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It makes the Python seem like a local danger, but not one connected to Apollo’s purpose.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 164</div>
+              <div class="passage">One day, as he was showing what he could do, he threw a heavy quoit a great deal farther than any had been thrown before. It fell in the crowd of lookers-on, and struck a stranger who was standing there. The stranger threw up his hands and sank upon the ground; and when Perseus ran to help him, he saw that he was dead. Now this man was none other than Danaë&#039;s father, the old king of Argos. He had fled from his kingdom to save his life, and in doing so had only met his death.</div>
+              <p class="question">4. How does the accident with the quoit affect the plot of the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows Perseus’s physical strength, but the stranger’s death is mainly background information. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It turns a public display into an unexpected consequence, showing how one action changes Perseus’s situation in a serious way.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It creates surprise, but it does not connect to the larger pattern of fate or consequence. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It turns attention away from Perseus and toward the crowd’s reaction to the public display. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 116</div>
+              <div class="passage">The beast sprang at Cadmus, and tried to seize him with its sharp claws. But Cadmus leaped quickly aside and struck it in the neck with his long sword. A great stream of black blood gushed out, and the dragon soon fell to the ground dead. Cadmus had seen many fearful sights, but never anything so dreadful as this beast. He had never been in so great danger before. He sat down on the ground and trembled; and, all the time, he was weeping for his two friends. How now was he to build a city, with no one to help him?</div>
+              <p class="question">5. How does Cadmus’s fight with the beast develop the conflict in the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It emphasizes Cadmus’s bravery, but the fight mainly serves as an action scene without a new problem. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows Cadmus defeating the beast, so the conflict becomes less connected to his larger goal. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows that Cadmus survives the immediate danger but is left with a new problem, so the conflict creates both victory and uncertainty.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It makes Cadmus mourn his friends, but that grief matters more than the conflict with the beast. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 2</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 3: Characterization adds meaning</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Point to what the character does or says. Then explain what it reveals and why it matters.</p>
+        <p><strong>Common trap:</strong> Student labels the character with a trait but does not prove the layer of meaning.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 80</div>
+              <div class="passage">JULIET. Tell me not, Friar, that thou hear’st of this, Unless thou tell me how I may prevent it. If in thy wisdom, thou canst give no help, Do thou but call my resolution wise, And with this knife I’ll help it presently. God join’d my heart and Romeo’s, thou our hands; And ere this hand, by thee to Romeo’s seal’d, Shall be the label to another deed, Or my true heart with treacherous revolt Turn to another, this shall slay them both. Therefore, out of thy long-experienc’d time, Give me some present counsel, or behold ’Twixt my extremes and me this bloody knife Shall play the empire, arbitrating that Which the commission of thy years and art Could to no issue of true honour bring. Be not so long to speak. I long to die, If what thou speak’st speak not of remedy.</div>
+              <p class="question">1. What does Juliet’s speech to Friar Lawrence reveal about her?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It reveals that Juliet is desperate and determined because she demands a solution and is willing to risk death rather than accept the marriage.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It reveals that Juliet is calm and willing to accept whatever others decide for her. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows that Juliet is only asking the Friar for ordinary wedding advice. This does not explain the author’s move. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It proves that Juliet has stopped caring about Romeo or her own future. The development of the passage points elsewhere. This misses the evidence in the excerpt.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 240</div>
+              <div class="passage">&quot;But I tell you, you must lie upon it,&quot; said Theseus; and he seized the trembling man around the waist and threw him by force upon the bed. And no sooner was he prone upon the couch than curious iron arms reached out and clasped his body in their embrace and held him down so that he could not move hand or foot. The wretched man shrieked and cried for mercy; but Theseus stood over him and looked him straight in the eye.</div>
+              <p class="question">2. What does Theseus’s treatment of the robber reveal about him?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that Theseus is uncertain and lets the robber decide what should happen. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that Theseus is forceful and willing to punish the robber with the same cruelty the robber used on others.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It reveals that Theseus is unaware of the robber’s cruelty. This does not explain the author’s move. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that Theseus avoids conflict by leaving the robber alone. The development of the passage points elsewhere. This misses the evidence in the excerpt.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 75</div>
+              <div class="passage">CAPULET. God’s bread, it makes me mad! Day, night, hour, ride, time, work, play, Alone, in company, still my care hath been To have her match’d, and having now provided A gentleman of noble parentage, Of fair demesnes, youthful, and nobly allied, Stuff’d, as they say, with honourable parts, Proportion’d as one’s thought would wish a man, And then to have a wretched puling fool, A whining mammet, in her fortune’s tender, To answer, ‘I’ll not wed, I cannot love, I am too young, I pray you pardon me.’ But, and you will not wed, I’ll pardon you. Graze where you will, you shall not house with me. Look to’t, think on’t, I do not use to jest. Thursday is near; lay hand on heart, advise. And you be mine, I’ll give you to my friend; And you be not, hang, beg, starve, die in the streets, For by my soul, I’ll ne’er acknowledge thee, Nor what is mine shall never do thee good. Trust to’t, bethink you, I’ll not be forsworn.</div>
+              <p class="question">3. What does Capulet’s response to Juliet reveal about him?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It reveals that he is patient because he calmly accepts Juliet’s refusal.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that he gives Juliet complete freedom to choose what she wants.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It reveals that he is controlling and angry because he threatens Juliet when she refuses to obey him.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It proves that he is confused because he does not understand what Juliet said.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 137</div>
+              <div class="passage">When Perseus went away from the king&#039;s palace, he began to feel sorry that he had spoken so rashly. For how should he ever make good his promise and do the king&#039;s bidding? He did not know which way to go to find the Gorgons, and he had no weapon with which to slay the terrible Medusa. But at any rate he would never show his face to the king again, unless he could bring the head of terror with him. He went down to the shore and stood looking out over the sea towards Argos, his native land; and while he looked, the sun went down, and the moon arose, and a soft wind came blowing from the west. Then, all at once, two persons, a man and a woman, stood before him. Both were tall and noble. The man looked like a prince; and there were wings on his cap and on his feet, and he carried a winged staff, around which two golden serpents were twined.</div>
+              <p class="question">4. What does Perseus’s reaction to his promise reveal about him?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that Perseus immediately gives up and decides to hide forever. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It reveals that Perseus already knows exactly how to defeat Medusa. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows that Perseus made a careful plan before speaking to the king. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that Perseus recognizes the danger of his boast but is still determined to keep his promise.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">The Death of Ivan Ilyich — Leo Tolstoy · paragraph 78</div>
+              <div class="passage">thing?’ — and became quiet, listening. Then he felt some one was kissing his hand. He opened his eyes and glanced at his son He felt sorry for him. His wife went up to him. He glanced at her She was gazing at him with open mouth, the tears unwiped streaming over her nose and cheeks, a look of despair on her face He felt sorry for her.</div>
+              <p class="question">5. What does the character evidence in &quot;Then he felt some one was kissing his hand.&quot; help reveal?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It only tells the reader where the scene happens and does not reveal anything about character.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It proves the character has no connection to the conflict in the excerpt.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It gives a summary of the plot without helping the reader infer anything about the character.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It reveals a trait, motive, pressure, or change in the character, making the moment mean more than the action itself.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 3</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 4: Point of view adds meaning</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Ask: who sees this moment, what do they notice, and how does that shape the reader?</p>
+        <p><strong>Common trap:</strong> Student identifies who is telling the story but not how that lens changes meaning.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">The Odyssey — Homer · paragraph 104</div>
+              <div class="passage">“He got more and more furious as he heard me, so he tore the top from off a high mountain, and flung it just in front of my ship so that it was within a little of hitting the end of the rudder.81 The sea quaked as the rock fell into it, and the wash of the wave it raised carried us back towards the mainland, and forced us towards the shore. But I snatched up a long pole and kept the ship off, making signs to my men by nodding my head, that they must row for their lives, whereon they laid out with a will. When we had got twice as far as we were before, I was for jeering at the Cyclops again, but the men begged and prayed of me to hold my tongue.</div>
+              <p class="question">1. How does Ulysses’s first-person narration shape the reader’s understanding of this moment?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes Ulysses seem completely objective because he gives no opinion about his own actions. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It lets the reader see both his boldness and his reckless pride because he admits he wanted to taunt the Cyclops again.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It hides the danger from the reader by leaving out what the men say to him. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that Ulysses has no control over the choices made in the scene. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 22</div>
+              <div class="passage">ROMEO. O, she doth teach the torches to burn bright! It seems she hangs upon the cheek of night As a rich jewel in an Ethiop’s ear; Beauty too rich for use, for earth too dear! So shows a snowy dove trooping with crows As yonder lady o’er her fellows shows. The measure done, I’ll watch her place of stand, And touching hers, make blessed my rude hand. Did my heart love till now? Forswear it, sight! For I ne’er saw true beauty till this night.</div>
+              <p class="question">2. How does Romeo’s point of view shape the reader’s understanding of Juliet in this excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It presents Juliet through a neutral description that shows no emotion from Romeo. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that Romeo is focused on avoiding Juliet rather than noticing her. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It presents Juliet through Romeo’s sudden admiration, making the reader see how completely his attention shifts to her.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It proves that Romeo already knows Juliet well before seeing her. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 84</div>
+              <div class="passage">JULIET. Farewell. God knows when we shall meet again. I have a faint cold fear thrills through my veins That almost freezes up the heat of life. I’ll call them back again to comfort me. Nurse!—What should she do here? My dismal scene I needs must act alone. Come, vial. What if this mixture do not work at all? Shall I be married then tomorrow morning? No, No! This shall forbid it. Lie thou there.</div>
+              <p class="question">3. How does Juliet’s point of view build tension in the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows Juliet is calm because she knows the plan cannot fail. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It removes tension by describing only what other characters think. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It proves Juliet has already changed her mind about the plan. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It gives the reader direct access to her fear and uncertainty before she chooses to take the vial.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">The Odyssey — Homer · paragraph 106</div>
+              <div class="passage">“When at last we got to the island where we had left the rest of our ships, we found our comrades lamenting us, and anxiously awaiting our return. We ran our vessel upon the sands and got out of her on to the sea shore; we also landed the Cyclops’ sheep, and divided them equitably amongst us so that none might have reason to complain. As for the ram, my companions agreed that I should have it as an extra share; so I sacrificed it on the sea shore, and burned its thigh bones to Jove, who is the lord of all. But he heeded not my sacrifice, and only thought how he might destroy both my ships and my comrades.</div>
+              <p class="question">4. How does the first-person narration affect the reader’s understanding of the return to the ships?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the return seem peaceful because the crew no longer has reason to fear what happened.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It presents the event through the crew’s shared experience, so the reader understands both relief and continued danger.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It focuses on the sacrifice at the shore more than the crew’s emotional response.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows Ulysses receiving honor, but it does not explain how the crew experiences the return.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">The Odyssey — Homer · paragraph 116</div>
+              <div class="passage">“Their hearts sank as they heard me, for they remembered how they had been treated by the Laestrygonian Antiphates, and by the savage ogre Polyphemus. They wept bitterly in their dismay, but there was nothing to be got by crying, so I divided them into two companies and set a captain over each; I gave one company to Eurylochus, while I took command of the other myself. Then we cast lots in a helmet, and the lot fell upon Eurylochus; so he set out with his twenty-two men, and they wept, as also did we who were left behind.</div>
+              <p class="question">5. How does Ulysses’s point of view affect the way the reader understands the crew’s danger?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the danger seem unimportant because Ulysses ignores how the crew feels.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It removes Ulysses from the action and focuses only on an outside narrator’s opinion.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows the danger through Ulysses’s leadership decisions and through his awareness of the crew’s fear.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that the crew is excited and confident about being separated.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 4</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 5: Theme or tone layer</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Name the element. Then finish: this points to the idea/attitude that ___.</p>
+        <p><strong>Common trap:</strong> Student chooses a broad theme or tone word without proving it from the element.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 254</div>
+              <div class="passage">As for Daedalus, when the people of Athens heard of his dastardly deed, they were filled with grief and rage--grief for young Perdix, whom all had learned to love; rage towards the wicked uncle, who loved only himself. At first they were for punishing Daedalus with the death which he so richly deserved, but when they remembered what he had done to make their homes pleasanter and their lives easier, they allowed him to live; and yet they drove him out of Athens and bade him never return.</div>
+              <p class="question">1. How does the people’s response to Daedalus help develop a theme?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows the tension between justice and mercy because the people condemn his selfish act but still spare his life.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that the people approve of Daedalus’s selfishness and reward him. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It suggests that no one cares about what happened to Perdix. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It proves that Daedalus immediately admits guilt and asks to be punished. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 7</div>
+              <div class="passage">ROMEO. Alas that love, whose view is muffled still, Should, without eyes, see pathways to his will! Where shall we dine? O me! What fray was here? Yet tell me not, for I have heard it all. Here’s much to do with hate, but more with love: Why, then, O brawling love! O loving hate! O anything, of nothing first create! O heavy lightness! serious vanity! Misshapen chaos of well-seeming forms! Feather of lead, bright smoke, cold fire, sick health! Still-waking sleep, that is not what it is! This love feel I, that feel no love in this. Dost thou not laugh?</div>
+              <p class="question">2. How does Romeo’s language help develop the tone of the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It creates a calm tone by showing that Romeo has completely solved his feelings.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It creates a conflicted, emotional tone by showing love and hate as tangled together in Romeo’s mind.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It makes the scene feel humorous because Romeo is mocking other characters.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It removes emotion from the scene by using only literal descriptions of the feud.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 84</div>
+              <div class="passage">And AEsculapius proved to be a wise child, gentle and sweet and teachable; and among all the pupils of Cheiron he was the best loved. He learned the lore of the mountains, the woods, and the fields. He found out what virtue there is in herbs and flowers and senseless stones; and he studied the habits of birds and beasts and men. But above all he became skillful in dressing wounds and healing diseases; and to this day physicians remember and honor him as the first and greatest of their craft. When he grew up to manhood his name was heard in every land, and people blessed him because he was the friend of life and the foe of death.</div>
+              <p class="question">3. How does the description of AEsculapius help develop a theme?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that knowledge becomes meaningful when it is used to heal and protect life.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that AEsculapius uses knowledge mainly to gain power over others.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It suggests that healing is unimportant because people do not remember him.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It proves that AEsculapius avoids learning from nature or other people.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">Medea — Euripides · paragraph 45</div>
+              <div class="passage">But they within whose garden fair That gentle plant hath blown, they go Deep-written all their days with care-- To rear the children, to make fast Their hold, to win them wealth; and then Much darkness, if the seed at last Bear fruit in good or evil men! And one thing at the end of all Abideth, that which all men dread: The wealth is won, the limbs are bred To manhood, and the heart withal Honest: and, lo, where Fortune smiled, Some change, and what hath fallen? Hark! &#039;Tis death slow winging to the dark, And in his arms what was thy child.</div>
+              <p class="question">4. How does the image of death help develop the tone of the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It creates a playful tone by making death seem harmless and distant. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It creates a sorrowful, fearful tone by showing how quickly hope for a child can turn into loss.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows that the speaker feels certain children will always be safe. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shifts the excerpt away from family and focuses only on wealth. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">The Iliad — Homer · paragraph 203</div>
+              <div class="passage">Coon, Antenor’s eldest hope, was nigh: Tears, at the sight, came starting from his eye, While pierced with grief the much-loved youth he view’d, And the pale features now deform’d with blood. Then, with his spear, unseen, his time he took, Aim’d at the king, and near his elbow strook. The thrilling steel transpierced the brawny part, And through his arm stood forth the barbed dart. Surprised the monarch feels, yet void of fear On Coon rushes with his lifted spear: His brother’s corpse the pious Trojan draws, And calls his country to assert his cause; Defends him breathless on the sanguine field, And o’er the body spreads his ample shield. Atrides, marking an unguarded part, Transfix’d the warrior with his brazen dart; Prone on his brother’s bleeding breast he lay, The monarch’s falchion lopp’d his head away: The social shades the same dark journey go, And join each other in the realms below.</div>
+              <p class="question">5. How does Coon’s grief for his brother develop the tone of the excerpt?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the battle feel playful because Coon treats the death as a game.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It removes emotion from the scene by focusing only on weapons and armor.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It makes the battle feel mournful by showing family grief inside the violence.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows that Coon is indifferent to his brother’s death and avoids action.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 5</span></div>
+    </section>
+  
+    <section class="sheet">
+      <div class="topline"><span>Date of Completion: __________________</span><span>Score: ____________</span></div>
+      <h1 class="title">Chapter 1 - Reading</h1>
+      <div class="chapter">Lesson 6: Style technique adds meaning</div>
+      <p class="standard-line">ELA.9.R.1.1 · Key literary elements add layers of meaning</p>
+      <div class="skill-box">
+        <h3>Skill Strategy</h3>
+        <p>Name the style move. Then ask what it makes the reader hear, feel, or notice.</p>
+        <p><strong>Common trap:</strong> Student notices the technique but gives a generic effect.</p>
+      </div>
+      
+            <div class="passage-card">
+              <div class="lesson-pill">Question 1 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 148</div>
+              <div class="passage">He heard a sound as of some one breathing heavily, and he looked around sharply to see where it came from. Among the foul weeds which grew close to the bank of a muddy river there was something which glittered in the pale light. He flew a little nearer; but he did not dare to look straight forward, lest he should all at once meet the gaze of a Gorgon, and be changed into stone. So he turned around, and held the shining shield before him in such a way that by looking into it he could see objects behind him as in a mirror.</div>
+              <p class="question">1. How does the author’s description of the riverbank and shield affect the passage?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the scene feel tense and indirect, showing Perseus must rely on reflected sight instead of looking straight at danger.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It makes the riverbank seem beautiful, so Perseus’s danger feels less urgent. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It emphasizes the shield as a weapon, but not as part of how Perseus avoids danger. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It shows Perseus is curious about the setting, but the description does not shape the suspense. The development of the passage points elsewhere.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 2 is based on the passage below</div>
+              <div class="source">The Odyssey — Homer · paragraph 61</div>
+              <div class="passage">While he was thus in two minds, Neptune sent a terrible great wave that seemed to rear itself above his head till it broke right over the raft, which then went to pieces as though it were a heap of dry chaff tossed about by a whirlwind. Ulysses got astride of one plank and rode upon it as if he were on horseback; he then took off the clothes Calypso had given him, bound Ino’s veil under his arms, and plunged into the sea—meaning to swim on shore. King Neptune watched him as he did so, and wagged his head, muttering to himself and saying, “There now, swim up and down as you best can till you fall in with well-to-do people. I do not think you will be able to say that I have let you off too lightly.” On this he lashed his horses and drove to Aegae where his palace is.</div>
+              <p class="question">2. How does the comparison to “a heap of dry chaff tossed about by a whirlwind” affect the passage?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It shows that the raft is heavy and stable enough to resist the storm easily.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It makes the storm seem peaceful because the raft moves gently across calm water.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It shows how powerless the raft is against the wave, making the storm feel violent and overwhelming.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It explains that Ulysses is controlling the wave rather than struggling against it.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 3 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 69</div>
+              <div class="passage">So Apollo went down to Parnassus, and looked about for a spot in which to lay the foundations of his house. The mountain itself was savage and wild, and the valley below it was lonely and dark. The few people who lived there kept themselves hidden among the rocks as if in dread of some great danger. They told Apollo that near the foot of the mountain where the steep cliff seemed to be split in two there lived a huge serpent called the Python. This serpent often seized sheep and cattle, and sometimes even men and women and children, and carried them up to his dreadful den and devoured them.</div>
+              <p class="question">3. How does the author’s word choice in &quot;savage and wild&quot; affect the passage?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It makes the place seem peaceful because the words suggest safety and comfort. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It only names the location without shaping the reader’s response. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It proves that Apollo has already defeated the danger before arriving. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It makes the place feel dangerous before the conflict begins, so the language prepares the reader for Apollo’s threat.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 4 is based on the passage below</div>
+              <div class="source">Old Greek Stories — James Baldwin · paragraph 71</div>
+              <div class="passage">Close to the foot of the steep cliff, and beneath the spot where Jupiter&#039;s eagles had fallen, he laid the foundations; and soon where had been the lair of the Python, the white walls of Apollo&#039;s temple arose among the rocks. Then the poor people of the land came and built their houses near by; and Apollo lived among them many years, and taught them to be gentle and wise, and showed them how to be happy. The mountain was no longer savage and wild, but was a place of music and song; the valley was no longer dark and lonely, but was filled with beauty and light.</div>
+              <p class="question">4. How does the repeated contrast “no longer... but...” affect the passage?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>It emphasizes transformation by contrasting the place’s former danger with its new beauty and order.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>It shows that the place remains exactly the same after Apollo builds there.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>It makes the passage focus only on location without showing any change in meaning.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>It suggests that the people are less safe after the temple is built.</span></li>
+                    
+              </ul>
+            </div>
+          
+            <div class="passage-card">
+              <div class="lesson-pill">Question 5 is based on the passage below</div>
+              <div class="source">Romeo and Juliet — William Shakespeare · paragraph 7</div>
+              <div class="passage">ROMEO. Alas that love, whose view is muffled still, Should, without eyes, see pathways to his will! Where shall we dine? O me! What fray was here? Yet tell me not, for I have heard it all. Here’s much to do with hate, but more with love: Why, then, O brawling love! O loving hate! O anything, of nothing first create! O heavy lightness! serious vanity! Misshapen chaos of well-seeming forms! Feather of lead, bright smoke, cold fire, sick health! Still-waking sleep, that is not what it is! This love feel I, that feel no love in this. Dost thou not laugh?</div>
+              <p class="question">5. How do Romeo’s contradictory phrases affect the passage?</p>
+              <ul class="choices">
+                
+                      <li class="choice"><span class="bubble">A</span><span>They show Romeo using formal language to hide his feelings from the reader. The passage points to a different effect.</span></li>
+                    
+                      <li class="choice"><span class="bubble">B</span><span>They make Romeo sound clever, but the contradictions do not reveal his emotional state. This does not explain the author’s move.</span></li>
+                    
+                      <li class="choice"><span class="bubble">C</span><span>They shift attention from Romeo’s feelings to the public conflict in the street. The development of the passage points elsewhere.</span></li>
+                    
+                      <li class="choice"><span class="bubble">D</span><span>They make Romeo’s feelings sound confused and conflicted, showing that love and hate are tangled together in his mind.</span></li>
+                    
+              </ul>
+            </div>
+          
+      <div class="footer"><span>GOGI Workbook</span><span>Lesson 6</span></div>
+    </section>
+  
+      </body>
+    </html>

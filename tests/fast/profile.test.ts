@@ -4,6 +4,7 @@ import {
   FAST_CLASSIFICATION_CODES,
   type BenchmarkClassificationMapRow,
 } from '../../src/lib/fast/constants';
+import { getFastAldGuidanceForStandard } from '../../src/lib/fast/achievementLevelDescriptions';
 
 const clinicalMap: BenchmarkClassificationMapRow[] = [
   {
@@ -24,6 +25,29 @@ const clinicalMap: BenchmarkClassificationMapRow[] = [
 ];
 
 describe('FAST cold-start profile', () => {
+  it('turns FAST ISR achievement guidance into standard-specific content questions', () => {
+    const r11 = getFastAldGuidanceForStandard('ELA.9.R.1.1');
+    const r31 = getFastAldGuidanceForStandard('ELA.9.R.3.1');
+    const r24 = getFastAldGuidanceForStandard('ELA.9.R.2.4');
+
+    expect(r11.map((item) => item.question)).toEqual(
+      expect.arrayContaining([
+        'How do key elements enhance meaning?',
+        'What is the mood of the text? Does it change? Where and how do you know?',
+        'What is the author’s purpose for writing this text? Find evidence to support that purpose.',
+      ])
+    );
+    expect(r31.map((item) => item.question)).toContain(
+      'Compare the literal message to the figurative message.'
+    );
+    expect(r24.map((item) => item.question)).toEqual(
+      expect.arrayContaining([
+        'What claims are being made in each text?',
+        'Which claims are supported with evidence and which are not supported?',
+      ])
+    );
+  });
+
   it('keeps all 13 classification codes present even when a code has no signal', () => {
     const profile = buildFastColdStartProfile({
       assessments: [
@@ -98,6 +122,16 @@ describe('FAST cold-start profile', () => {
           achievement_level: 3,
         },
       ],
+      categoryPerformance: [
+        {
+          category_code: 'RI',
+          category_name: 'Reading Informational Text',
+          achievement_level: 'Below the Standard',
+          achievement_level_description:
+            'Analyze the support an author is using to develop a central idea.',
+          next_steps: 'Read informational texts. Ask how the central idea is developed.',
+        },
+      ],
       itemResponses: [
         {
           fast_assessment_id: 'pm3',
@@ -117,6 +151,13 @@ describe('FAST cold-start profile', () => {
     expect(profile.points_to_next_rung).toBe(8);
     expect(profile.classification_scores.evidence_retrieval_failure).toBe(0.6);
     expect(profile.interpretation.recommended_next_step.route).toBe('teacher_review');
+    expect(profile.interpretation.achievement_level_guidance[0]).toMatchObject({
+      category_code: 'RI',
+      priority_standards: ['ELA.9.R.2.2'],
+    });
+    expect(profile.interpretation.achievement_level_guidance[0].student_can_do[0]).toContain(
+      'central idea'
+    );
   });
 
   it('promotes repeated aligned misses into a strong signal with a diagnostic next step', () => {

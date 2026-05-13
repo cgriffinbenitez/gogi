@@ -4,6 +4,7 @@ import { mapGutenbergClassificationToFastStandard } from './gutenbergBridge';
 export type GutenbergPipelinePassageStatusRow = {
   id: string;
   classification: string | null;
+  source?: string | null;
   standard_code?: string | null;
   approval_status: string | null;
   approved: boolean | null;
@@ -15,6 +16,7 @@ export type GutenbergPromotedQuestionStatusRow = {
   content: string | null;
   cognitive_skill_targeted: string | null;
   source_classification: string | null;
+  source?: string | null;
 };
 
 export type GutenbergReadingWinStatusRow = {
@@ -25,18 +27,54 @@ export type GutenbergReadingWinStatusRow = {
   rejected_passages: number;
   unpromoted_approved_passages: number;
   promoted_question_rows: number;
+  trusted_promoted_question_rows: number;
+  audit_promoted_question_rows: number;
   sample_titles: string[];
 };
 
 export function extractGutenbergPassageIdFromQuestion(content: string | null) {
   if (!content) return null;
-  return content.match(/Project Gutenberg passage ([0-9a-f-]{8,})/i)?.[1] ?? null;
+  return (
+    content.match(/Project Gutenberg passage ([0-9a-f-]{8,})/i)?.[1] ??
+    content.match(/GOGI rights-managed passage ([0-9a-f-]{8,})/i)?.[1] ??
+    null
+  );
 }
 
 function normalizedApprovalStatus(row: GutenbergPipelinePassageStatusRow) {
   if (row.approval_status === 'approved' || row.approved === true) return 'approved';
   if (row.approval_status === 'rejected') return 'rejected';
   return 'pending_review';
+}
+
+function section(content: string | null, label: string) {
+  if (!content) return '';
+  const pattern = new RegExp(`${label}:\\n([\\s\\S]*?)(?=\\n\\n[A-Z_ ]+:\\n|$)`, 'i');
+  return content.match(pattern)?.[1]?.trim() ?? '';
+}
+
+function hasWeakGenericStem(questionText: string) {
+  return /what does (it|this|the phrase|the comparison|the personification|the imagery) suggest in context/i.test(
+    questionText
+  );
+}
+
+function isTrustedPromotedQuestion(question: GutenbergPromotedQuestionStatusRow) {
+  const quality = section(question.content, 'FAST_ITEM_QUALITY');
+  const targetSkill = section(question.content, 'TARGET_SKILL');
+  const questionText = section(question.content, 'QUESTION');
+  const trustNote = section(question.content, 'TEACHER_TRUST_NOTE');
+  const hasSkillMove = Boolean(section(question.content, 'GOGI_SKILL_MOVE'));
+
+  return (
+    /strong signal/i.test(quality) &&
+    Boolean(targetSkill) &&
+    !/official_text_candidate|official benchmark-aligned content/i.test(targetSkill) &&
+    Boolean(questionText) &&
+    !hasWeakGenericStem(questionText) &&
+    Boolean(trustNote) &&
+    hasSkillMove
+  );
 }
 
 export function buildGutenbergReadingWinStatus(args: {
@@ -63,8 +101,18 @@ export function buildGutenbergReadingWinStatus(args: {
           question.cognitive_skill_targeted === demand.standardCode ||
           question.source_classification === demand.standardCode
       ).length,
+      trusted_promoted_question_rows: args.promotedQuestions.filter(
+        (question) =>
+          (question.cognitive_skill_targeted === demand.standardCode ||
+            question.source_classification === demand.standardCode) &&
+          isTrustedPromotedQuestion(question)
+      ).length,
+      audit_promoted_question_rows: 0,
       sample_titles: [],
     });
+    const row = rowsByStandard.get(demand.standardCode)!;
+    row.audit_promoted_question_rows =
+      row.promoted_question_rows - row.trusted_promoted_question_rows;
   }
 
   for (const passage of args.passages) {

@@ -46,6 +46,15 @@ export interface CriteriaConfig {
 export interface SourceConfig {
   gutendexSearchTerms: string[];
   priorityAuthors: string[];
+  officialOnly?: boolean;
+  officialGutenbergSeeds?: Array<{
+    gutenbergId: number;
+    title: string;
+    author: string;
+    year?: number | null;
+    sectionStart?: string;
+    sectionEnd?: string;
+  }>;
   maxFilterCallsPerBook?: number; // Phase 1 budget cap: max Claude filter calls per book (default 250, hard ceiling 1000)
   stopLossMinFilterCalls?: number; // minimum filter calls before no-yield stop-loss can fire
   stopLossMaxZeroSuitableCalls?: number; // stop filtering a book after this many calls with zero suitable passages
@@ -213,7 +222,7 @@ export interface PassageRowV3 {
   approval_status: 'pending_review' | 'approved' | 'rejected';
 }
 
-export type WriteStatus = 'inserted' | 'duplicate' | 'error';
+export type WriteStatus = 'inserted' | 'duplicate' | 'updated_existing' | 'error';
 
 export interface WriteResult {
   status: WriteStatus;
@@ -249,5 +258,6 @@ export interface PipelineOptions {
   maxBooks: number;
   dryRun: boolean;
   writeAllPassed: boolean;
+  expandBeyondOfficial?: boolean;
   perSourceCapOverride?: number;
 }

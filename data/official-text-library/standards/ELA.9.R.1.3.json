@@ -1,0 +1,198 @@
+{
+  "generated_at": "2026-05-09T22:16:12.697Z",
+  "standard": "ELA.9.R.1.3",
+  "stored_texts": 5,
+  "mapped_texts": 8,
+  "entries": [
+    {
+      "title": "1984",
+      "author": "George Orwell",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "A Modest Proposal",
+      "author": "Jonathan Swift",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/a-modest-proposal-jonathan-swift.txt",
+      "char_count": 19493,
+      "word_count": 3420,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "A White Heron",
+      "author": "Sarah Orne Jewett",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4",
+        "ELA.9.V.1.3"
+      ],
+      "gutenberg_ids": [
+        74980
+      ],
+      "discovered_gutenberg_id": 74980,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/a-white-heron-sarah-orne-jewett.txt",
+      "char_count": 23264,
+      "word_count": 4259,
+      "notes": "Official Grade 9 FAST released literary model. Use as a legal public-domain seed and as a benchmark for excerpt length, pointable evidence, and stem specificity. Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Bringing My Son to the Police Station to Be Fingerprinted",
+      "author": "Shoshauna Shy",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "Icarus After the Fall",
+      "author": null,
+      "access": "educational_purpose",
+      "pipeline_use": "style_model_only",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.3"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "reference_only",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official FAST adaptation-pair model. Use for question architecture and source/adaptation comparison; do not harvest as reusable source text."
+    },
+    {
+      "title": "Icarus and Daedalus",
+      "author": "Josephine Preston Peabody",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.3",
+        "ELA.9.V.1.3"
+      ],
+      "gutenberg_ids": [
+        9313
+      ],
+      "discovered_gutenberg_id": 9313,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/icarus-and-daedalus-josephine-preston-peabody.txt",
+      "char_count": 3813,
+      "word_count": 716,
+      "notes": "Official Grade 9 FAST myth/adaptation model. Strong priority seed for R.3.3 and literary-remediation passages when the source pattern is self-contained."
+    },
+    {
+      "title": "The Death of Ivan Ilyich",
+      "author": "Leo Tolstoy",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.1",
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "manual_upload",
+      "text_path": "data/official-text-library/manual-uploads/the-death-of-ivan-ilyich-leo-tolstoy.txt",
+      "char_count": 135057,
+      "word_count": 24831,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Prince",
+      "author": "Niccolò Machiavelli",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-prince-niccolo-machiavelli.txt",
+      "char_count": 282551,
+      "word_count": 49943,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    }
+  ]
+}

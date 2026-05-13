@@ -39,3 +39,8 @@ jest-test-results.json
 
 # Optional: if using TurboRepo or monorepo
 turbo/
+
+# Local/generated source corpora
+data/official-text-library/texts/
+data/official-text-library/manual-uploads/
+supabase/.temp/

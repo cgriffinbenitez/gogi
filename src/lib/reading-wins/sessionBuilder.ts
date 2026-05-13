@@ -1,10 +1,13 @@
 import type { FastGrade9ReadingDemand } from './fastSkillMap';
+import { stemFitsFastItemBlueprint } from './itemBlueprints';
+import { buildSkillMoveScaffold } from './skillMoveMap';
 import type { ReadingWinLoopItem, ReadingWinSession } from './r31FigurativeLanguageSession';
 
 export type PromotedReadingWinQuestion = {
   id: string;
   content: string;
   cognitive_skill_targeted: string | null;
+  source_classification?: string | null;
   difficulty_level: number | null;
   title: string | null;
   option_a_text: string | null;
@@ -15,6 +18,12 @@ export type PromotedReadingWinQuestion = {
   rationale: string | null;
   source: string | null;
   is_released_item: boolean | null;
+};
+
+export type ReadingWinQuestionTaxonomy = {
+  targetStandard: string | null;
+  targetSkill: string | null;
+  quality: string | null;
 };
 
 export type ReadingWinCoverageAnalysis = {
@@ -46,11 +55,22 @@ type ParsedQuestion = {
   difficulty: 1 | 2 | 3 | 4 | 5;
   source: string;
   qualityScore: number;
+  targetSkill: string | null;
 };
 
 function section(content: string, label: string) {
-  const pattern = new RegExp(`${label}:\\n([\\s\\S]*?)(?=\\n\\n[A-Z ]+:\\n|$)`, 'i');
+  const pattern = new RegExp(`${label}:\\n([\\s\\S]*?)(?=\\n\\n[A-Z_ ]+:\\n|$)`, 'i');
   return content.match(pattern)?.[1]?.trim() ?? '';
+}
+
+export function extractReadingWinQuestionTaxonomy(
+  row: Pick<PromotedReadingWinQuestion, 'content' | 'cognitive_skill_targeted'>
+): ReadingWinQuestionTaxonomy {
+  return {
+    targetStandard: section(row.content, 'TARGET_STANDARD') || row.cognitive_skill_targeted || null,
+    targetSkill: section(row.content, 'TARGET_SKILL') || null,
+    quality: section(row.content, 'FAST_ITEM_QUALITY') || null,
+  };
 }
 
 function clampDifficulty(value: number | null | undefined): 1 | 2 | 3 | 4 | 5 {
@@ -115,7 +135,8 @@ function hasReadingWinPassageTexture(
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
   const words = wordCount(passage);
-  const isTrustedPublicDomain = source === 'gutenberg_public_domain';
+  const isTrustedPublicDomain =
+    source === 'gutenberg_public_domain' || source === 'rights_managed_literature';
 
   if (standardCode === 'ELA.9.R.3.1') {
     if (isTrustedPublicDomain) {
@@ -146,45 +167,10 @@ function uniqueOptions(options: string[]) {
 }
 
 function promptFitsStandard(prompt: string, standardCode: string) {
-  const text = normalizeText(prompt);
-  const hasAny = (terms: string[]) => terms.some((term) => text.includes(term));
-
-  if (standardCode === 'ELA.9.R.3.1') {
-    return (
-      hasAny(['figurative', 'phrase', 'image', 'simile', 'metaphor', 'personification']) &&
-      hasAny(['affect', 'effect', 'understanding', 'mood', 'tone', 'meaning'])
-    );
-  }
-
-  if (standardCode === 'ELA.9.R.1.1') {
-    return hasAny([
-      'detail',
-      'element',
-      'description',
-      'setting',
-      'contribute',
-      'enhance',
-      'meaning',
-    ]);
-  }
-
-  if (standardCode === 'ELA.9.R.1.2') {
-    return hasAny(['theme', 'develop', 'lesson', 'message']);
-  }
-
-  if (standardCode === 'ELA.9.R.2.1') {
-    return hasAny(['structure', 'paragraph', 'feature', 'purpose', 'organize']);
-  }
-
-  if (standardCode === 'ELA.9.R.2.2') {
-    return hasAny(['central idea', 'support', 'evidence', 'develop']);
-  }
-
-  if (standardCode === 'ELA.9.V.1.2' || standardCode === 'ELA.9.V.1.3') {
-    return hasAny(['word', 'phrase', 'meaning', 'context', 'clue', 'connotation']);
-  }
-
-  return hasAny(['best', 'how', 'why', 'effect', 'meaning', 'purpose', 'develop', 'support']);
+  return stemFitsFastItemBlueprint({
+    standardCode,
+    stem: prompt,
+  });
 }
 
 function scoreQuestionQuality(args: {
@@ -232,6 +218,11 @@ function parseQuestion(
   if (!hasReadingWinPassageTexture(passage, demand.standardCode, row.source)) return null;
 
   const correctLetter = row.correct_option?.trim().toUpperCase() ?? '';
+  const taxonomy = extractReadingWinQuestionTaxonomy(row);
+  const explicitStandard =
+    taxonomy.targetStandard ?? row.cognitive_skill_targeted ?? row.source_classification ?? null;
+  if (explicitStandard !== demand.standardCode) return null;
+
   const correctAnswer =
     /^[A-D]$/.test(correctLetter) && optionByLetter(row, correctLetter)
       ? optionByLetter(row, correctLetter)!
@@ -260,6 +251,7 @@ function parseQuestion(
     difficulty: clampDifficulty(row.difficulty_level),
     source: row.source ?? (row.is_released_item ? 'released_fast' : 'gogi_question_bank'),
     qualityScore,
+    targetSkill: taxonomy.targetSkill,
   };
 }
 
@@ -288,7 +280,11 @@ function itemFromParsed(args: {
     prompt: args.transfer ? `New passage. ${args.parsed.prompt}` : args.parsed.prompt,
     options: args.parsed.options,
     correctAnswer: args.parsed.correctAnswer,
-    scaffold: `Use today's move: ${args.demand.studentMove} Choose the answer that proves the standard in this passage.`,
+    scaffold: buildSkillMoveScaffold({
+      standardCode: args.demand.standardCode,
+      targetSkill: args.parsed.targetSkill,
+      fallbackMove: args.demand.studentMove,
+    }),
     successCold: `Yes. That is ${args.demand.studentTitle.toLowerCase()} without extra support.`,
     successScaffold: `Good. You used the scaffold to apply the ${args.demand.standardCode} move.`,
     workedExample:
@@ -419,7 +415,9 @@ export function analyzeReadingWinCoverage(args: {
       (question) => question.source === 'gogi_original_fast_aligned'
     ).length,
     gutenbergRows: args.questions.filter(
-      (question) => question.source === 'gutenberg_public_domain'
+      (question) =>
+        question.source === 'gutenberg_public_domain' ||
+        question.source === 'rights_managed_literature'
     ).length,
     ready,
     status,

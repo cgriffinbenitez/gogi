@@ -215,6 +215,51 @@ function StatCard({
   );
 }
 
+function TeacherWorkflowCard({
+  label,
+  title,
+  detail,
+  href,
+  color,
+}: {
+  label: string;
+  title: string;
+  detail: string;
+  href: string;
+  color: string;
+}) {
+  const router = useRouter();
+  return (
+    <button
+      type="button"
+      onClick={() => router.push(href)}
+      style={{
+        background: C.white,
+        border: `0.5px solid ${C.border}`,
+        borderRadius: 8,
+        cursor: 'pointer',
+        minHeight: 94,
+        padding: '12px 14px',
+        textAlign: 'left' as const,
+      }}
+    >
+      <div
+        style={{
+          color,
+          fontSize: 9,
+          fontWeight: 800,
+          letterSpacing: 1,
+          textTransform: 'uppercase' as const,
+        }}
+      >
+        {label}
+      </div>
+      <div style={{ color: C.dark, fontSize: 14, fontWeight: 800, marginTop: 6 }}>{title}</div>
+      <div style={{ color: C.gray, fontSize: 11, lineHeight: 1.45, marginTop: 4 }}>{detail}</div>
+    </button>
+  );
+}
+
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({
@@ -309,11 +354,16 @@ function TeacherNav({
     { key: 'questions', label: 'Questions' },
   ];
   const actionLinks = [
-    { label: 'Welcome Cards', href: '/teacher/welcome-cards' },
-    { label: 'FAST Upload', href: '/teacher-dashboard/fast-upload' },
+    { label: 'Upload FAST', href: '/teacher-dashboard/fast-upload' },
+    { label: 'Plan Tomorrow', href: '/teacher-dashboard/plan-tomorrow' },
+    { label: 'Official Corpus', href: '/teacher-dashboard/official-teachable-corpus' },
+    { label: 'Workbook Builder', href: '/teacher-dashboard/workbook-builder' },
+    { label: 'Pull-Out Sheets', href: '/teacher-dashboard/pull-out-sheets' },
+    { label: 'R.1.1 Coverage', href: '/teacher-dashboard/r11-coverage' },
+    { label: 'Content Library', href: '/admin/gutenberg-library' },
     { label: 'Library Readiness', href: '/admin/reading-win-coverage' },
-    { label: 'Item Builder', href: '/admin/original-items' },
-    { label: 'FAST Booklets', href: '/admin/released-items' },
+    { label: 'Lesson Builder', href: '/teacher-dashboard/literary-intelligence' },
+    { label: 'Question Builder', href: '/admin/original-items' },
   ];
 
   return (
@@ -1152,6 +1202,84 @@ export default function TeacherDashboardPage() {
             <div style={{ fontSize: 11, color: C.gray }}>Last updated: today · {currentTime}</div>
           )}
         </div>
+
+        {/* ── Pilot workflow ── */}
+        <section
+          style={{
+            background: C.white,
+            border: `0.5px solid ${C.border}`,
+            borderRadius: 10,
+            marginBottom: 16,
+            padding: 14,
+          }}
+        >
+          <div
+            style={{
+              alignItems: 'flex-start',
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: 12,
+              marginBottom: 10,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  color: C.blue,
+                  fontSize: 9,
+                  fontWeight: 800,
+                  letterSpacing: 1,
+                  textTransform: 'uppercase' as const,
+                }}
+              >
+                Pilot workflow
+              </div>
+              <div style={{ color: C.dark, fontSize: 15, fontWeight: 800, marginTop: 3 }}>
+                Start with FAST evidence, then build the daily work.
+              </div>
+            </div>
+            <div style={{ color: C.gray, fontSize: 11, lineHeight: 1.45, maxWidth: 340 }}>
+              Use this strip as the teacher path. Admin tools stay available, but the pilot should
+              move left to right.
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gap: 10,
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            }}
+          >
+            <TeacherWorkflowCard
+              label="Step 1"
+              title="Upload FAST"
+              detail="Add the student ISR so GOGI can see the starting point."
+              href="/teacher-dashboard/fast-upload"
+              color={C.blue}
+            />
+            <TeacherWorkflowCard
+              label="Step 2"
+              title="Check the plan"
+              detail="Open the roster and see each student’s next standard."
+              href="/dashboard/teacher"
+              color={C.green}
+            />
+            <TeacherWorkflowCard
+              label="Step 3"
+              title="Prepare content"
+              detail="Confirm official texts, mined excerpts, and source gaps."
+              href="/admin/gutenberg-library"
+              color={C.amber}
+            />
+            <TeacherWorkflowCard
+              label="Step 4"
+              title="Plan tomorrow"
+              detail="Pick a standard and get the clearest text, excerpt, and lesson flow."
+              href="/teacher-dashboard/plan-tomorrow"
+              color={C.red}
+            />
+          </div>
+        </section>
 
         {/* ── Stats row ── */}
         <div

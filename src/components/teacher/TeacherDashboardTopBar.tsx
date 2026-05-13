@@ -13,6 +13,15 @@ type TeacherDashboardTopBarProps = {
     | 'original'
     | 'coverage'
     | 'gutenberg'
+    | 'literary'
+    | 'pm3'
+    | 'plan'
+    | 'readiness'
+    | 'corpus'
+    | 'how'
+    | 'textmap'
+    | 'pullouts'
+    | 'r11'
     | 'questions';
   teacherName?: string;
   school?: string;
@@ -33,11 +42,20 @@ export function TeacherDashboardTopBar({
 
   const items = [
     { key: 'roster' as const, label: 'Roster', href: '/dashboard/teacher' },
+    { key: 'pm3' as const, label: 'Class Planner', href: '/teacher-dashboard/pm3-planner' },
+    { key: 'plan' as const, label: 'Plan Tomorrow', href: '/teacher-dashboard/plan-tomorrow' },
+    { key: 'readiness' as const, label: 'Teaching Readiness', href: '/teacher-dashboard/teaching-readiness' },
+    { key: 'corpus' as const, label: 'Official Corpus', href: '/teacher-dashboard/official-teachable-corpus' },
+    { key: 'how' as const, label: 'How GOGI Works', href: '/teacher-dashboard/how-gogi-works' },
+    { key: 'textmap' as const, label: 'Text Teaching Map', href: '/teacher-dashboard/text-teaching-map' },
+    { key: 'pullouts' as const, label: 'Pull-Out Sheets', href: '/teacher-dashboard/pull-out-sheets' },
+    { key: 'r11' as const, label: 'R.1.1 Coverage', href: '/teacher-dashboard/r11-coverage' },
     { key: 'welcome' as const, label: 'Welcome Cards', href: '/teacher/welcome-cards' },
     { key: 'fast' as const, label: 'FAST Upload', href: '/teacher-dashboard/fast-upload' },
+    { key: 'gutenberg' as const, label: 'Content Library', href: '/admin/gutenberg-library' },
     { key: 'coverage' as const, label: 'Library Readiness', href: '/admin/reading-win-coverage' },
-    { key: 'gutenberg' as const, label: 'Gutenberg Library', href: '/admin/gutenberg-library' },
-    { key: 'original' as const, label: 'Item Builder', href: '/admin/original-items' },
+    { key: 'literary' as const, label: 'Lesson Builder', href: '/teacher-dashboard/literary-intelligence' },
+    { key: 'original' as const, label: 'Question Builder', href: '/admin/original-items' },
     { key: 'released' as const, label: 'FAST Booklets', href: '/admin/released-items' },
     { key: 'questions' as const, label: 'Question Bank', href: '/admin/questions' },
   ];

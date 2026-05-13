@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-05-09T22:16:12.697Z",
+  "standard": "ELA.9.R.2.4",
+  "stored_texts": 3,
+  "mapped_texts": 5,
+  "entries": [
+    {
+      "title": "A Modest Proposal",
+      "author": "Jonathan Swift",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/a-modest-proposal-jonathan-swift.txt",
+      "char_count": 19493,
+      "word_count": 3420,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "Do People Need Small Talk to Be Happy?",
+      "author": "Stephanie Hayes",
+      "access": "copyright_permission",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "2025 Grade 9 FAST ELA Reading Released Items"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.V.1.2",
+        "ELA.9.V.1.3"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official FAST paired-informational reference. Use to model opposing-argument, central-idea, and vocabulary item design; rights limit reusable passage harvesting."
+    },
+    {
+      "title": "Letter from Birmingham Jail",
+      "author": "Martin Luther King, Jr.",
+      "access": "reference_only",
+      "pipeline_use": "rights_limited_reference",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.3",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "gutenberg_ids": [],
+      "discovered_gutenberg_id": null,
+      "status": "needs_upload",
+      "text_path": null,
+      "char_count": 0,
+      "word_count": 0,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a teaching/model reference; rights status limits reusable passage harvesting."
+    },
+    {
+      "title": "The Lincoln-Douglas Debates",
+      "author": "Stephen Douglas and Abraham Lincoln",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [
+        2655,
+        2656
+      ],
+      "discovered_gutenberg_id": 2655,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-lincoln-douglas-debates-stephen-douglas-and-abraham-lincoln.txt",
+      "char_count": 250806,
+      "word_count": 45524,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    },
+    {
+      "title": "The Talented Tenth",
+      "author": "W.E.B. Du Bois",
+      "access": "public_domain",
+      "pipeline_use": "priority_seed",
+      "source_documents": [
+        "Florida B.E.S.T. ELA Standards"
+      ],
+      "standards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2"
+      ],
+      "gutenberg_ids": [
+        15041
+      ],
+      "discovered_gutenberg_id": 15041,
+      "status": "stored",
+      "text_path": "data/official-text-library/texts/the-talented-tenth-w-e-b-du-bois.txt",
+      "char_count": 43029,
+      "word_count": 7318,
+      "notes": "Official B.E.S.T. Grade 9 sample text. Use as a public-domain priority seed when the excerpt passes GOGI certification."
+    }
+  ]
+}

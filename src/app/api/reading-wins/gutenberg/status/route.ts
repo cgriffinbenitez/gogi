@@ -8,6 +8,8 @@ import {
 
 export const runtime = 'nodejs';
 
+const REVIEWABLE_PASSAGE_SOURCES = ['gutenberg', 'manual_rights', 'official_text_library'];
+
 function getSupabaseApiKey() {
   const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (
@@ -34,17 +36,17 @@ export async function GET() {
       const withCoverage = await supabase
         .from('intervention_passages')
         .select(
-          'id, classification, standard_code, approval_status, approved, source_title, source_author'
+          'id, classification, source, standard_code, approval_status, approved, source_title, source_author'
         )
-        .eq('source', 'gutenberg')
+        .in('source', REVIEWABLE_PASSAGE_SOURCES)
         .order('created_at', { ascending: false })
         .limit(5000);
 
       if (withCoverage.error && isCoverageColumnMissing(withCoverage.error.message)) {
         return supabase
           .from('intervention_passages')
-          .select('id, classification, approval_status, approved, source_title, source_author')
-          .eq('source', 'gutenberg')
+          .select('id, classification, source, approval_status, approved, source_title, source_author')
+          .in('source', REVIEWABLE_PASSAGE_SOURCES)
           .order('created_at', { ascending: false })
           .limit(5000);
       }
@@ -57,8 +59,8 @@ export async function GET() {
         loadPassages(),
         supabase
           .from('questions')
-          .select('content, cognitive_skill_targeted, source_classification')
-          .eq('source', 'gutenberg_public_domain')
+          .select('content, cognitive_skill_targeted, source_classification, source')
+          .in('source', ['gutenberg_public_domain', 'rights_managed_literature'])
           .limit(5000),
       ]);
 
@@ -81,6 +83,14 @@ export async function GET() {
           0
         ),
         promoted_question_rows: rows.reduce((sum, row) => sum + row.promoted_question_rows, 0),
+        trusted_promoted_question_rows: rows.reduce(
+          (sum, row) => sum + row.trusted_promoted_question_rows,
+          0
+        ),
+        audit_promoted_question_rows: rows.reduce(
+          (sum, row) => sum + row.audit_promoted_question_rows,
+          0
+        ),
       },
     });
   } catch (err) {

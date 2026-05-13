@@ -1,0 +1,562 @@
+{
+  "generatedAt": "2026-05-13T00:03:21.490Z",
+  "summary": {
+    "officialTexts": 40,
+    "localSources": 36,
+    "claudeSavedCards": 1460,
+    "classroomReadyCards": 877,
+    "localTextsWithReadyCards": 35,
+    "localTextsWithoutReadyCards": 1,
+    "thinLocalTexts": 13,
+    "standardsRepresented": 13,
+    "standardsWithoutReadyCards": 1
+  },
+  "localTextsWithoutReadyCards": [
+    {
+      "title": "Bringing My Son to the Police Station to Be Fingerprinted — Shoshauna Shy",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 0,
+      "missingStandards": [
+        "ELA.9.R.1.2",
+        "ELA.9.R.1.3",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 0
+    }
+  ],
+  "thinLocalTexts": [
+    {
+      "title": "Speech to the Troops at Tilbury — Queen Elizabeth I",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 1,
+      "missingStandards": [
+        "ELA.9.R.2.1",
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 1
+    },
+    {
+      "title": "The Love Song of J. Alfred Prufrock — T.S. Eliot",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 1,
+      "missingStandards": [
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 1
+    },
+    {
+      "title": "The Danger of a Single Story — Chimamanda Ngozi Adichie",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 1,
+      "missingStandards": [
+        "ELA.9.R.2.2",
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.4"
+      ],
+      "readyCards": 2
+    },
+    {
+      "title": "Democracy in America — Alexis de Tocqueville",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 1,
+      "standardsCovered": 1,
+      "missingStandards": [],
+      "readyCards": 4
+    },
+    {
+      "title": "I Have a Dream — Martin Luther King, Jr.",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 2,
+      "missingStandards": [
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 4
+    },
+    {
+      "title": "Nobel Prize Acceptance Speech — William Faulkner",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 3,
+      "missingStandards": [],
+      "readyCards": 4
+    },
+    {
+      "title": "St. Crispin’s Day Speech — William Shakespeare",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 2,
+      "standardsCovered": 2,
+      "missingStandards": [],
+      "readyCards": 4
+    },
+    {
+      "title": "Antigone — Jean Anouilh",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 2,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 5
+    },
+    {
+      "title": "Icarus and Daedalus — Josephine Preston Peabody",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 6,
+      "standardsCovered": 4,
+      "missingStandards": [
+        "ELA.9.R.3.3",
+        "ELA.9.V.1.3"
+      ],
+      "readyCards": 5
+    },
+    {
+      "title": "Small Talk Is Overrated — Unknown",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 2,
+      "missingStandards": [
+        "ELA.9.R.3.1"
+      ],
+      "readyCards": 5
+    },
+    {
+      "title": "Choice: A Tribute to Dr. Martin Luther King, Jr. — Alice Walker",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 5,
+      "standardsCovered": 4,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 7
+    },
+    {
+      "title": "Letter from Birmingham Jail — Martin Luther King, Jr.",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 7,
+      "standardsCovered": 4,
+      "missingStandards": [
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.1",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 7
+    },
+    {
+      "title": "The Face of Science — Sam Kean",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 3,
+      "missingStandards": [],
+      "readyCards": 7
+    }
+  ],
+  "strongestTexts": [
+    {
+      "title": "A White Heron — Sarah Orne Jewett",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 6,
+      "standardsCovered": 5,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 93
+    },
+    {
+      "title": "The Aeneid — Virgil",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 3,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 88
+    },
+    {
+      "title": "The Odyssey — Homer",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 3,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 79
+    },
+    {
+      "title": "Old Greek Stories — James Baldwin",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 2,
+      "missingStandards": [
+        "ELA.9.R.3.2",
+        "ELA.9.R.3.3"
+      ],
+      "readyCards": 56
+    },
+    {
+      "title": "The Iliad — Homer",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 4,
+      "missingStandards": [],
+      "readyCards": 55
+    },
+    {
+      "title": "Antigone — Sophocles",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 3,
+      "missingStandards": [],
+      "readyCards": 50
+    },
+    {
+      "title": "The Talented Tenth — W.E.B. Du Bois",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 3,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 44
+    },
+    {
+      "title": "Romeo and Juliet — William Shakespeare",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 4,
+      "missingStandards": [],
+      "readyCards": 42
+    },
+    {
+      "title": "Letter to the Grand Duchess Christina of Tuscany — Galileo Galilei",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 5,
+      "standardsCovered": 5,
+      "missingStandards": [],
+      "readyCards": 41
+    },
+    {
+      "title": "The Death of Ivan Ilyich — Leo Tolstoy",
+      "status": "manual_upload",
+      "hasLocalText": true,
+      "mappedStandards": 5,
+      "standardsCovered": 4,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 39
+    },
+    {
+      "title": "A Modest Proposal — Jonathan Swift",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 8,
+      "standardsCovered": 6,
+      "missingStandards": [
+        "ELA.9.R.2.4",
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 38
+    },
+    {
+      "title": "Electra — Sophocles",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 3,
+      "standardsCovered": 2,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 28
+    },
+    {
+      "title": "Beowulf",
+      "status": "stored",
+      "hasLocalText": true,
+      "mappedStandards": 4,
+      "standardsCovered": 3,
+      "missingStandards": [
+        "ELA.9.R.3.2"
+      ],
+      "readyCards": 26
+    }
+  ],
+  "standardsByNeed": [
+    {
+      "standardCode": "ELA.9.R.3.3",
+      "readyCards": 0,
+      "localMappedTexts": 2,
+      "textsCovered": 0,
+      "localTextsWithoutCards": [
+        "Old Greek Stories",
+        "Icarus and Daedalus"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.V.1.3",
+      "readyCards": 4,
+      "localMappedTexts": 3,
+      "textsCovered": 2,
+      "localTextsWithoutCards": [
+        "A White Heron",
+        "Do People Need Small Talk to Be Happy?",
+        "Icarus and Daedalus"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.V.1.2",
+      "readyCards": 5,
+      "localMappedTexts": 1,
+      "textsCovered": 1,
+      "localTextsWithoutCards": [
+        "Do People Need Small Talk to Be Happy?"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.3.4",
+      "readyCards": 11,
+      "localMappedTexts": 9,
+      "textsCovered": 8,
+      "localTextsWithoutCards": [
+        "A Modest Proposal",
+        "I Have a Dream",
+        "Letter from Birmingham Jail",
+        "Letter to the Grand Duchess Christina of Tuscany",
+        "The Danger of a Single Story",
+        "Choice: A Tribute to Dr. Martin Luther King, Jr.",
+        "Small Talk Is Overrated",
+        "Speech to the Troops at Tilbury",
+        "The Face of Science"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.3.2",
+      "readyCards": 16,
+      "localMappedTexts": 32,
+      "textsCovered": 10,
+      "localTextsWithoutCards": [
+        "The Talented Tenth",
+        "A Modest Proposal",
+        "Industrial Education for the Negro",
+        "Old Greek Stories",
+        "The Odyssey",
+        "A White Heron",
+        "Romeo and Juliet",
+        "The Lincoln-Douglas Debates",
+        "The Aeneid",
+        "The Iliad",
+        "The Love Song of J. Alfred Prufrock",
+        "The Prince",
+        "The Death of Ivan Ilyich",
+        "Beowulf",
+        "Electra",
+        "I Have a Dream",
+        "Letter from Birmingham Jail",
+        "Letter to the Grand Duchess Christina of Tuscany",
+        "Medea",
+        "St. Crispin’s Day Speech",
+        "The Danger of a Single Story",
+        "1984",
+        "A Very Old Man with Enormous Wings",
+        "Animal Farm",
+        "Antigone",
+        "Antigone",
+        "Bringing My Son to the Police Station to Be Fingerprinted",
+        "Choice: A Tribute to Dr. Martin Luther King, Jr.",
+        "Democracy in America",
+        "Nobel Prize Acceptance Speech",
+        "Speech to the Troops at Tilbury",
+        "The Epic of Gilgamesh"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.3.1",
+      "readyCards": 19,
+      "localMappedTexts": 9,
+      "textsCovered": 5,
+      "localTextsWithoutCards": [
+        "A White Heron",
+        "Romeo and Juliet",
+        "Icarus and Daedalus",
+        "The Love Song of J. Alfred Prufrock",
+        "The Death of Ivan Ilyich",
+        "I Have a Dream",
+        "Letter from Birmingham Jail",
+        "Animal Farm",
+        "Small Talk Is Overrated"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.2.3",
+      "readyCards": 20,
+      "localMappedTexts": 9,
+      "textsCovered": 8,
+      "localTextsWithoutCards": [
+        "A Modest Proposal",
+        "Industrial Education for the Negro",
+        "Do People Need Small Talk to Be Happy?",
+        "The Prince",
+        "I Have a Dream",
+        "Letter from Birmingham Jail",
+        "Letter to the Grand Duchess Christina of Tuscany",
+        "The Danger of a Single Story",
+        "Choice: A Tribute to Dr. Martin Luther King, Jr."
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.2.4",
+      "readyCards": 33,
+      "localMappedTexts": 5,
+      "textsCovered": 3,
+      "localTextsWithoutCards": [
+        "The Talented Tenth",
+        "A Modest Proposal",
+        "Do People Need Small Talk to Be Happy?",
+        "The Lincoln-Douglas Debates",
+        "Letter from Birmingham Jail"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.2.1",
+      "readyCards": 48,
+      "localMappedTexts": 10,
+      "textsCovered": 8,
+      "localTextsWithoutCards": [
+        "The Talented Tenth",
+        "A Modest Proposal",
+        "Do People Need Small Talk to Be Happy?",
+        "Letter from Birmingham Jail",
+        "Letter to the Grand Duchess Christina of Tuscany",
+        "Choice: A Tribute to Dr. Martin Luther King, Jr.",
+        "Nobel Prize Acceptance Speech",
+        "Small Talk Is Overrated",
+        "Speech to the Troops at Tilbury",
+        "The Face of Science"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.1.3",
+      "readyCards": 55,
+      "localMappedTexts": 6,
+      "textsCovered": 5,
+      "localTextsWithoutCards": [
+        "A Modest Proposal",
+        "A White Heron",
+        "Icarus and Daedalus",
+        "The Death of Ivan Ilyich",
+        "1984",
+        "Bringing My Son to the Police Station to Be Fingerprinted"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.2.2",
+      "readyCards": 69,
+      "localMappedTexts": 12,
+      "textsCovered": 9,
+      "localTextsWithoutCards": [
+        "The Talented Tenth",
+        "A Modest Proposal",
+        "Industrial Education for the Negro",
+        "Do People Need Small Talk to Be Happy?",
+        "The Prince",
+        "Letter from Birmingham Jail",
+        "Letter to the Grand Duchess Christina of Tuscany",
+        "The Danger of a Single Story",
+        "Choice: A Tribute to Dr. Martin Luther King, Jr.",
+        "Nobel Prize Acceptance Speech",
+        "Speech to the Troops at Tilbury",
+        "The Face of Science"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.1.4",
+      "readyCards": 78,
+      "localMappedTexts": 5,
+      "textsCovered": 5,
+      "localTextsWithoutCards": [
+        "The Odyssey",
+        "The Aeneid",
+        "The Iliad"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.1.2",
+      "readyCards": 185,
+      "localMappedTexts": 20,
+      "textsCovered": 19,
+      "localTextsWithoutCards": [
+        "A Modest Proposal",
+        "Old Greek Stories",
+        "The Odyssey",
+        "A White Heron",
+        "Romeo and Juliet",
+        "The Aeneid",
+        "Icarus and Daedalus",
+        "The Iliad",
+        "The Love Song of J. Alfred Prufrock",
+        "The Death of Ivan Ilyich",
+        "Electra",
+        "St. Crispin’s Day Speech",
+        "1984",
+        "A Very Old Man with Enormous Wings",
+        "Animal Farm",
+        "Antigone",
+        "Antigone",
+        "Bringing My Son to the Police Station to Be Fingerprinted"
+      ]
+    },
+    {
+      "standardCode": "ELA.9.R.1.1",
+      "readyCards": 326,
+      "localMappedTexts": 17,
+      "textsCovered": 17,
+      "localTextsWithoutCards": [
+        "Old Greek Stories",
+        "The Odyssey",
+        "A White Heron",
+        "Romeo and Juliet",
+        "The Aeneid",
+        "Icarus and Daedalus",
+        "The Iliad",
+        "The Death of Ivan Ilyich",
+        "Electra",
+        "Medea",
+        "1984",
+        "A Very Old Man with Enormous Wings",
+        "Animal Farm",
+        "Antigone",
+        "Antigone"
+      ]
+    }
+  ]
+}

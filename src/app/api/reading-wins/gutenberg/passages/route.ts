@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
-  mapGutenbergClassificationToFastStandard,
+  buildGutenbergReadingWinQuestionInsert,
   type GutenbergPassageForReadingWin,
 } from '@/lib/reading-wins/gutenbergBridge';
 import { extractGutenbergPassageIdFromQuestion } from '@/lib/reading-wins/gutenbergStatus';
+import { getFastAldGuidanceForStandard } from '@/lib/fast/achievementLevelDescriptions';
 
 export const runtime = 'nodejs';
 
@@ -30,11 +31,66 @@ type PassageRow = GutenbergPassageForReadingWin & {
   reviewed_at: string | null;
 };
 
+function extractSection(content: string | null, section: string) {
+  if (!content) return null;
+  const pattern = new RegExp(`${section}:\\n([\\s\\S]*?)(?=\\n\\n[A-Z_]+:|$)`, 'i');
+  return content.match(pattern)?.[1]?.trim() ?? null;
+}
+
+function buildGeneratedItemPreview(passage: GutenbergPassageForReadingWin) {
+  const insert = buildGutenbergReadingWinQuestionInsert(passage, { standardId: null });
+  if (!insert) return null;
+
+  return {
+    question: extractSection(insert.content, 'QUESTION'),
+    options: extractSection(insert.content, 'OPTIONS'),
+    answer: extractSection(insert.content, 'ANSWER'),
+    target_standard: extractSection(insert.content, 'TARGET_STANDARD'),
+    target_skill: extractSection(insert.content, 'TARGET_SKILL'),
+    quality: extractSection(insert.content, 'FAST_ITEM_QUALITY'),
+    teacher_trust_note: extractSection(insert.content, 'TEACHER_TRUST_NOTE'),
+    rationale: insert.rationale,
+    difficulty_level: insert.difficulty_level,
+  };
+}
+
+function extractAldRationale(tierRationale?: string | null) {
+  const scoreMatch = tierRationale?.match(/ALD alignment score:\s*([0-9.-]+)/i);
+  const reasonsMatch = tierRationale?.match(/ALD reasons:\s*([\s\S]*?)(?:\s+No question package generated\.|$)/i);
+  return {
+    score: scoreMatch ? Number(scoreMatch[1]) : null,
+    reasons: reasonsMatch?.[1]
+      ?.split('|')
+      .map((item) => item.trim())
+      .filter(Boolean) ?? [],
+  };
+}
+
+function buildAldPurpose(passage: GutenbergPassageForReadingWin) {
+  if (!passage.standard_code) return null;
+  const guidance = getFastAldGuidanceForStandard(passage.standard_code);
+  const rationale = extractAldRationale(passage.tier_rationale);
+  const matchedGuidance = guidance.filter((item) =>
+    rationale.reasons.some((reason) => reason.includes(item.question))
+  );
+
+  return {
+    score: rationale.score,
+    questions: (matchedGuidance.length ? matchedGuidance : guidance).slice(0, 3).map((item) => ({
+      category_code: item.category_code,
+      category_name: item.category_name,
+      question: item.question,
+      content_use: item.content_use,
+    })),
+    reasons: rationale.reasons,
+  };
+}
+
 const PASSAGE_SELECT_WITH_COVERAGE =
-  'id, classification, standard_code, coverage_strand_id, coverage_strand_label, coverage_strand_signals, paragraph_text, word_count, source_title, source_author, source_year, source_gutenberg_id, intervention_tier, target_signal, supporting_evidence, non_supporting_evidence, plausible_distractors, tier_rationale, approval_status, approved, rejection_reason, created_at, reviewed_at';
+  'id, classification, source, standard_code, coverage_strand_id, coverage_strand_label, coverage_strand_signals, paragraph_text, word_count, source_title, source_author, source_year, source_gutenberg_id, intervention_tier, target_signal, supporting_evidence, non_supporting_evidence, plausible_distractors, tier_rationale, approval_status, approved, rejection_reason, created_at, reviewed_at';
 
 const PASSAGE_SELECT_LEGACY =
-  'id, classification, paragraph_text, word_count, source_title, source_author, source_year, source_gutenberg_id, intervention_tier, target_signal, supporting_evidence, non_supporting_evidence, plausible_distractors, tier_rationale, approval_status, approved, rejection_reason, created_at, reviewed_at';
+  'id, classification, source, paragraph_text, word_count, source_title, source_author, source_year, source_gutenberg_id, intervention_tier, target_signal, supporting_evidence, non_supporting_evidence, plausible_distractors, tier_rationale, approval_status, approved, rejection_reason, created_at, reviewed_at';
 
 function isCoverageColumnMissing(message: string) {
   return /standard_code|coverage_strand_id|coverage_strand_label|coverage_strand_signals/i.test(
@@ -49,40 +105,19 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const standardCode = url.searchParams.get('standard_code');
     const status = url.searchParams.get('status') ?? 'all';
+    const includeLegacy = url.searchParams.get('include_legacy') === '1';
     const limit = Math.max(1, Math.min(200, Number(url.searchParams.get('limit') ?? 80)));
-
-    let allowedClassifications: string[] | null = null;
-    if (standardCode) {
-      allowedClassifications = [
-        'inferencing',
-        'evidence_retrieval_failure',
-        'tone_misreading',
-        'mood_misreading',
-        'figurative_language_failure',
-        'comprehension_integration_failure',
-        'topic_vs_theme_confusion',
-        'structure_purpose_disconnect',
-        'vocabulary_gap',
-        'morphology_gap',
-        'syntax_barrier',
-        'schema_strategy_missing',
-        'no_metacognitive_strategy',
-      ].filter(
-        (classification) =>
-          mapGutenbergClassificationToFastStandard(classification) === standardCode
-      );
-    }
 
     function buildPassageQuery(select: string) {
       let passageQuery = supabase
         .from('intervention_passages')
         .select(select)
-        .eq('source', 'gutenberg')
+        .in('source', ['gutenberg', 'manual_rights', 'official_text_library'])
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (allowedClassifications?.length) {
-        passageQuery = passageQuery.in('classification', allowedClassifications);
+      if (standardCode && select === PASSAGE_SELECT_WITH_COVERAGE) {
+        passageQuery = passageQuery.eq('standard_code', standardCode);
       }
 
       if (status === 'approved') {
@@ -91,6 +126,14 @@ export async function GET(req: NextRequest) {
         passageQuery = passageQuery.or('approval_status.eq.pending_review,approval_status.is.null');
       } else if (status === 'rejected') {
         passageQuery = passageQuery.eq('approval_status', 'rejected');
+        passageQuery = passageQuery.not('rejection_reason', 'ilike', 'Legacy pre-official%');
+      } else if (status === 'legacy') {
+        passageQuery = passageQuery.eq('approval_status', 'rejected');
+        passageQuery = passageQuery.ilike('rejection_reason', 'Legacy pre-official%');
+      } else if (!includeLegacy) {
+        passageQuery = passageQuery.or(
+          'rejection_reason.is.null,rejection_reason.not.ilike.Legacy pre-official%'
+        );
       }
 
       return passageQuery;
@@ -108,7 +151,7 @@ export async function GET(req: NextRequest) {
           .select(
             'id, content, cognitive_skill_targeted, source_classification, title, option_a_text, option_b_text, option_c_text, option_d_text, correct_option, rationale, difficulty_level'
           )
-          .eq('source', 'gutenberg_public_domain')
+          .in('source', ['gutenberg_public_domain', 'rights_managed_literature'])
           .limit(5000),
       ]);
 
@@ -125,8 +168,15 @@ export async function GET(req: NextRequest) {
     const rows = ((passages ?? []) as unknown as PassageRow[])
       .map((passage) => ({
         ...passage,
-        standard_code:
-          passage.standard_code ?? mapGutenbergClassificationToFastStandard(passage.classification),
+        standard_code: passage.standard_code ?? null,
+        generated_item_preview: buildGeneratedItemPreview({
+          ...passage,
+          standard_code: passage.standard_code ?? null,
+        }),
+        ald_purpose: buildAldPurpose({
+          ...passage,
+          standard_code: passage.standard_code ?? null,
+        }),
         promoted_questions: questionsByPassage.get(passage.id) ?? [],
         promoted_question_count: questionsByPassage.get(passage.id)?.length ?? 0,
       }))

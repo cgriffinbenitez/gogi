@@ -42,18 +42,46 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
     classifications: ['inferencing', 'schema_strategy_missing', 'no_metacognitive_strategy'],
     coverageStrands: [
       {
-        id: 'literal-detail-to-layer',
-        label: 'Literal detail to deeper layer',
+        id: 'setting-layer',
+        label: 'Setting adds meaning or style',
         studentCanDo:
-          'Explain how one object, setting detail, description, or event adds meaning beyond what literally happens.',
-        harvestSignals: ['symbolic object', 'revealing setting detail', 'plot detail with effect'],
+          'Explain how place, time, weather, social conditions, or atmosphere adds meaning, mood, tone, or style.',
+        harvestSignals: ['setting detail', 'weather', 'place description', 'atmosphere', 'social condition'],
       },
       {
-        id: 'style-or-meaning-effect',
-        label: 'Meaning or style effect',
+        id: 'plot-conflict-layer',
+        label: 'Plot or conflict adds meaning',
         studentCanDo:
-          'Connect the key element to an author effect such as mood, characterization, theme, tension, or style.',
-        harvestSignals: ['style shift', 'mood-bearing detail', 'character-revealing action'],
+          'Explain how an event, conflict, decision, reversal, or consequence adds a deeper layer of meaning.',
+        harvestSignals: ['conflict', 'turning point', 'choice', 'consequence', 'reversal', 'event with effect'],
+      },
+      {
+        id: 'characterization-layer',
+        label: 'Characterization adds meaning',
+        studentCanDo:
+          'Explain how a character action, thought, speech, contrast, or description reveals meaning or style.',
+        harvestSignals: ['character action', 'character thought', 'speech', 'description', 'contrast'],
+      },
+      {
+        id: 'point-of-view-layer',
+        label: 'Point of view adds meaning',
+        studentCanDo:
+          'Explain how who tells or sees the moment shapes meaning, tone, mood, or reader understanding.',
+        harvestSignals: ['narrator view', 'point of view', 'limited knowledge', 'perspective', 'reader understanding'],
+      },
+      {
+        id: 'theme-tone-layer',
+        label: 'Theme or tone layer',
+        studentCanDo:
+          'Explain how a key element points toward a theme or creates the author’s tone.',
+        harvestSignals: ['theme clue', 'tone clue', 'author attitude', 'lesson', 'message'],
+      },
+      {
+        id: 'style-technique-layer',
+        label: 'Style technique adds meaning',
+        studentCanDo:
+          'Connect diction, syntax, grammar, or figurative language to the writer’s voice or effect.',
+        harvestSignals: ['diction', 'syntax', 'sentence style', 'figurative language', 'writer voice'],
       },
     ],
     passageRequirements: [
@@ -79,6 +107,13 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
     classifications: ['topic_vs_theme_confusion', 'inferencing'],
     coverageStrands: [
       {
+        id: 'universal-theme',
+        label: 'Universal theme',
+        studentCanDo:
+          'Explain a theme as a transferable idea about people, choices, life, society, or human experience.',
+        harvestSignals: ['universal idea', 'life lesson', 'human experience', 'applies beyond the story'],
+      },
+      {
         id: 'topic-vs-theme',
         label: 'Topic vs. theme statement',
         studentCanDo:
@@ -91,6 +126,13 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
         studentCanDo:
           'Track how two or more story moments develop the same theme instead of treating one detail as the whole message.',
         harvestSignals: ['repeated idea', 'character choice', 'consequence or realization'],
+      },
+      {
+        id: 'theme-through-conflict',
+        label: 'Theme through conflict or consequence',
+        studentCanDo:
+          'Explain how conflict, consequence, realization, or change develops the theme.',
+        harvestSignals: ['conflict develops theme', 'consequence', 'realization', 'change', 'choice'],
       },
       {
         id: 'theme-evidence-fit',
@@ -165,6 +207,78 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
     ],
     recommendedCommand:
       'npm run pipeline:standard -- --standard ELA.9.R.1.3 --max-books 5 --max 12',
+  },
+  {
+    standardCode: 'ELA.9.R.1.4',
+    teacherLabel: 'Epic poetry: characters, structures, and themes',
+    studentMove:
+      'Name the epic convention, point to the evidence, then explain how it develops character, structure, or theme.',
+    harvestGoal:
+      'Find epic excerpts where structure, character action, divine influence, heroic values, ritual, or elevated style develops meaning.',
+    classifications: ['schema_strategy_missing', 'inferencing', 'comprehension_integration_failure'],
+    coverageStrands: [
+      {
+        id: 'in-medias-res',
+        label: 'In medias res',
+        studentCanDo:
+          'Explain how beginning in the middle of action affects structure, tension, or reader understanding.',
+        harvestSignals: ['in medias res', 'middle of action', 'already underway', 'opening conflict'],
+      },
+      {
+        id: 'divine-intervention',
+        label: 'Divine intervention',
+        studentCanDo:
+          'Explain how a god, goddess, prophecy, prayer, or supernatural force shapes action or theme.',
+        harvestSignals: ['god', 'goddess', 'Minerva', 'Jove', 'Juno', 'Apollo', 'prayer', 'prophecy', 'fate'],
+      },
+      {
+        id: 'epic-hero-traits',
+        label: 'Epic hero traits',
+        studentCanDo:
+          'Use evidence to explain a hero’s courage, pride, loyalty, cleverness, endurance, or leadership.',
+        harvestSignals: ['hero', 'courage', 'honor', 'brave', 'leader', 'quest', 'battle', 'endure'],
+      },
+      {
+        id: 'quest-journey-structure',
+        label: 'Quest or journey structure',
+        studentCanDo:
+          'Track how a journey stage, obstacle, test, return, or recognition moment develops the epic.',
+        harvestSignals: ['journey', 'return', 'home', 'voyage', 'wander', 'test', 'trial', 'obstacle'],
+      },
+      {
+        id: 'ritual-speech-oath',
+        label: 'Ritual, speech, or oath',
+        studentCanDo:
+          'Explain how formal speeches, prayers, oaths, hospitality, feasts, or rituals reveal epic values.',
+        harvestSignals: ['speech', 'oath', 'prayer', 'offering', 'sacrifice', 'feast', 'hospitality', 'wine'],
+      },
+      {
+        id: 'theme-through-heroic-action',
+        label: 'Theme through heroic action',
+        studentCanDo:
+          'Explain how an action develops a theme such as honor, loyalty, fate, revenge, sacrifice, or homecoming.',
+        harvestSignals: ['honor', 'loyalty', 'fate', 'revenge', 'sacrifice', 'homecoming', 'duty'],
+      },
+      {
+        id: 'elevated-style-epic-simile',
+        label: 'Elevated style and epic simile',
+        studentCanDo:
+          'Explain how formal language, repeated phrasing, invocation, or extended comparison creates epic style.',
+        harvestSignals: ['muse', 'sing', 'invocation', 'like', 'as when', 'glory', 'noble', 'renowned'],
+      },
+    ],
+    passageRequirements: [
+      'The excerpt must show an epic convention students can name and explain.',
+      'The convention must connect to character, structure, or theme.',
+      'The teaching move must be visible without reading the whole epic.',
+    ],
+    rejectIf: [
+      'The excerpt is only plot movement with no teachable epic convention.',
+      'The epic feature requires extensive background summary before students can practice.',
+      'Archaic language blocks the target skill more than it supports it.',
+    ],
+    recommendedCommand:
+      'npm run library:mine-official -- --standard ELA.9.R.1.4 --max-per-text 3',
   },
   {
     standardCode: 'ELA.9.R.2.1',
@@ -450,6 +564,57 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
       'npm run pipeline:standard -- --standard ELA.9.R.3.1 --max-books 5 --max 12',
   },
   {
+    standardCode: 'ELA.9.R.3.2',
+    teacherLabel: 'Paraphrase grade-level text',
+    studentMove:
+      'Break the sentence or passage into chunks, restate each chunk in plain language, then keep the original meaning.',
+    harvestGoal:
+      'Find grade-level excerpts with dense syntax, figurative phrasing, archaic wording, or layered claims that require accurate paraphrase.',
+    classifications: ['syntax_barrier', 'vocabulary_gap', 'comprehension_integration_failure'],
+    coverageStrands: [
+      {
+        id: 'chunk-complex-syntax',
+        label: 'Chunk complex syntax',
+        studentCanDo:
+          'Break a long or inverted sentence into smaller parts and restate the meaning accurately.',
+        harvestSignals: ['long sentence', 'inverted syntax', 'semicolon', 'embedded clause'],
+      },
+      {
+        id: 'preserve-original-meaning',
+        label: 'Preserve original meaning',
+        studentCanDo:
+          'Paraphrase without adding, deleting, or changing the author’s idea.',
+        harvestSignals: ['same meaning', 'no added claim', 'accurate restatement'],
+      },
+      {
+        id: 'translate-archaic-or-formal-language',
+        label: 'Translate archaic or formal language',
+        studentCanDo:
+          'Use context to restate older, formal, poetic, or unfamiliar wording in modern plain language.',
+        harvestSignals: ['archaic diction', 'formal phrasing', 'poetic wording', 'older usage'],
+      },
+      {
+        id: 'paraphrase-claim-or-theme',
+        label: 'Paraphrase claim or theme',
+        studentCanDo:
+          'Restate a claim, central idea, theme, or speaker point in clear, student-friendly language.',
+        harvestSignals: ['claim', 'central idea', 'theme', 'speaker point'],
+      },
+    ],
+    passageRequirements: [
+      'The excerpt should be complex enough to require paraphrase but not so dense that it becomes decoding-only.',
+      'There must be a stable meaning students can preserve.',
+      'The passage should support wrong choices that subtly add, omit, or distort meaning.',
+    ],
+    rejectIf: [
+      'The passage is already so simple that paraphrase is unnecessary.',
+      'The passage contains multiple equally plausible meanings without enough context.',
+      'The language is too archaic to transfer to modern FAST-style paraphrase work.',
+    ],
+    recommendedCommand:
+      'npm run library:mine-official -- --standard ELA.9.R.3.2 --max-per-text 3',
+  },
+  {
     standardCode: 'ELA.9.R.3.3',
     teacherLabel: 'Adaptation across texts',
     studentMove: 'Notice what stayed the same, what changed, and how the meaning changed.',
@@ -547,6 +712,50 @@ export const GUTENBERG_STANDARD_BLUEPRINTS: GutenbergStandardPipelineBlueprint[]
     ],
     recommendedCommand:
       'npm run pipeline:standard -- --standard ELA.9.R.3.4 --max-books 5 --max 12',
+  },
+  {
+    standardCode: 'ELA.9.V.1.1',
+    teacherLabel: 'Academic vocabulary in context',
+    studentMove:
+      'Use the sentence, surrounding idea, and academic word family to choose the meaning that fits.',
+    harvestGoal:
+      'Find excerpts where academic vocabulary carries meaning and the surrounding context lets students infer or verify the word.',
+    classifications: ['vocabulary_gap', 'syntax_barrier'],
+    coverageStrands: [
+      {
+        id: 'tier-two-academic-word',
+        label: 'Tier 2 academic word',
+        studentCanDo:
+          'Use context to determine the meaning of a transferable academic word.',
+        harvestSignals: ['academic word', 'transferable vocabulary', 'Tier 2'],
+      },
+      {
+        id: 'word-family-relationship',
+        label: 'Word family relationship',
+        studentCanDo:
+          'Use related forms of a word to infer meaning and check the meaning in context.',
+        harvestSignals: ['word family', 'related form', 'derivation'],
+      },
+      {
+        id: 'academic-tone-precision',
+        label: 'Academic tone and precision',
+        studentCanDo:
+          'Explain why one precise academic word fits the author’s meaning better than a near synonym.',
+        harvestSignals: ['precise word', 'tone', 'near synonym', 'academic register'],
+      },
+    ],
+    passageRequirements: [
+      'The target word should transfer beyond a single text.',
+      'Nearby context must support meaning recovery.',
+      'Distractors should include familiar but imprecise meanings.',
+    ],
+    rejectIf: [
+      'The word is rare, archaic, or not useful for academic transfer.',
+      'The context does not help determine meaning.',
+      'The item would become a dictionary question instead of a reading question.',
+    ],
+    recommendedCommand:
+      'npm run library:mine-official -- --standard ELA.9.V.1.1 --max-per-text 3',
   },
   {
     standardCode: 'ELA.9.V.1.2',
