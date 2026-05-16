@@ -22,6 +22,29 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
+function mockVerification(word: string) {
+  const clean = word.toLowerCase();
+
+  return {
+    word: clean,
+    correct_definition: `A test definition for "${clean}" that represents the correct meaning in context.`,
+    wrong_definition: `A test definition for "${clean}" that sounds plausible but means something different.`,
+    mocked: true,
+  };
+}
+
+function mockDefinition(word: string) {
+  const clean = word.toLowerCase();
+
+  return {
+    word: clean,
+    part_of_speech: 'noun',
+    definition: `Mock definition for "${clean}" used during local development.`,
+    example: `The student saw "${clean}" in the passage and used context to understand it.`,
+    mocked: true,
+  };
+}
+
 export async function POST(request: Request) {
   const { word, passageContext, verification } = (await request.json()) as {
     word: string;
@@ -31,6 +54,16 @@ export async function POST(request: Request) {
 
   if (!word?.trim()) {
     return Response.json({ error: 'word is required' }, { status: 400 });
+  }
+
+  const useMock = process.env.ANTHROPIC_MOCK === 'true';
+
+  if (useMock && verification) {
+    return Response.json(mockVerification(word));
+  }
+
+  if (useMock) {
+    return Response.json(mockDefinition(word));
   }
 
   const client = new Anthropic();

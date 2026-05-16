@@ -126,6 +126,38 @@ type ClaudeAction =
   // ─── Sprint K reading profile ─────────────────────────────────────────────
   | 'score_syntax_response';
 
+function buildMockClaudeResponse(action: ClaudeAction) {
+  switch (action) {
+    case 'score_syntax_response':
+      return { text: '1', mocked: true };
+
+    case 'evaluate_mastery_structured':
+      return {
+        text: JSON.stringify({
+          mastery: false,
+          score: 1,
+          feedback: 'Mock feedback: this response is partially on track.',
+        }),
+        mocked: true,
+      };
+
+    case 'evaluate_practice_response':
+      return {
+        text: JSON.stringify({
+          correct: false,
+          feedback: 'Mock feedback: look back at the passage detail and try again.',
+        }),
+        mocked: true,
+      };
+
+    default:
+      return {
+        text: 'Mock GOGI response for local development. This avoided a real Anthropic API call.',
+        mocked: true,
+      };
+  }
+}
+
 function buildPrompt(action: ClaudeAction, params: Record<string, string>): string {
   const { standardCode = '', standardTitle = '' } = params;
 
@@ -869,14 +901,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { action, ...params } = body as { action: ClaudeAction } & Record<string, string>;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
-    }
-
     const prompt = buildPrompt(action, params);
     if (!prompt) {
       return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+    }
+
+    if (process.env.ANTHROPIC_MOCK === 'true') {
+      return NextResponse.json(buildMockClaudeResponse(action));
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
     }
 
     const isExtractPassages = action === 'extract_passages';

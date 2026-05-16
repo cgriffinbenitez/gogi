@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { GogiNav } from '@/components/nav/GogiNav';
 import { GogiAvatar } from '@/components/gogi/GogiAvatar';
@@ -48,6 +48,7 @@ interface QuestionRow {
   option_b_class?: string | null;
   option_c_class?: string | null;
   option_d_class?: string | null;
+  approved?: boolean | null;
 }
 
 function parseQuestionContent(row: QuestionRow): Omit<ParsedQuestion, 'passageText' | 'title' | 'author' | 'pub_year'> {
@@ -88,6 +89,15 @@ function parseQuestionContent(row: QuestionRow): Omit<ParsedQuestion, 'passageTe
   }
 
   return { id: row.id, stem, choices, correctLetter, cognitiveSkill, classifications };
+}
+
+function isClassifiedDiagnosticQuestion(q: ParsedQuestion): boolean {
+  return (
+    Boolean(q.stem) &&
+    Boolean(q.correctLetter) &&
+    q.choices.every((choice) => Boolean(choice.text)) &&
+    ['A', 'B', 'C', 'D'].every((letter) => Boolean(q.classifications[letter]))
+  );
 }
 
 function extractPassageFromContent(content: string): string {
@@ -183,7 +193,7 @@ export default function DiagnosticPage() {
 
   const [view,        setView]        = useState<DiagnosticView>('loading');
   const [errorMsg,    setErrorMsg]    = useState('');
-  const [initialized, setInitialized] = useState(false);
+  const initialized = useRef(false);
   const [schemaGenerating, setSchemaGenerating] = useState(false);
 
   function changeView(next: DiagnosticView) {
@@ -194,6 +204,7 @@ export default function DiagnosticPage() {
   const [studentId,    setStudentId]    = useState('');
   const [standardUuid, setStandardUuid] = useState('');
   const [sessionId,    setSessionId]    = useState('');
+  const [sessionNumber, setSessionNumber] = useState(1);
   const [questions,    setQuestions]    = useState<ParsedQuestion[]>([]);
   const [fontSize] = useState(17);
 
@@ -212,8 +223,8 @@ export default function DiagnosticPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push('/login'); return; }
-    if (initialized) return;
-    setInitialized(true);
+    if (initialized.current) return;
+    initialized.current = true;
 
     console.log('[DiagnosticPage] init starting for user:', user.id, 'standard:', standardCode);
 
@@ -253,7 +264,7 @@ export default function DiagnosticPage() {
         setStandardUuid(standard.id);
 
         // ── Step 3: Get session number from standard_progress ───────────────
-        let sessionNumber = 1;
+        let resolvedSessionNumber = 1;
         if (resolvedStudentId) {
           const { data: progress } = await supabase
             .from('standard_progress')
@@ -262,21 +273,55 @@ export default function DiagnosticPage() {
             .eq('standard_id', standard.id)
             .maybeSingle();
           const attempted = (progress as { sessions_attempted?: number } | null)?.sessions_attempted ?? 0;
-          sessionNumber = Math.max(1, attempted + 1);
+          resolvedSessionNumber = Math.max(1, attempted + 1);
         }
+        setSessionNumber(resolvedSessionNumber);
 
-        // ── Step 4: Create diagnostic session ──────────────────────────────
+        // ── Step 4: Resolve diagnostic session ─────────────────────────────
         let resolvedSessionId = '';
         if (resolvedStudentId) {
-          const { data: session, error: sessErr } = await supabase
+          const { data: completedSession } = await supabase
+            .from('sessions')
+            .select('id, dominant_classification')
+            .eq('student_id', resolvedStudentId)
+            .eq('standard_id', standard.id)
+            .eq('phase', 'diagnostic')
+            .eq('status', 'complete')
+            .not('dominant_classification', 'is', null)
+            .order('completed_at', { ascending: false, nullsFirst: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (completedSession?.id) {
+            clearTimeout(timeoutId);
+            router.push(`/standard/${standardId}/bridge`);
+            return;
+          }
+
+          const { data: existingSession } = await supabase
+            .from('sessions')
+            .select('id')
+            .eq('student_id', resolvedStudentId)
+            .eq('standard_id', standard.id)
+            .eq('phase', 'diagnostic')
+            .eq('status', 'in_progress')
+            .order('started_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (existingSession?.id) {
+            resolvedSessionId = existingSession.id;
+          } else {
+            const { data: session, error: sessErr } = await supabase
             .from('sessions')
             .insert({ student_id: resolvedStudentId, standard_id: standard.id, phase: 'diagnostic', status: 'in_progress' })
             .select('id')
             .single();
-          if (sessErr) {
-            console.error('[DiagnosticPage] step 4 ERROR — session insert:', sessErr.message);
-          } else {
-            resolvedSessionId = session?.id ?? '';
+            if (sessErr) {
+              console.error('[DiagnosticPage] step 4 ERROR — session insert:', sessErr.message);
+            } else {
+              resolvedSessionId = session?.id ?? '';
+            }
           }
         }
         setSessionId(resolvedSessionId);
@@ -284,30 +329,37 @@ export default function DiagnosticPage() {
         // ── Step 5: Fetch questions ─────────────────────────────────────────
         const { data: qRows, error: qErr } = await supabase
           .from('questions')
-          .select('id, content, cognitive_skill_targeted, title, author, pub_year, keyword_flags, option_a_class, option_b_class, option_c_class, option_d_class')
+          .select('id, content, cognitive_skill_targeted, title, author, pub_year, keyword_flags, option_a_class, option_b_class, option_c_class, option_d_class, approved')
           .eq('standard_id', standard.id)
           .order('created_at', { ascending: false })
-          .limit(10);
+          .limit(50);
         if (qErr) console.error('[DiagnosticPage] step 5 ERROR:', qErr.message);
 
-        const shuffled = [...(qRows ?? [])].sort(() => Math.random() - 0.5);
-
-        const parsed: ParsedQuestion[] = shuffled.map((row) => ({
+        const parsedRows = (qRows ?? []).map((row) => ({
+          row,
+          question: {
           ...parseQuestionContent(row as QuestionRow),
           passageText: extractPassageFromContent(row.content),
           title:       row.title    ?? 'Literary Selection',
           author:      row.author   ?? 'Public Domain',
           pub_year:    row.pub_year ?? '',
+          },
         }));
+
+        const classifiedRows = parsedRows.filter(({ question }) => isClassifiedDiagnosticQuestion(question));
+        const approvedClassifiedRows = classifiedRows.filter(({ row }) => row.approved === true);
+        const diagnosticRows = approvedClassifiedRows.length > 0 ? approvedClassifiedRows : classifiedRows;
+        const shuffled = [...diagnosticRows].sort(() => Math.random() - 0.5).slice(0, 10);
+        const parsed: ParsedQuestion[] = shuffled.map(({ question }) => question);
 
         const finalQuestions = parsed.length > 0 ? parsed : PLACEHOLDER_QUESTIONS;
 
         // ── Step 6: Store diagnostic question IDs ───────────────────────────
         if (resolvedSessionId && shuffled.length > 0) {
-          const questionIds = shuffled.map((q) => q.id);
+          const questionIds = shuffled.map(({ row }) => row.id);
           const { error: updateErr } = await supabase
             .from('sessions')
-            .update({ diagnostic_question_id: shuffled[0].id, diagnostic_question_ids: questionIds })
+            .update({ diagnostic_question_id: shuffled[0].row.id, diagnostic_question_ids: questionIds })
             .eq('id', resolvedSessionId);
           if (updateErr) console.warn('[DiagnosticPage] question IDs store failed:', updateErr.message);
         }
@@ -353,7 +405,7 @@ export default function DiagnosticPage() {
           }
 
           // No existing schema — run demand analysis and generate if needed
-          const demand = await analyzeSchemaDemand(resolvedStudentId, standard.id, sessionNumber);
+          const demand = await analyzeSchemaDemand(resolvedStudentId, standard.id, resolvedSessionNumber);
           console.log('[DiagnosticPage] schema demand:', demand);
 
           if (demand.shouldFire) {
@@ -445,17 +497,24 @@ export default function DiagnosticPage() {
             console.log('[DiagnosticPage] classification result:', result);
 
             // Persist all identified gaps before routing
-            if (!result.skipTeach && studentId && standardUuid && result.allGaps.length > 0) {
+            if (studentId && standardUuid) {
               try {
                 const supabaseGaps = createClient();
+                const gapsIdentified = result.skipTeach
+                  ? []
+                  : (result.allGaps.length > 0 ? result.allGaps : [result.dominant]);
                 await supabaseGaps.from('standard_progress').upsert({
-                  student_id:      studentId,
-                  standard_id:     standardUuid,
-                  gaps_identified: result.allGaps,
-                  current_gap:     result.dominant,
+                  student_id:          studentId,
+                  standard_id:         standardUuid,
+                  current_status:      result.skipTeach ? 'practicing' : 'intervening',
+                  sessions_attempted:  sessionNumber,
+                  sessions_passed:     result.skipTeach ? 1 : 0,
+                  last_session_at:     new Date().toISOString(),
+                  gaps_identified:     gapsIdentified,
+                  current_gap:         result.skipTeach ? null : result.dominant,
                 }, { onConflict: 'student_id,standard_id' });
               } catch (gapErr) {
-                console.error('[DiagnosticPage] gaps upsert failed:', gapErr);
+                console.error('[DiagnosticPage] standard_progress upsert failed:', gapErr);
               }
             }
 

@@ -113,6 +113,7 @@ export default function VocabCheckPage() {
   const [verificationOptions, setVerificationOptions] = useState<VerificationOptions | null>(null);
   const [verificationSelected, setVerificationSelected] = useState<'A' | 'B' | null>(null);
   const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationUnavailable, setVerificationUnavailable] = useState(false);
   const [saving,              setSaving]              = useState(false);
 
   const currentWord     = words[currentWordIndex] ?? '';
@@ -215,13 +216,18 @@ export default function VocabCheckPage() {
     setVerificationLoading(true);
     setVerificationOptions(null);
     setVerificationSelected(null);
+    setVerificationUnavailable(false);
 
     fetch('/api/vocab/define', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ word: currentWord, passageContext: contextSentence, verification: true }),
     })
-      .then(res => res.json())
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error ?? 'verification unavailable');
+        return data as { correct_definition?: string; wrong_definition?: string };
+      })
       .then((data: { correct_definition?: string; wrong_definition?: string }) => {
         if (data.correct_definition && data.wrong_definition) {
           setVerificationOptions({
@@ -229,9 +235,14 @@ export default function VocabCheckPage() {
             wrong:      data.wrong_definition,
             aIsCorrect: Math.random() > 0.5,
           });
+        } else {
+          setVerificationUnavailable(true);
         }
       })
-      .catch(err => console.error('[VocabCheck] verification error:', err))
+      .catch(err => {
+        console.error('[VocabCheck] verification error:', err);
+        setVerificationUnavailable(true);
+      })
       .finally(() => setVerificationLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOption, currentWordIndex]);
@@ -251,8 +262,9 @@ export default function VocabCheckPage() {
   function isNextEnabled(): boolean {
     if (!selectedOption) return false;
     if (selectedOption === 'maybe' || selectedOption === 'no') return true;
-    // 'know': need verification answered OR no verification available
-    return verificationSelected !== null || (!verificationLoading && !verificationOptions);
+    // 'know': require verification when available; if verification fails, proceed
+    // but save the word as "maybe" rather than confirmed knowledge.
+    return verificationSelected !== null || (!verificationLoading && verificationUnavailable);
   }
 
   function handleNext() {
@@ -265,8 +277,8 @@ export default function VocabCheckPage() {
       response = 'maybe';
     } else {
       // 'know' path
-      if (!verificationOptions || verificationSelected === null) {
-        response = 'confirmed_know';
+      if (verificationUnavailable || !verificationOptions || verificationSelected === null) {
+        response = 'maybe';
       } else {
         const pickedCorrect = verificationOptions.aIsCorrect
           ? verificationSelected === 'A'
@@ -288,6 +300,7 @@ export default function VocabCheckPage() {
       setSelectedOption(null);
       setVerificationOptions(null);
       setVerificationSelected(null);
+      setVerificationUnavailable(false);
     }
   }
 
@@ -535,9 +548,9 @@ export default function VocabCheckPage() {
                     })}
                   </>
                 )}
-                {!verificationLoading && !verificationOptions && (
-                  <div style={{ fontSize: 11, color: C.gray, fontStyle: 'italic' }}>
-                    Verification unavailable — your answer has been recorded.
+                {!verificationLoading && verificationUnavailable && (
+                  <div style={{ fontSize: 11, color: C.gray, fontStyle: 'italic', lineHeight: 1.5 }}>
+                    Verification unavailable — GOGI will save this word as unsure, not confirmed known.
                   </div>
                 )}
               </div>
