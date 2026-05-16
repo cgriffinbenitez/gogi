@@ -55,6 +55,7 @@ export interface StandardTileProps {
   skillGaps:                   SkillGap[];
   lastSessionAt:               string | null;
   currentStatus:               string;
+  phase?:                      string | null;
   isOpen:                      boolean;
   onToggle:                    () => void;
   onCTAClick?:                 () => void;   // kept for compat; tile routes internally
@@ -385,6 +386,7 @@ export function StandardTile({
   skillGaps,
   lastSessionAt,
   currentStatus,
+  phase               = null,
   isOpen,
   onToggle,
   onCTAClick,
@@ -397,14 +399,17 @@ export function StandardTile({
 }: StandardTileProps) {
   // Suppress unused-var warnings for props kept for backward compat
   void currentIntervention; void timeSpentMinutes; void skillGaps;
-  void lastSessionAt; void currentStatus; void vocabCoverageScore; void onCTAClick;
+  void lastSessionAt; void vocabCoverageScore; void onCTAClick;
 
   const router       = useRouter();
   const displayName  = STANDARD_DISPLAY_NAMES[standardUuid] ?? title;
   const diagnosticDone = status !== 'notStarted' && status !== 'inDiagnostic';
   const allGapsDone    = gapsIdentified.length > 0 && gapsAddressed.length >= gapsIdentified.length;
-  // "practicing" = has had at least one practice session evaluated
-  const isPracticing   = sessionsAttempted > 0 && status === 'inIntervention';
+  // "practicing" should mean an actual practice phase, not merely that the
+  // diagnostic incremented the attempt counter.
+  const isPracticing   =
+    status === 'inIntervention' &&
+    (currentStatus === 'practicing' || phase === 'practice');
 
   // ── Section A: badge ───────────────────────────────────────────────────────
 
