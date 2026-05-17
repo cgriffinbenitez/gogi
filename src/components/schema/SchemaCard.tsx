@@ -38,6 +38,7 @@ export function SchemaCard({
   introMessage,
 }: SchemaCardProps) {
   const [prediction, setPrediction]     = useState('');
+  const [predictionBlurred, setPredictionBlurred] = useState(false);
   const [submitting, setSubmitting]     = useState(false);
   const [feedback,   setFeedback]       = useState('');
   const [feedbackOk, setFeedbackOk]     = useState(false);
@@ -45,6 +46,7 @@ export function SchemaCard({
 
   const wordCount  = prediction.trim().split(/\s+/).filter(Boolean).length;
   const isValid    = wordCount >= WORD_THRESHOLD;
+  const wordsLeft  = Math.max(WORD_THRESHOLD - wordCount, 0);
   const modeLabel  = MODE_LABELS[payload.schemaMode] ?? 'Schema';
 
   async function handleSubmit() {
@@ -219,6 +221,7 @@ export function SchemaCard({
           <textarea
             value={prediction}
             onChange={(e) => setPrediction(e.target.value)}
+            onBlur={() => setPredictionBlurred(true)}
             disabled={unlocked}
             placeholder="Write your answer here..."
             style={{
@@ -238,6 +241,16 @@ export function SchemaCard({
               cursor: unlocked ? 'not-allowed' : 'text',
             }}
           />
+          {predictionBlurred && !isValid && !unlocked && (
+            <div style={{
+              fontSize: 11,
+              color: '#BA7517',
+              marginTop: 6,
+              lineHeight: 1.4,
+            }}>
+              {wordsLeft} {wordsLeft === 1 ? 'word' : 'words'} left
+            </div>
+          )}
         </div>
 
         {/* ── Micro feedback ── */}
