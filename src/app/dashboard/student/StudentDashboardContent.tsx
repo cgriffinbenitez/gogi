@@ -306,6 +306,7 @@ export default function StudentDashboardContent({ studentId, studentName, standa
                     skillGaps={result?.skillGaps                        ?? []}
                     lastSessionAt={result?.lastSessionAt                ?? null}
                     currentStatus={result?.currentStatus                ?? 'not_started'}
+                    phase={result?.phase                                ?? null}
                     vocabCheckComplete={result?.vocabCheckComplete      ?? false}
                     vocabCoverageScore={result?.vocabCoverageScore      ?? null}
                     gapsIdentified={result?.gapsIdentified              ?? []}

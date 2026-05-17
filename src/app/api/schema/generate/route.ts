@@ -9,6 +9,22 @@ const MODE_INSTRUCTIONS: Record<SchemaMode, string> = {
   task_framing:    'Build a task frame. The student needs to know what kind of reading this is and what to look for. Focus on the reading lens and prediction prompt.',
 }
 
+function buildMockSchemaPayload(schemaMode: SchemaMode): SchemaPayload {
+  return {
+    schemaMode,
+    topicFrame: 'Mock frame: this passage asks you to notice the situation before judging the character.',
+    knowledgeAnchors: [
+      'Look for where the setting creates pressure.',
+      'Notice what changes from the beginning to the end.',
+      'Track what the character does, not just what they say.',
+    ],
+    analogyOrBridge: 'Think about walking into a tense room and reading the mood before anyone explains it.',
+    misconceptionGuardrail: 'Do not assume the first obvious feeling is the whole meaning.',
+    readingLens: 'Watch how details build mood and pressure across the passage.',
+    predictionPrompt: 'What feeling do you expect the passage to build, and what details might prove it?',
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json() as {
@@ -69,12 +85,17 @@ export async function POST(request: Request) {
     const schemaMode: SchemaMode = schemaModeOverride ?? selectSchemaMode(standardCode, passageTitle, passageAuthor)
 
     // ── Generate schema payload with Claude ─────────────────────────────────
-    const client = new Anthropic()
+    let payload: SchemaPayload
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 600,
-      system: `You are a pre-reading schema designer for a 9th grade literacy platform serving Title I students in Miami. Your job is to build the MINIMUM viable mental model a student needs before reading.
+    if (process.env.ANTHROPIC_MOCK === 'true') {
+      payload = buildMockSchemaPayload(schemaMode)
+    } else {
+      const client = new Anthropic()
+
+      const message = await client.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 600,
+        system: `You are a pre-reading schema designer for a 9th grade literacy platform serving Title I students in Miami. Your job is to build the MINIMUM viable mental model a student needs before reading.
 
 CRITICAL RULES:
 - Do NOT give away the theme, inference, or answer
@@ -97,24 +118,24 @@ Schema:
   "readingLens": "string (max 160 chars — what to watch for as they read)",
   "predictionPrompt": "string (max 160 chars — one question they answer before reading)"
 }`,
-      messages: [{
-        role: 'user',
-        content: `Standard: ${standardCode}
+        messages: [{
+          role: 'user',
+          content: `Standard: ${standardCode}
 Title: ${passageTitle || 'Literary passage'}
 Author: ${passageAuthor || 'Unknown'}
 Keywords: ${keywords.join(', ')}
 Passage excerpt:
 ${passageText}`,
-      }],
-    })
+        }],
+      })
 
-    let payload: SchemaPayload
-    try {
-      const raw = message.content[0].type === 'text' ? message.content[0].text : '{}'
-      payload = JSON.parse(raw.replace(/```json\n?|```/g, '').trim()) as SchemaPayload
-    } catch (parseErr) {
-      console.error('[schema/generate] JSON parse failed:', parseErr)
-      return Response.json({ error: 'Schema generation failed' }, { status: 500 })
+      try {
+        const raw = message.content[0].type === 'text' ? message.content[0].text : '{}'
+        payload = JSON.parse(raw.replace(/```json\n?|```/g, '').trim()) as SchemaPayload
+      } catch (parseErr) {
+        console.error('[schema/generate] JSON parse failed:', parseErr)
+        return Response.json({ error: 'Schema generation failed' }, { status: 500 })
+      }
     }
 
     // ── Store intervention ──────────────────────────────────────────────────
@@ -129,7 +150,7 @@ ${passageText}`,
         trigger_reason:    'demand_analysis',
         demand_score:      0.9,
         generated_payload: payload,
-        model_version:     'claude-sonnet-4-6',
+        model_version:     process.env.ANTHROPIC_MOCK === 'true' ? 'mock' : 'claude-sonnet-4-6',
       })
       .select('id')
       .single()

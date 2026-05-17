@@ -50,6 +50,7 @@
     "pipeline": "tsx src/pipeline/run.ts",
     "review-passages": "tsx src/pipeline/review-cli.ts",
     "validate": "tsx src/pipeline/validate.ts",
+    "audit:diagnostic-readiness": "tsx scripts/audit-diagnostic-readiness.ts",
     "test:integration": "vitest run tests/integration/"
   },
   "dependencies": {
